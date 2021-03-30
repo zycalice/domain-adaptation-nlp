@@ -3,6 +3,7 @@
 
 #Data
 data/
+*.npy
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
