@@ -1,8 +1,7 @@
 import os
-import numpy as np
 import pandas as pd
 import zipfile
-import utils
+from utils import *
 import bz2
 from sklearn.model_selection import train_test_split
 
@@ -16,7 +15,7 @@ def get_label_feature_amazon(file):
         review = e[(sep_pos + 1):]
         labels.append(label)
         reviews.append(review)
-    return reviews, labels
+    return np.array(reviews), np.array(labels)
 
 
 if __name__ == '__main__':
@@ -55,7 +54,6 @@ if __name__ == '__main__':
     X_train_mv, X_dev_mv, X_test_mv = movie_train['text'].values, movie_dev['text'].values, movie_test['text'].values
     y_train_mv, y_dev_mv, y_test_mv = movie_train['label'].values, movie_dev['label'].values, movie_test['label'].values
 
-
     # Finance sentiment.
     finance_file = pd.read_csv(data_path + "/finance/archive/all-data.csv", encoding='ISO-8859-1', header=None)
     finance = finance_file[finance_file[0] != "neutral"]
@@ -65,8 +63,8 @@ if __name__ == '__main__':
     y_fi[y_fi == "positive"] = 1
     X_fi = finance[1].values
 
-    X_train_val_fi, X_test_fi, y_train_val_fi, y_test_fi = train_test_split(X_fi, y_fi, test_size=0.33, random_state=7)
-    X_train_fi, X_dev_fi, y_train_fi, y_dev_fi = train_test_split(X_train_val_fi, y_train_val_fi, test_size=0.33,
+    X_train_val_fi, X_test_fi, y_train_val_fi, y_test_fi = train_test_split(X_fi, y_fi, test_size=0.1, random_state=7)
+    X_train_fi, X_dev_fi, y_train_fi, y_dev_fi = train_test_split(X_train_val_fi, y_train_val_fi, test_size=0.1,
                                                                   random_state=7)
 
     # output data for further use
@@ -74,6 +72,6 @@ if __name__ == '__main__':
                  X_train_az, y_train_az, X_dev_az, y_dev_az, X_test_az, y_test_az,
                  X_train_mv, y_train_mv, X_dev_mv, y_dev_mv, X_test_mv, y_test_mv,
                  X_train_fi, y_train_fi, X_dev_fi, y_dev_fi, X_test_fi, y_test_fi]:
-        file_path = data_path + utils.namestr(data, globals())
+        file_path = data_path + namestr(data, globals())
         if not os.path.isfile(file_path):
-            np.save(data_path + utils.namestr(data, globals()), data)
+            np.save(data_path + "all_cleaned/" + namestr(data, globals()), data)
