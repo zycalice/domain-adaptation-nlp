@@ -27,16 +27,19 @@ def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences):
 
 # Pseudo labeling (self train) and gradual train.
 
-def psuedo_labeling(X_source, y_source, X_ti, y_ti, model):  # incorporate alpha in psuedo labeling later
+def psuedo_labeling(X_source, y_source, X_ti, y_ti, model, conf=0):
     model = model
     model.fit(X_source, y_source)
-    y_pred = model.predict(X_ti)
-    X_source_updated = np.concatenate((X_source, X_ti), 0)
+    y_prob = model.predict_proba(X_ti)[:, 0]
+    X_ti_keep = X_ti[(y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)]
+    y_pred = model.predict(X_ti_keep)
+    X_source_updated = np.concatenate((X_source, X_ti_keep), 0)
     y_source_updated = np.concatenate((y_source, y_pred), 0)
     return X_source_updated, y_source_updated
 
 
-def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=2000, group_size=5, plot_hist=True):
+def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=2000, group_size=5, plot_hist=True,
+                  conf=0):
     # initial model:
     model = base_model
     model.fit(X_source, y_source)
@@ -57,6 +60,7 @@ def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=
     step = data_size / group_size
     X_target_groups = []
     y_target_groups = []
+    gradual_scores = []
     X_source_updated = X_source
     y_source_updated = y_source
     for i in range(group_size):
@@ -65,11 +69,15 @@ def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=
         y_ti = y_target[:data_size][subset_tf]
         X_target_groups.append(X_ti)
         y_target_groups.append(y_ti)
-        X_source_updated, y_source_updated = psuedo_labeling(X_source_updated, y_source_updated, X_ti, y_ti, model)
-        print(model.fit(X_source_updated, y_source_updated).score(X_target, y_target))
+        X_source_updated, y_source_updated = psuedo_labeling(X_source_updated, y_source_updated, X_ti, y_ti, model,
+                                                             conf)
+        gradual_score = model.fit(X_source_updated, y_source_updated).score(X_target, y_target)
+        gradual_scores.append(gradual_score)
 
     model.fit(X_source_updated, y_source_updated)
     gradual = model.score(X_target, y_target)
+
+    print('{:.2f}'.format(original * 100), ['{:.2f}'.format(elem * 100) for elem in gradual_scores])
 
     return original, gradual
 
