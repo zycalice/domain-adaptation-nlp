@@ -36,7 +36,7 @@ def psuedo_labeling(X_source, y_source, X_ti, y_ti, model):  # incorporate alpha
     return X_source_updated, y_source_updated
 
 
-def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=2000, group_size=5):
+def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=2000, group_size=5, plot_hist=True):
     # initial model:
     model = base_model
     model.fit(X_source, y_source)
@@ -45,8 +45,9 @@ def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=
     # calculate distances
     source_center = np.mean(X_source, 0)
     dists = [1 - cosine_similarity(source_center.reshape(1, -1), x.reshape(1, -1))[0][0] for x in X_target]
-    plt.hist(dists)
-    plt.show()
+    if plot_hist:
+        plt.hist(dists, bins=100)
+        plt.show()
 
     # create groups within targets and gradually train
     dists = np.array(dists)
@@ -72,3 +73,22 @@ def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=
 
     return original, gradual
 
+
+def gradual_train_groups(X_source, y_source, X_target, y_target, base_model, data_size, group_range):
+    accuracies = []
+    for i in range(group_range[0] + 1, group_range[1] + 1):
+        print("\ngroup = ", i)
+        plot_hist = False
+        if i == 1:
+            plot_hist = True
+        data_size = data_size
+        base_model = base_model
+        original, gradual = gradual_train(X_source, y_source, X_target, y_target,
+                                          base_model, data_size=data_size, group_size=i, plot_hist=plot_hist)
+        if i == 1:
+            accuracies.append(original)
+        else:
+            accuracies.append(gradual)
+
+    plt.plot(accuracies)
+    plt.show()
