@@ -39,15 +39,10 @@ if __name__ == '__main__':
             target_feature_name = target + str(data_size)
             target_label_name = "y_train_" + target
 
-            # if source == "fi" or target == "fi":
-            #     data_size = 1185
-            # else:
-            #     data_size = 2000
-
             final_accuracies, accuracies_ti, dists = gradual_train_groups(
                 X_source_raw=bert_dict[source_feature_name], y_source_raw=y_dict[source_label_name],
                 X_target_raw=bert_dict[target_feature_name], y_target_raw=y_dict[target_label_name],
-                base_model=lr, data_size=data_size, group_range=[0, 20], plot_hist=False,
+                base_model=lr, data_size=data_size, group_range=[0, 10], plot_hist=False,
             )
 
             final_accuracies_all_domains[train_name] = final_accuracies
@@ -55,15 +50,15 @@ if __name__ == '__main__':
             dists_all_domains[train_name] = dists
 
     # plot and output
-    for x in final_accuracies_all_domains:
-        plt.plot(x)
-    plt.savefig("../outputs/final_accuracies.png")
-    plt.show()
-
-    for x in dists_all_domains:
-        plt.hist(x, alpha=0.5)
-    plt.savefig("../outputs/dists_hists.png")
-    plt.show()
+    # for x in final_accuracies_all_domains:
+    #     plt.plot(x)
+    # plt.savefig("../outputs/final_accuracies.png")
+    # plt.show()
+    #
+    # for x in dists_all_domains:
+    #     plt.hist(x, alpha=0.5)
+    # plt.savefig("../outputs/dists_hists.png")
+    # plt.show()
 
     print(accuracies_ti_all_domains)
     with open("../outputs/accuracies_ti_all_domains.json", "w") as outfile:
