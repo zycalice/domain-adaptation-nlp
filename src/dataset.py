@@ -61,9 +61,10 @@ if __name__ == '__main__':
     y_fi = finance[0].values
     y_fi[y_fi == "negative"] = 0
     y_fi[y_fi == "positive"] = 1
+    y_fi = y_fi.astype("int64")
     X_fi = finance[1].values
 
-    X_train_val_fi, X_test_fi, y_train_val_fi, y_test_fi = train_test_split(X_fi, y_fi, test_size=0.1, random_state=7)
+    X_train_val_fi, X_test_fi, y_train_val_fi, y_test_fi = train_test_split(X_fi, y_fi, test_size=0.33, random_state=7)
     X_train_fi, X_dev_fi, y_train_fi, y_dev_fi = train_test_split(X_train_val_fi, y_train_val_fi, test_size=0.1,
                                                                   random_state=7)
 
@@ -75,3 +76,6 @@ if __name__ == '__main__':
         file_path = data_path + namestr(data, globals())
         if not os.path.isfile(file_path):
             np.save(data_path + "all_cleaned/" + namestr(data, globals()), data)
+
+    # for data in [X_train_fi, y_train_fi, X_dev_fi, y_dev_fi, X_test_fi, y_test_fi]:
+    #     np.save(data_path + "all_cleaned/" + namestr(data, globals()), data)

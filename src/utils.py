@@ -9,6 +9,28 @@ def namestr(obj, namespace):
     return [name for name in namespace if namespace[name] is obj][0]
 
 
+def load_np_files(data_path, domains, data_types, load_feature):
+    np_dataset = {}
+    for domain in domains:
+        for data_type in data_types:
+            if load_feature:
+                file_prefix = "X_"
+            else:
+                file_prefix = "y_"
+            file = file_prefix + data_type + "_" + domain
+            filename = data_path + "all_cleaned/" + file + ".npy"
+            np_dataset[file] = np.load(filename, allow_pickle=True)
+    return np_dataset
+
+
+def load_bert(data_path, domains, data_size):
+    bert_dataset = {}
+    for domain in domains:
+        bert_dataset[domain + str(data_size)] = np.load(data_path + "all_bert/encoded_" +
+                                                        domain + "_train_" + str(data_size) + ".npy")
+    return bert_dataset
+
+
 # BERT embedding functions.
 
 def tokenize_encode_bert_sentences(tokenizer, model, input_sentences, output_path):
@@ -38,12 +60,44 @@ def psuedo_labeling(X_source, y_source, X_ti, y_ti, model, conf=0):
     return X_source_updated, y_source_updated
 
 
-def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=2000, group_size=5, plot_hist=True,
-                  conf=0):
-    # initial model:
+def gradual_train(X_source, y_source, X_target, y_target, base_model, dists, group_size=5, conf=0):
+    # initiate model
+    model = base_model
+
+    # create groups within targets and gradually train
+    dists = np.array(dists)
+    dists_order = np.argsort(dists)
+    dists_rank = np.argsort(dists_order)
+
+    step = len(y_target) / group_size
+    X_target_groups = []
+    y_target_groups = []
+    gradual_scores = []
+    X_source_updated = X_source.copy()
+    y_source_updated = y_source.copy()
+    for i in range(group_size):
+        subset_tf = (step * i <= dists_rank) & (dists_rank < step * (i + 1))
+        X_ti = X_target[subset_tf]
+        y_ti = y_target[subset_tf]
+        X_target_groups.append(X_ti)
+        y_target_groups.append(y_ti)
+        X_source_updated, y_source_updated = psuedo_labeling(X_source_updated, y_source_updated, X_ti, y_ti, model,
+                                                             conf)
+        gradual_score = model.fit(X_source_updated, y_source_updated).score(X_target, y_target)
+        gradual_scores.append(gradual_score)
+    return gradual_scores
+
+
+def gradual_train_groups(X_source_raw, y_source_raw, X_target_raw, y_target_raw, base_model, data_size, group_range,
+                         plot_hist=True):
+    # initial data and model
+    X_source, y_source = X_source_raw[:data_size], y_source_raw[:data_size]
+    X_target, y_target = X_target_raw[:data_size], y_target_raw[:data_size]
+    print(X_target.shape, y_target.shape)
+
     model = base_model
     model.fit(X_source, y_source)
-    original = model.score(X_target, y_target)
+    no_self_train_adaptation_score = model.score(X_target, y_target)
 
     # calculate distances
     source_center = np.mean(X_source, 0)
@@ -52,51 +106,20 @@ def gradual_train(X_source, y_source, X_target, y_target, base_model, data_size=
         plt.hist(dists, bins=100)
         plt.show()
 
-    # create groups within targets and gradually train
-    dists = np.array(dists)
-    dists_order = np.argsort(dists)
-    dists_rank = np.argsort(dists_order)
-
-    step = data_size / group_size
-    X_target_groups = []
-    y_target_groups = []
-    gradual_scores = []
-    X_source_updated = X_source
-    y_source_updated = y_source
-    for i in range(group_size):
-        subset_tf = (step * i <= dists_rank) & (dists_rank < step * (i + 1))
-        X_ti = X_target[:data_size][subset_tf]
-        y_ti = y_target[:data_size][subset_tf]
-        X_target_groups.append(X_ti)
-        y_target_groups.append(y_ti)
-        X_source_updated, y_source_updated = psuedo_labeling(X_source_updated, y_source_updated, X_ti, y_ti, model,
-                                                             conf)
-        gradual_score = model.fit(X_source_updated, y_source_updated).score(X_target, y_target)
-        gradual_scores.append(gradual_score)
-
-    model.fit(X_source_updated, y_source_updated)
-    gradual = model.score(X_target, y_target)
-
-    print('{:.2f}'.format(original * 100), ['{:.2f}'.format(elem * 100) for elem in gradual_scores])
-
-    return original, gradual
-
-
-def gradual_train_groups(X_source, y_source, X_target, y_target, base_model, data_size, group_range):
-    accuracies = []
+    # save accuracies
+    final_accuracies = [no_self_train_adaptation_score]
+    accuracies_ti = {"no_self_train_adaptation_score": no_self_train_adaptation_score}
     for i in range(group_range[0] + 1, group_range[1] + 1):
-        print("\ngroup = ", i)
-        plot_hist = False
-        if i == 1:
-            plot_hist = True
+        # print("\ngroup = ", i)
         data_size = data_size
         base_model = base_model
-        original, gradual = gradual_train(X_source, y_source, X_target, y_target,
-                                          base_model, data_size=data_size, group_size=i, plot_hist=plot_hist)
-        if i == 1:
-            accuracies.append(original)
-        else:
-            accuracies.append(gradual)
+        gradual_scores = gradual_train(
+            X_source, y_source,
+            X_target, y_target,
+            base_model, dists=dists, group_size=i)
+        final_accuracies.append(gradual_scores[-1])
+        accuracies_ti[i] = gradual_scores
+        print("group", i, '{:.2f}'.format(no_self_train_adaptation_score*100),
+              ['{:.2f}'.format(elem*100) for elem in gradual_scores])
 
-    plt.plot(accuracies)
-    plt.show()
+    return final_accuracies, accuracies_ti, dists
