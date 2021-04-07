@@ -6,10 +6,9 @@ from sklearn.linear_model import LogisticRegression
 if __name__ == '__main__':
     data_path = "../data/"
     domains = ["tw", "az", "mv", "fi"]
-    data_size = 2000
 
     # Load data
-    bert_dict = load_bert(data_path, domains, data_size)
+    bert_dict = load_bert(data_path, domains, 2000)
     y_dict = load_np_files(data_path, domains, ['train', 'dev'], load_feature=False)
     for b in bert_dict:
         print(b, len(bert_dict[b]))
@@ -34,10 +33,15 @@ if __name__ == '__main__':
         for target in domains:
             train_name = source + "_to_" + target
             print("\n", train_name)
-            source_feature_name = source + str(data_size)
+            source_feature_name = source
             source_label_name = "y_train_" + source
-            target_feature_name = target + str(data_size)
+            target_feature_name = target
             target_label_name = "y_train_" + target
+
+            if (source == "fi") or (target == "fi"):
+                data_size = 1185
+            else:
+                data_size = 2000
 
             final_accuracies, accuracies_ti, dists = gradual_train_groups(
                 X_source_raw=bert_dict[source_feature_name], y_source_raw=y_dict[source_label_name],
@@ -48,17 +52,6 @@ if __name__ == '__main__':
             final_accuracies_all_domains[train_name] = final_accuracies
             accuracies_ti_all_domains[train_name] = accuracies_ti
             dists_all_domains[train_name] = dists
-
-    # plot and output
-    # for x in final_accuracies_all_domains:
-    #     plt.plot(x)
-    # plt.savefig("../outputs/final_accuracies.png")
-    # plt.show()
-    #
-    # for x in dists_all_domains:
-    #     plt.hist(x, alpha=0.5)
-    # plt.savefig("../outputs/dists_hists.png")
-    # plt.show()
 
     print(accuracies_ti_all_domains)
     with open("../outputs/accuracies_ti_all_domains.json", "w") as outfile:

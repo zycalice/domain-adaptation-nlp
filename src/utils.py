@@ -26,7 +26,7 @@ def load_np_files(data_path, domains, data_types, load_feature):
 def load_bert(data_path, domains, data_size):
     bert_dataset = {}
     for domain in domains:
-        bert_dataset[domain + str(data_size)] = np.load(data_path + "all_bert/encoded_" +
+        bert_dataset[domain] = np.load(data_path + "all_bert/encoded_" +
                                                         domain + "_train_" + str(data_size) + ".npy")
     return bert_dataset
 
@@ -50,9 +50,9 @@ def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences):
 # Pseudo labeling (self train) and gradual train.
 
 def psuedo_labeling(X_source, y_source, X_ti, y_ti, model, conf=0):
-    model = model
+    base_model = model
     model.fit(X_source, y_source)
-    y_prob = model.predict_proba(X_ti)[:, 0]
+    y_prob = base_model.predict_proba(X_ti)[:, 0]
     X_ti_keep = X_ti[(y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)]
     y_pred = model.predict(X_ti_keep)
     X_source_updated = np.concatenate((X_source, X_ti_keep), 0)
@@ -91,9 +91,10 @@ def gradual_train(X_source, y_source, X_target, y_target, base_model, dists, gro
 def gradual_train_groups(X_source_raw, y_source_raw, X_target_raw, y_target_raw, base_model, data_size, group_range,
                          plot_hist=True):
     # initial data and model
+    print(data_size)
     X_source, y_source = X_source_raw[:data_size], y_source_raw[:data_size]
     X_target, y_target = X_target_raw[:data_size], y_target_raw[:data_size]
-    print(X_target.shape, y_target.shape)
+    print(X_source.shape, y_source.shape, X_target.shape, y_target.shape)
 
     model = base_model
     model.fit(X_source, y_source)
