@@ -1,3 +1,5 @@
+import json
+
 from transformers import DistilBertTokenizer, DistilBertModel
 from utils import *
 
@@ -29,8 +31,17 @@ if __name__ == '__main__':
     data_path = "../data/"
     tokenizer_d = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
     model_d = DistilBertModel.from_pretrained('distilbert-base-uncased')
+
+    # Classification.
     domains = ["tw", "az", "mv", "fi"]
-    data_size = 3000
+    clf_data_size = 3000
 
     X_dict = load_np_files(data_path=data_path, domains=domains, data_types=["train", "dev"], load_feature=True)
-    output_bert_embeddings(domains, data_size)
+    output_bert_embeddings(domains, clf_data_size)
+
+    # NER.
+    with open(data_path + "wiki_sec_word2idx.json") as f:
+        word2idx = json.load(f)
+    words_list = list(word2idx.keys())
+    encoded_ner_corpus = tokenize_encode_bert_sentences(tokenizer_d, model_d, words_list,
+                                                        "../data/all_bert/encoded_ner_corpus")

@@ -4,6 +4,7 @@ import zipfile
 from utils import *
 import bz2
 from sklearn.model_selection import train_test_split
+import json
 
 
 # Classification.
@@ -130,5 +131,13 @@ if __name__ == '__main__':
         if not os.path.isfile(file_path):
             np.save(data_path + "all_cleaned/" + namestr(data, globals()), data)
 
-    # for data in [X_train_fi, y_train_fi, X_dev_fi, y_dev_fi, X_test_fi, y_test_fi]:
-    #     np.save(data_path + "all_cleaned/" + namestr(data, globals()), data)
+    # NER.
+    wiki = load_ner_data("../data/ner_wikigold/wikigold.conll.txt", " ")[:-1]
+    sec = load_ner_data("../data/ner_sec/FIN5.txt")[:-1]
+
+    words_wiki, tags = unique_words_tags(wiki)
+    words_sec, _ = unique_words_tags(sec)
+
+    word2idx = {w: i + 1 for i, w in enumerate(words_wiki | words_sec)}
+    with open(data_path + "wiki_sec_word2idx.json", "w") as outfile:
+        json.dump(word2idx, outfile)
