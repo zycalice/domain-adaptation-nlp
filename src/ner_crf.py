@@ -15,17 +15,17 @@ from dataset import load_ner_data
 from sklearn.model_selection import train_test_split
 
 
-# tokenizer_d = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
-# model_d = DistilBertModel.from_pretrained('distilbert-base-uncased')
+tokenizer_d = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+model_d = DistilBertModel.from_pretrained('distilbert-base-uncased')
 
-# Load pre-computed bert embeddings.
-data_path = "../data/"
-with open(data_path + "wiki_sec_word2idx.json") as f:
-    word2idx = json.load(f)
-
-ner_bert = np.load("../data/all_bert/encoded_ner_corpus.npy")
-
-assert(len(ner_bert) == len(word2idx))
+# # Load pre-computed bert embeddings.
+# data_path = "../data/"
+# with open(data_path + "wiki_sec_word2idx.json") as f:
+#     word2idx = json.load(f)
+#
+# ner_bert = np.load("../data/all_bert/encoded_ner_corpus.npy")
+#
+# assert(len(ner_bert) == len(word2idx))
 
 
 def word2features(sent, i):
@@ -35,7 +35,8 @@ def word2features(sent, i):
     sentence.
     """
     word = sent[i][0]
-    embedding = ner_bert[word2idx[word]-1]
+    # embedding = ner_bert[word2idx[word]-1]
+    embedding = tokenize_encode_bert_sentences_sample(tokenizer_d, model_d, word)[0]
     features = {}
     for j in range(len(embedding)):
         features[str(j)] = embedding[j]
@@ -137,9 +138,9 @@ if __name__ == '__main__':
         c1=0.1,
         c2=0.1,
         algorithm='lbfgs',
-        max_iterations=500,
+        max_iterations=200,
         all_possible_transitions=True,
-        all_possible_states=True,
+        # all_possible_states=True,
     )
 
     run_crf(train_wiki, test_wiki, crf, "../outputs/wiki_sec_crf_results.txt",
