@@ -138,6 +138,9 @@ if __name__ == '__main__':
     words_wiki, tags = unique_words_tags(wiki)
     words_sec, _ = unique_words_tags(sec)
 
-    word2idx = {w: i + 1 for i, w in enumerate(words_wiki | words_sec)}
+    words = list(words_wiki | words_sec)
+    words.sort()
+
+    word2idx = {w: i for i, w in enumerate(words)}
     with open(data_path + "wiki_sec_word2idx.json", "w") as outfile:
-        json.dump(word2idx, outfile)
+        json.dump(word2idx, outfile, indent=4)

@@ -1,0 +1,33 @@
+train: train_wiki
+dev: test_wiki
+
+    crf = sklearn_crfsuite.CRF(
+        c1=0.1,
+        c2=0.2,
+        algorithm='lbfgs',
+        max_iterations=200,
+        all_possible_transitions=True,
+        # all_possible_states=True,
+    )
+
+              precision    recall  f1-score   support
+
+       I-LOC      0.753     0.732     0.742      1053
+      I-MISC      0.624     0.355     0.452      1051
+       I-ORG      0.635     0.501     0.560      1452
+       I-PER      0.861     0.880     0.870      1263
+
+   micro avg      0.735     0.619     0.672      4819
+   macro avg      0.718     0.617     0.656      4819
+weighted avg      0.717     0.619     0.658      4819
+
+              precision    recall  f1-score   support
+
+       I-LOC      0.749     0.650     0.696       394
+      I-MISC      0.510     0.370     0.429       341
+       I-ORG      0.505     0.455     0.479       506
+       I-PER      0.801     0.889     0.843       371
+
+   micro avg      0.647     0.584     0.614      1612
+   macro avg      0.641     0.591     0.611      1612
+weighted avg      0.634     0.584     0.605      1612
