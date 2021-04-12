@@ -35,7 +35,7 @@ def word2features(sent, i):
     sentence.
     """
     word = sent[i][0]
-    embedding = ner_bert[word2idx[word]-1]
+    embedding = ner_bert[word2idx[word]]
     # embedding_orig = tokenize_encode_bert_sentences_sample(tokenizer_d, model_d, word)[0]
     # if (embedding != embedding_orig).any():
     #     print(word, word2idx[word]-1)
