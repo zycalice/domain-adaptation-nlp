@@ -146,5 +146,11 @@ if __name__ == '__main__':
         # all_possible_states=True,
     )
 
+    run_crf(train_wiki, test_wiki, crf, "../outputs/wiki_sec_crf_results.txt",
+            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    run_crf(train_wiki, test_sec, crf, "../outputs/wiki_sec_crf_results.txt",
+            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
     run_crf(train_sec, test_sec, crf, "../outputs/wiki_sec_crf_results.txt",
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
