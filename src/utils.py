@@ -34,6 +34,7 @@ def load_bert(data_path, domains, data_size):
 # Pseudo labeling (self train) and gradual train.
 
 def psuedo_labeling(X_source, y_source, X_ti, y_ti, model, conf=0):
+    # TODO: add NER version; NER version inputs are dictionaries
     base_model = model
     model.fit(X_source, y_source)
     y_prob = base_model.predict_proba(X_ti)[:, 0]
