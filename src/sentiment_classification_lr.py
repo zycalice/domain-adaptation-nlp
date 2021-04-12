@@ -3,6 +3,8 @@ import json
 from utils import *
 from sklearn.linear_model import LogisticRegression
 
+# TODO: add comparison with oracle model
+
 if __name__ == '__main__':
     data_path = "../data/"
     domains = ["tw", "az", "mv", "fi"]
@@ -14,14 +16,6 @@ if __name__ == '__main__':
         print(b, len(bert_dict[b]))
     for y in y_dict:
         print(y, len(y_dict[y]))
-
-    # # test
-    # lr = LogisticRegression(max_iter=200000)
-    # final_accuracies, accuracies_ti, dists = gradual_train_groups(
-    #     X_source_raw=bert_dict["az2000"], y_source_raw=y_dict["y_train_az"],
-    #     X_target_raw=bert_dict["fi2000"], y_target_raw=y_dict["y_train_fi"],
-    #     base_model=lr, data_size=data_size, group_range=[0, 20], plot_hist=False,
-    # )
 
     # Create accuracies and graphs
     lr = LogisticRegression(max_iter=200000)
