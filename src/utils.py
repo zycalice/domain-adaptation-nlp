@@ -74,7 +74,7 @@ def gradual_train(X_source, y_source, X_target, y_target, base_model, dists, gro
 
 
 def gradual_train_groups(X_source_raw, y_source_raw, X_target_raw, y_target_raw, base_model, data_size, group_range,
-                         plot_hist=True):
+                         conf, plot_hist=True):
     # initial data and model
     print(data_size)
     X_source, y_source = X_source_raw[:data_size], y_source_raw[:data_size]
@@ -102,7 +102,7 @@ def gradual_train_groups(X_source_raw, y_source_raw, X_target_raw, y_target_raw,
         gradual_scores = gradual_train(
             X_source, y_source,
             X_target, y_target,
-            base_model, dists=dists, group_size=i)
+            base_model, dists=dists, group_size=i, conf=conf)
         final_accuracies.append(gradual_scores[-1])
         accuracies_ti[i] = gradual_scores
         print("group", i, '{:.2f}'.format(no_self_train_adaptation_score*100),

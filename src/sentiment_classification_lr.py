@@ -41,6 +41,7 @@ if __name__ == '__main__':
                 X_source_raw=bert_dict[source_feature_name], y_source_raw=y_dict[source_label_name],
                 X_target_raw=bert_dict[target_feature_name], y_target_raw=y_dict[target_label_name],
                 base_model=lr, data_size=data_size, group_range=[0, 10], plot_hist=False,
+                conf=0.3
             )
 
             final_accuracies_all_domains[train_name] = final_accuracies
@@ -48,5 +49,5 @@ if __name__ == '__main__':
             dists_all_domains[train_name] = dists
 
     print(accuracies_ti_all_domains)
-    with open("../outputs/accuracies_ti_all_domains.json", "w") as outfile:
+    with open("../outputs/accuracies_ti_all_domains_conf3.json", "w") as outfile:
         json.dump(accuracies_ti_all_domains, outfile, indent=4)
