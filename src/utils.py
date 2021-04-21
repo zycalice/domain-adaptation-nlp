@@ -162,7 +162,6 @@ def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target
         x_source, y_source, y_pred, y_true, x_target, y_target = psuedo_labeling_label_final(
             x_source, y_source, x_target, y_target, base_model, conf
         )
-        # print(len(y_pred_all))
         y_pred_all.extend(list(y_pred))
         y_true_all.extend(list(y_true))
 
