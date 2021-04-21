@@ -115,26 +115,31 @@ def gradual_train_groups_range(x_source_raw, y_source_raw, x_target_raw, y_targe
 
 # Self-Train and use pseudo level as final labels, and use conf as groups.
 
-def psuedo_labeling_label_final(x_s, y_s, x_t, model, conf):
+def psuedo_labeling_label_final(x_s, y_s, x_t, y_t, model, conf):
     # TODO: add NER version; NER version inputs are dictionaries
     base_model = model
     model.fit(x_s, y_s)
     y_prob = base_model.predict_proba(x_t)[:, 0]
     x_ti_keep = []
     x_ti_not_keep = []
+    y_ti_keep = []
+    y_ti_not_keep = []
 
     # if no data past the conf requirement, lower the requirement by 0.1
     while len(x_ti_keep) == 0:
         keep_ti_bool = (y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)
         x_ti_keep = x_t[keep_ti_bool]
         x_ti_not_keep = x_t[~keep_ti_bool]
+        y_ti_keep = y_t[keep_ti_bool]
+        y_ti_not_keep = y_t[~keep_ti_bool]
         conf = conf - 0.1
 
     # output prediction and update source
     y_pred = model.predict(x_ti_keep)
     x_source_updated = np.concatenate((x_s, x_ti_keep), 0)
     y_source_updated = np.concatenate((y_s, y_pred), 0)
-    return x_source_updated, y_source_updated, y_pred, x_ti_not_keep
+    # print(len(x_ti_not_keep))
+    return x_source_updated, y_source_updated, y_pred, y_ti_keep, x_ti_not_keep, y_ti_not_keep
 
 
 def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model, data_size, conf):
@@ -148,19 +153,23 @@ def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target
     x_source = x_source_raw
     y_source = y_source_raw
     x_target = x_target_raw
+    y_target = y_target_raw
     y_pred_all = []
+    y_true_all = []
 
     # repeat self-train until all target data are computed
     while len(x_target) > 0:
-        x_source, y_source, y_pred, x_target = psuedo_labeling_label_final(
-            x_source, y_source, x_target, base_model, conf
+        x_source, y_source, y_pred, y_true, x_target, y_target = psuedo_labeling_label_final(
+            x_source, y_source, x_target, y_target, base_model, conf
         )
-        y_pred_all.append(y_pred)
+        # print(len(y_pred_all))
+        y_pred_all.extend(list(y_pred))
+        y_true_all.extend(list(y_true))
 
     # calculate accuracy
     s2t_score = base_model.fit(x_source_raw, y_source_raw).score(x_target_raw, y_target_raw)
     t2t_score = base_model.fit(x_target_raw, y_target_raw).score(x_target_raw, y_target_raw)
-    gradual_score = accuracy_score(y_target_raw, y_pred_all)
+    gradual_score = accuracy_score(y_true_all, y_pred_all)
     return s2t_score, t2t_score, gradual_score
 
 
