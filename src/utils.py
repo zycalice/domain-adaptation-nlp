@@ -150,8 +150,8 @@ def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target
     x_target_raw, y_target_raw = x_target_raw[:data_size], y_target_raw[:data_size]
     print(x_source_raw.shape, y_source_raw.shape, x_target_raw.shape, y_target_raw.shape)
 
-    x_source, y_source = x_source_raw, y_source_raw
-    x_target, y_target = x_target_raw, y_target_raw
+    x_source, y_source = x_source_raw.copy(), y_source_raw.copy()
+    x_target, y_target = x_target_raw.copy(), y_target_raw.copy()
     y_pred_all = []
     y_true_all = []
 
@@ -165,7 +165,7 @@ def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target
 
     # calculate accuracy
     s2t_score = base_model.fit(x_source_raw, y_source_raw).score(x_target_raw, y_target_raw)
-    s2s_score = base_model.fit(x_source_raw, y_source_raw).score(x_source_raw, x_source_raw)
+    s2s_score = base_model.fit(x_source_raw, y_source_raw).score(x_source_raw, y_source_raw)
     t2t_score = base_model.fit(x_target_raw, y_target_raw).score(x_target_raw, y_target_raw)
     gradual_score = accuracy_score(y_true_all, y_pred_all)
     return s2s_score, t2t_score, s2t_score, gradual_score
