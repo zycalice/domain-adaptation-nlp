@@ -132,7 +132,7 @@ def psuedo_labeling_label_final(x_s, y_s, x_t, y_t, model, conf):
         x_ti_not_keep = x_t[~keep_ti_bool]
         y_ti_keep = y_t[keep_ti_bool]
         y_ti_not_keep = y_t[~keep_ti_bool]
-        conf = conf - 0.1
+        conf = conf - 0.01
 
     # output prediction and update source
     y_pred = model.predict(x_ti_keep)
@@ -150,10 +150,8 @@ def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target
     x_target_raw, y_target_raw = x_target_raw[:data_size], y_target_raw[:data_size]
     print(x_source_raw.shape, y_source_raw.shape, x_target_raw.shape, y_target_raw.shape)
 
-    x_source = x_source_raw
-    y_source = y_source_raw
-    x_target = x_target_raw
-    y_target = y_target_raw
+    x_source, y_source = x_source_raw, y_source_raw
+    x_target, y_target = x_target_raw, y_target_raw
     y_pred_all = []
     y_true_all = []
 
@@ -167,9 +165,10 @@ def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target
 
     # calculate accuracy
     s2t_score = base_model.fit(x_source_raw, y_source_raw).score(x_target_raw, y_target_raw)
+    s2s_score = base_model.fit(x_source_raw, y_source_raw).score(x_source_raw, x_source_raw)
     t2t_score = base_model.fit(x_target_raw, y_target_raw).score(x_target_raw, y_target_raw)
     gradual_score = accuracy_score(y_true_all, y_pred_all)
-    return s2t_score, t2t_score, gradual_score
+    return s2s_score, t2t_score, s2t_score, gradual_score
 
 
 #######################################################################################################################
@@ -477,7 +476,7 @@ def si2T_prob_4_adj_rand(train_features, train_labels, test_features, test_label
     return original_score, gradual_score
 
 
-def S2T_prob_4_adj(train_features, train_labels, test_features, test_labels, num_i, eval_bool=False, dist_eval=False):
+def S2T_prob_4_adj(train_features, train_labels, test_features, test_labels, base_model):
     # gradual training
     X_train = train_features[:]
     y_train = train_labels[:]
@@ -487,7 +486,7 @@ def S2T_prob_4_adj(train_features, train_labels, test_features, test_labels, num
     y_test_store = []
     previous_r_target = []
     while len(X_test) > 0:
-        lr_clf = LogisticRegression()
+        lr_clf = base_model
         lr_clf.fit(X_train, y_train)
         y_pred = lr_clf.predict(X_test)
         y_prob = lr_clf.predict_proba(X_test)[:, 0]
@@ -523,7 +522,7 @@ def S2T_prob_4_adj(train_features, train_labels, test_features, test_labels, num
     lm_score = [y_pred[i] == test_labels[i] for i in range(len(test_labels))]
     lm_score = sum(lm_score) / len(lm_score)
 
-    return lm_score, gradual_score
+    return original_score, lm_score, gradual_score
 
 
 def si2T_prob_4_adj_rev(train_features, train_labels, test_features, test_labels, num_i, eval_bool=False,
