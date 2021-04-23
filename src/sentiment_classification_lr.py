@@ -102,5 +102,5 @@ if __name__ == '__main__':
     #         except:
     #             pass
     #
-    # with open("../outputs/S2T_prob_4_adj.json", "w") as outfile:
+    # with open("../outputs/accuracies_all_domains.json", "w") as outfile:
     #     json.dump(accuracies_all_domains, outfile, indent=4)
