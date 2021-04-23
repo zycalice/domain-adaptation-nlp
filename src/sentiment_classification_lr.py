@@ -75,32 +75,3 @@ if __name__ == '__main__':
     print(accuracies_all_domains)
     with open("../outputs/accuracies_all_domains_s2t_conf4.json", "w") as outfile:
         json.dump(accuracies_all_domains, outfile, indent=4)
-
-    # accuracies_all_domains = {}
-    # lr = LogisticRegression(max_iter=200000)
-    #
-    # for source in domains:
-    #     for target in domains:
-    #         train_name = source + "_to_" + target
-    #         print("\n", train_name)
-    #         source_feature_name = source
-    #         source_label_name = "y_train_" + source
-    #         target_feature_name = target
-    #         target_label_name = "y_train_" + target
-    #
-    #         data_size = min(len(bert_dict[source_feature_name]), len(bert_dict[target_feature_name]))
-    #         print(data_size)
-    #         try:
-    #             accuracies_all_domains[train_name] = S2T_prob_4_adj(
-    #                 train_features=bert_dict[source_feature_name][:data_size],
-    #                 train_labels=y_dict[source_label_name][:data_size],
-    #                 test_features=bert_dict[target_feature_name][:data_size],
-    #                 test_labels=y_dict[target_label_name][:data_size],
-    #                 base_model=lr,
-    #             )
-    #
-    #         except:
-    #             pass
-    #
-    # with open("../outputs/accuracies_all_domains.json", "w") as outfile:
-    #     json.dump(accuracies_all_domains, outfile, indent=4)
