@@ -69,9 +69,9 @@ if __name__ == '__main__':
             accuracies_all_domains[train_name] = gradual_train_conf_groups(
                 x_source_raw=bert_dict[source_feature_name], y_source_raw=y_dict[source_label_name],
                 x_target_raw=bert_dict[target_feature_name], y_target_raw=y_dict[target_label_name],
-                base_model=lr, data_size=data_size,  conf=0.4
+                base_model=lr, data_size=data_size,  conf=0.9
             )
 
     print(accuracies_all_domains)
-    with open("../outputs/accuracies_all_domains_s2t_conf4.json", "w") as outfile:
+    with open("../outputs/accuracies_all_domains_s2t_conf9.json", "w") as outfile:
         json.dump(accuracies_all_domains, outfile, indent=4)
