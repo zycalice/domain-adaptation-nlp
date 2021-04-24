@@ -33,6 +33,61 @@ def load_bert(data_path, domains, data_size):
     return bert_dataset
 
 
+# distances
+def cosine_dist(x_source, x_target):
+    source_center = np.mean(x_source, 0)
+    dists = [1 - cosine_similarity(source_center.reshape(1, -1), x.reshape(1, -1))[0][0] for x in x_target]
+    return dists
+
+
+def l2_dist(x_source, x_target):
+    source_center = np.mean(x_source, 0)
+    dists = [np.linalg.norm(source_center.reshape(1, -1), x.reshape(1, -1))[0][0] for x in x_target]
+    return dists
+
+
+def mmd_dist(x_source, x_target):
+    dists = []
+    return dists
+
+
+def fisher_dist(x_source, x_target):
+    dists = []
+    return dists
+
+
+def mixed_dist(x_source, x_target):
+    dists = []
+    return dists
+
+
+def get_dist(x_source, x_target, dist_type):
+    """
+    get dist function
+    :param x_source:
+    :param x_target:
+    :param dist_type: cosine similarity, l2 norm,  maximum mean discrepancy, fisher
+    :return:
+    """
+    if dist_type not in ["cos", "l2", "mmd", 'fisher', 'mixed']:
+        raise ValueError("")
+
+    dists = None
+    if dist_type == "cos":
+        dists = cosine_dist(x_source, x_target)
+    if dist_type == "l2":
+        dists = l2_dist(x_source, x_target)
+    if dist_type == "mmd":
+        dists = mmd_dist(x_source, x_target)
+    if dist_type == "fisher":
+        dists = fisher_dist(x_source, x_target)
+
+    if dist_type == "mixed":
+        dists = mixed_dist(x_source, x_target)
+
+    return dists
+
+
 # Pseudo labeling (self train) and gradual train.
 
 def psuedo_labeling(x_source, y_source, x_ti, model, conf=0):
@@ -193,9 +248,9 @@ def cos_dist(A, B):
     return 1 - (np.dot(A, B) / (np.norm(A) * np.norm(B)))
 
 
-def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, dist_eval=False):
+def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, base_model, dist_eval=False):
     top_n = 30
-    lr_original = LogisticRegression(max_iter=20000)
+    lr_original = base_model
     # lr_st = LogisticRegression(max_iter=20000)
     original_score = lr_original.fit(train_features, train_labels).score(test_features, test_labels)
 
@@ -208,7 +263,7 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, dis
     y_test_store = []
     previous_r_target = []
     while len(X_test) > 0:
-        lr_clf = LogisticRegression(max_iter=20000)
+        lr_clf = base_model
         lr_clf.fit(X_train, y_train)
         y_pred = lr_clf.predict(X_test)
         y_prob = lr_clf.predict_proba(X_test)[:, 0]
@@ -242,7 +297,7 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, dis
     output_score = [y_pred_store[i] == y_test_store[i] for i in range(len(y_test_store))]
     gradual_score = sum(output_score) / len(output_score)
 
-    lr_lm = LogisticRegression(max_iter=20000)
+    lr_lm = base_model
     lr_lm.fit(X_train, y_train)
     y_pred = lr_lm.predict(test_features)
     lm_score = [y_pred[i] == test_labels[i] for i in range(len(test_labels))]
