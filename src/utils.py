@@ -42,7 +42,7 @@ def cosine_dist(x_source, x_target):
 
 def l2_dist(x_source, x_target):
     source_center = np.mean(x_source, 0)
-    dists = [np.linalg.norm(source_center.reshape(1, -1), x.reshape(1, -1))[0][0] for x in x_target]
+    dists = [np.linalg.norm(source_center.reshape(1, -1) - x.reshape(1, -1)) for x in x_target]
     return dists
 
 
@@ -51,7 +51,7 @@ def mmd_dist(x_source, x_target):
     return dists
 
 
-def fisher_dist(x_source, x_target):
+def fld_dist(x_source, x_target):
     dists = []
     return dists
 
@@ -69,7 +69,7 @@ def get_dist(x_source, x_target, dist_type):
     :param dist_type: cosine similarity, l2 norm,  maximum mean discrepancy, fisher
     :return:
     """
-    if dist_type not in ["cos", "l2", "mmd", 'fisher', 'mixed']:
+    if dist_type not in ["cos", "l2", "mmd", 'fld', 'mixed']:
         raise ValueError("")
 
     dists = None
@@ -79,8 +79,8 @@ def get_dist(x_source, x_target, dist_type):
         dists = l2_dist(x_source, x_target)
     if dist_type == "mmd":
         dists = mmd_dist(x_source, x_target)
-    if dist_type == "fisher":
-        dists = fisher_dist(x_source, x_target)
+    if dist_type == "fld":
+        dists = fld_dist(x_source, x_target)
 
     if dist_type == "mixed":
         dists = mixed_dist(x_source, x_target)
@@ -148,7 +148,7 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
 
 
 def gradual_train_groups_range(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model, data_size,
-                               group_range, conf, plot_hist=True):
+                               group_range, conf, dist_type, plot_hist=True):
     # initial data and model
     data_size = min(len(x_source_raw), len(x_target_raw), data_size)
     print(data_size)
@@ -161,8 +161,7 @@ def gradual_train_groups_range(x_source_raw, y_source_raw, x_target_raw, y_targe
     no_self_train_adaptation_score = model.score(x_target, y_target)
 
     # calculate distances
-    source_center = np.mean(x_source, 0)
-    dists = [1 - cosine_similarity(source_center.reshape(1, -1), x.reshape(1, -1))[0][0] for x in x_target]
+    dists = get_dist(x_source, x_target, dist_type)
     if plot_hist:
         plt.hist(dists, bins=100)
         plt.show()
