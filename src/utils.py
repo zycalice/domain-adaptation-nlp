@@ -35,44 +35,61 @@ def load_bert(data_path, domains, data_size):
 
 # Pseudo labeling (self train) and gradual train.
 
-def psuedo_labeling_lm(x_source, y_source, x_ti, y_ti, model, conf=0):
+def psuedo_labeling(x_source, y_source, x_ti, model, conf=0):
     # TODO: add NER version; NER version inputs are dictionaries
     base_model = model
     model.fit(x_source, y_source)
     y_prob = base_model.predict_proba(x_ti)[:, 0]
-    X_ti_keep = x_ti[(y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)]
-    y_pred = model.predict(X_ti_keep)
-    X_source_updated = np.concatenate((x_source, X_ti_keep), 0)
+    x_ti_keep = x_ti[(y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)]
+    y_pred = model.predict(x_ti_keep)
+    x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
     y_source_updated = np.concatenate((y_source, y_pred), 0)
-    return X_source_updated, y_source_updated
+    return x_source_updated, y_source_updated
 
 
-def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model, dists, group_size=5, conf=0):
+def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model, dists,
+                              group_size=5, conf=0, subset_sizes=None):
     # initiate model
     model = base_model
+    x_source_updated = x_source.copy()
+    y_source_updated = y_source.copy()
 
-    # create groups within targets and gradually train
+    # calculate distance ranks
     dists = np.array(dists)
     dists_order = np.argsort(dists)
     dists_rank = np.argsort(dists_order)
-
     step = len(y_target) / group_size
-    x_target_groups = []
-    y_target_groups = []
-    gradual_scores = []
-    x_source_updated = x_source.copy()
-    y_source_updated = y_source.copy()
-    for i in range(group_size):
-        subset_tf = (step * i <= dists_rank) & (dists_rank < step * (i + 1))
-        X_ti = x_target[subset_tf]
-        y_ti = y_target[subset_tf]
-        x_target_groups.append(X_ti)
-        y_target_groups.append(y_ti)
-        x_source_updated, y_source_updated = psuedo_labeling_lm(x_source_updated, y_source_updated, X_ti, y_ti, model,
-                                                                conf)
-        gradual_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
-        gradual_scores.append(gradual_score)
-    return gradual_scores
+
+    if (subset_sizes is not None) and (group_size is None):
+        subset_scores = []
+
+        for x in subset_sizes:
+            subset_tf = len(y_source) * x <= dists_rank
+            x_ti = x_target[subset_tf]
+            y_ti = y_target[subset_tf]
+            x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, model, conf)
+            subset_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
+            subset_scores.append(subset_score)
+            return subset_scores
+
+    if (subset_sizes is None) and (group_size is not None):
+        # create groups within targets and gradually train
+        x_target_groups = []
+        y_target_groups = []
+        gradual_scores = []
+
+        for i in range(group_size):
+            subset_tf = (step * i <= dists_rank) & (dists_rank < step * (i + 1))
+            x_ti = x_target[subset_tf]
+            y_ti = y_target[subset_tf]
+            x_target_groups.append(x_ti)
+            y_target_groups.append(y_ti)
+            x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, model, conf)
+            gradual_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
+            gradual_scores.append(gradual_score)
+        return gradual_scores
+
+    raise ValueError("Check input; one of group size or subset size should be none.")
 
 
 def gradual_train_groups_range(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model, data_size,
