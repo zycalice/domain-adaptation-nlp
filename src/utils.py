@@ -193,7 +193,63 @@ def cos_dist(A, B):
     return 1 - (np.dot(A, B) / (np.norm(A) * np.norm(B)))
 
 
-def S2T(train_features, train_labels, test_features, test_labels):
-    lr_clf = LogisticRegression()
-    lr_clf.fit(train_features, train_labels)
-    return lr_clf.score(test_features, test_labels)
+def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, dist_eval=False):
+    top_n = 30
+    lr_original = LogisticRegression(max_iter=20000)
+    # lr_st = LogisticRegression(max_iter=20000)
+    original_score = lr_original.fit(train_features, train_labels).score(test_features, test_labels)
+
+    # gradual training
+    X_train = train_features[:]
+    y_train = train_labels[:]
+    X_test = test_features[:]
+    y_test = test_labels[:]
+    y_pred_store = []
+    y_test_store = []
+    previous_r_target = []
+    while len(X_test) > 0:
+        lr_clf = LogisticRegression(max_iter=20000)
+        lr_clf.fit(X_train, y_train)
+        y_pred = lr_clf.predict(X_test)
+        y_prob = lr_clf.predict_proba(X_test)[:, 0]
+        y_prob = [(i, val, y_pred[i]) for i, val in enumerate(y_prob)]
+        y_prob_P = [val for val in y_prob if val[1] < 0.5]
+        y_prob_P = sorted(y_prob_P, key=lambda x: x[1])
+        y_prob_P = [val[0] for val in y_prob_P[:top_n]]
+        y_prob_N = [val for val in y_prob if val[1] >= 0.5]
+        y_prob_N = sorted(y_prob_N, key=lambda x: x[1], reverse=True)
+        y_prob_N = [val[0] for val in y_prob_N[:top_n]]
+        keep_index = y_prob_P + y_prob_N
+        not_keep_index = [i for i in range(len(y_pred)) if i not in keep_index]
+        if len(keep_index) + len(not_keep_index) != len(y_pred):
+            raise ValueError('top_n error!')
+
+        X_test_keep = [X_test[i] for i in keep_index]
+        y_pred_keep = [y_pred[i] for i in keep_index]
+        X_train = np.concatenate((X_train, X_test_keep), axis=0)
+        y_train = np.concatenate((y_train, y_pred_keep), axis=0)
+        y_pred_store += y_pred_keep
+        y_test_store += [y_test[i] for i in keep_index]
+        print('total:', len(y_pred_keep), 'pred_true', sum(y_pred_keep), 'true_true',
+              sum([y_test[i] for i in keep_index]))
+        X_test = [X_test[i] for i in not_keep_index]
+        y_test = [y_test[i] for i in not_keep_index]
+        if X_test == previous_r_target:
+            break
+        previous_r_target = X_test[:]
+    if len(y_pred_store) != len(test_labels):
+        raise ValueError('output dimension error!')
+    output_score = [y_pred_store[i] == y_test_store[i] for i in range(len(y_test_store))]
+    gradual_score = sum(output_score) / len(output_score)
+
+    lr_lm = LogisticRegression(max_iter=20000)
+    lr_lm.fit(X_train, y_train)
+    y_pred = lr_lm.predict(test_features)
+    lm_score = [y_pred[i] == test_labels[i] for i in range(len(test_labels))]
+    lm_score = sum(lm_score) / len(lm_score)
+    print(lm_score, gradual_score)
+
+    if dist_eval:
+        return original_score, lm_score, gradual_score
+    else:
+        return original_score, lm_score, gradual_score
