@@ -103,7 +103,11 @@ def psuedo_labeling(x_source, y_source, x_ti, model, conf=0):
 
 
 def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model, dists,
-                              group_size=5, conf=0, subset_sizes=None):
+                              group_size=5, conf=0, subset_size=None):
+    """
+    For a particular group size
+    When subset size activates, there is only one group
+    """
     # initiate model
     model = base_model
     x_source_updated = x_source.copy()
@@ -115,26 +119,23 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
     dists_rank = np.argsort(dists_order)
     step = len(y_target) / group_size
 
-    if (subset_sizes is not None) and (group_size is None):
-        subset_scores = []
+    if (subset_size is not None) and (group_size == 1):
+        # generate subset results
+        subset_tf = dists_rank <= len(y_source) * subset_size
+        x_ti = x_target[subset_tf]
+        y_ti = y_target[subset_tf]
+        x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, model, conf)
+        subset_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
+        return subset_score
 
-        for x in subset_sizes:
-            subset_tf = len(y_source) * x <= dists_rank
-            x_ti = x_target[subset_tf]
-            y_ti = y_target[subset_tf]
-            x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, model, conf)
-            subset_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
-            subset_scores.append(subset_score)
-            return subset_scores
-
-    if (subset_sizes is None) and (group_size is not None):
+    if (subset_size is None) and (group_size > 0):
         # create groups within targets and gradually train
         x_target_groups = []
         y_target_groups = []
         gradual_scores = []
 
         for i in range(group_size):
-            subset_tf = (step * i <= dists_rank) & (dists_rank < step * (i + 1))
+            subset_tf = (dists_rank >= step * i) & (dists_rank < step * (i + 1))
             x_ti = x_target[subset_tf]
             y_ti = y_target[subset_tf]
             x_target_groups.append(x_ti)
@@ -147,8 +148,8 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
     raise ValueError("Check input; one of group size or subset size should be none.")
 
 
-def gradual_train_groups_range(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model, data_size,
-                               group_range, conf, dist_type, plot_hist=True):
+def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model, data_size,
+                             group_range, subset_range, conf, dist_type, plot_hist=True):
     # initial data and model
     data_size = min(len(x_source_raw), len(x_target_raw), data_size)
     print(data_size)
@@ -169,19 +170,39 @@ def gradual_train_groups_range(x_source_raw, y_source_raw, x_target_raw, y_targe
     # save accuracies
     final_accuracies = [no_self_train_adaptation_score]
     accuracies_ti = {"no_self_train_adaptation_score": no_self_train_adaptation_score}
-    for i in range(group_range[0] + 1, group_range[1] + 1):
-        data_size = data_size
-        base_model = base_model
-        gradual_scores = gradual_train_dist_groups(
-            x_source, y_source,
-            x_target, y_target,
-            base_model, dists=dists, group_size=i, conf=conf)
-        final_accuracies.append(gradual_scores[-1])
-        accuracies_ti[i] = gradual_scores
-        print("group", i, '{:.2f}'.format(no_self_train_adaptation_score * 100),
-              ['{:.2f}'.format(elem * 100) for elem in gradual_scores])
+    data_size = data_size
+    base_model = base_model
 
-    return final_accuracies, accuracies_ti, dists
+    # subset version
+    if (subset_range is not None) and (group_range is None):
+        for x in subset_range:
+            subset_score = gradual_train_dist_groups(
+                x_source, y_source,
+                x_target, y_target,
+                base_model=base_model, dists=dists, group_size=1, subset_size=x, conf=conf
+            )
+            final_accuracies.append(subset_score)
+            accuracies_ti[x] = subset_score
+            print('subset', '{:.0f}%'.format(x * 100), '{:.2f}%'.format(no_self_train_adaptation_score * 100),
+                  '{:.2f}%'.format(subset_score * 100))
+        return final_accuracies, accuracies_ti, dists
+
+    # group train last model version
+    if (subset_range is None) and (group_range is not None):
+        for i in range(group_range[0] + 1, group_range[1] + 1):
+            gradual_scores = gradual_train_dist_groups(
+                x_source, y_source,
+                x_target, y_target,
+                base_model=base_model, dists=dists, group_size=i, subset_size=None, conf=conf
+            )
+            final_accuracies.append(gradual_scores[-1])
+            accuracies_ti[i] = gradual_scores
+            print('group', i, '{:.2f}'.format(no_self_train_adaptation_score * 100),
+                  ['{:.2f}'.format(elem * 100) for elem in gradual_scores])
+
+        return final_accuracies, accuracies_ti, dists
+
+    raise ValueError("Check inputs for group range and subset range. Only one should be not none.")
 
 
 # Self-Train and use pseudo level as final labels, and use conf as groups.

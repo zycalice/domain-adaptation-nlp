@@ -31,11 +31,11 @@ if __name__ == '__main__':
             target_feature_name = target
             target_label_name = "y_train_" + target
 
-            final_accuracies, accuracies_ti, dists = gradual_train_groups_range(
+            final_accuracies, accuracies_ti, dists = run_gradual_train_ranges(
                 x_source_raw=bert_dict[source_feature_name], y_source_raw=y_dict[source_label_name],
                 x_target_raw=bert_dict[target_feature_name], y_target_raw=y_dict[target_label_name],
-                base_model=lr, data_size=data_size, group_range=[0, 10], plot_hist=False, dist_type="l2",
-                conf=0.3
+                base_model=lr, data_size=data_size, group_range=None, plot_hist=False, dist_type="l2",
+                conf=0.1, subset_range=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
             )
 
             final_accuracies_all_domains[train_name] = final_accuracies
@@ -43,7 +43,7 @@ if __name__ == '__main__':
             dists_all_domains[train_name] = dists
 
     print(accuracies_ti_all_domains)
-    with open("../outputs/accuracies_ti_all_domains_conf3_lr_c0.1_l2.json", "w") as outfile:
+    with open("../outputs/accuracies_subset_all_domains_conf1_lr_c0.1_l2.json", "w") as outfile:
         json.dump(accuracies_ti_all_domains, outfile, indent=4)
 
     # # Self-train label as final prediction label.
