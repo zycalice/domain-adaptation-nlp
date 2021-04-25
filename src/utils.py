@@ -1,5 +1,5 @@
+import random
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
@@ -90,15 +90,27 @@ def get_dist(x_source, x_target, dist_type):
 
 # Pseudo labeling (self train) and gradual train.
 
-def psuedo_labeling(x_source, y_source, x_ti, model, conf=0):
+def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_num=0):
     # TODO: add NER version; NER version inputs are dictionaries
     base_model = model
+
+    if few_shot_num == 0:
+        idx = np.arany(len(y_ti))
+        selected_idx = np.array(random.sample(list(idx), few_shot_num))
+        selected_label = y_ti[selected_idx]
+        selected_features = x_ti[selected_idx]
+        x_source = np.concatenate((x_source, selected_features), 0)
+        y_source = np.concatenate((y_source, selected_label), 0)
+        x_ti = x_ti[~selected_idx]
+        y_ti = y_ti[~selected_idx]
+
     model.fit(x_source, y_source)
     y_prob = base_model.predict_proba(x_ti)[:, 0]
     x_ti_keep = x_ti[(y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)]
     y_pred = model.predict(x_ti_keep)
     x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
     y_source_updated = np.concatenate((y_source, y_pred), 0)
+
     return x_source_updated, y_source_updated
 
 
@@ -124,7 +136,7 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
         subset_tf = dists_rank <= len(y_source) * subset_size
         x_ti = x_target[subset_tf]
         y_ti = y_target[subset_tf]
-        x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, model, conf)
+        x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, y_ti, model, conf)
         subset_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
         return subset_score
 

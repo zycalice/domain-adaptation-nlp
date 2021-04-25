@@ -15,8 +15,6 @@ from dataset import load_ner_data
 from sklearn.model_selection import train_test_split
 
 # # Load tokenizer and model
-# tokenizer_d = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
-# model_d = DistilBertModel.from_pretrained('distilbert-base-uncased')
 
 # Load pre-computed bert embeddings.
 data_path = "../data/"
