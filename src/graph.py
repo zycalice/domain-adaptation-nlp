@@ -4,7 +4,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    with open('../outputs/accuracies_ti_all_domains_conf1_lr_c0.1_l2_fs1.json') as f:
+    with open('../outputs/accuracies_ti_all_domains_conf1_lr_c0.1_l2_fs0.1.json') as f:
         accuracies_ti = json.load(f)
 
     print(accuracies_ti)
