@@ -4,7 +4,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    with open('../outputs/accuracies_ti_all_domains_conf1_lr_c0.1_l2_fs1.json.json') as f:
+    with open('../outputs/accuracies_ti_all_domains_conf1_lr_c0.1_l2_fs1.json') as f:
         accuracies_ti = json.load(f)
 
     print(accuracies_ti)
@@ -33,10 +33,11 @@ if __name__ == '__main__':
 
     print(tn_accuracies)
 
-    exps = ['tw_to_az', 'tw_to_mv', 'tw_to_fi',
-            'az_to_tw', 'az_to_mv', 'az_to_fi',
-            'mv_to_tw', 'mv_to_az', 'mv_to_fi',
-            'fi_to_tw', 'fi_to_az', 'fi_to_mv']
+    exps = [
+        'tw_to_az', 'tw_to_mv',
+        'az_to_tw', 'az_to_mv',
+        'mv_to_tw', 'mv_to_az',
+        ]
 
     # t1
     for exp in exps:

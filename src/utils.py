@@ -107,6 +107,8 @@ def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_size
     model.fit(x_source, y_source)
     y_prob = base_model.predict_proba(x_ti)[:, 0]
     x_ti_keep = x_ti[(y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)]
+    if len(x_ti_keep) == 0:
+        x_ti_keep = x_ti
     y_pred = model.predict(x_ti_keep)
     x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
     y_source_updated = np.concatenate((y_source, y_pred), 0)
