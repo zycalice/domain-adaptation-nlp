@@ -95,7 +95,7 @@ def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_size
     base_model = model
 
     if few_shot_size != 0:
-        idx = np.arany(len(y_ti))
+        idx = np.arange(len(y_ti))
         selected_idx = np.array(random.sample(list(idx), int(few_shot_size * len(y_ti))))
         selected_label = y_ti[selected_idx]
         selected_features = x_ti[selected_idx]
@@ -153,7 +153,8 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
             y_ti = y_target[subset_tf]
             x_target_groups.append(x_ti)
             y_target_groups.append(y_ti)
-            x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, model, conf)
+            x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, y_ti, model,
+                                                                 conf, few_shot_size)
             gradual_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
             gradual_scores.append(gradual_score)
         return gradual_scores
@@ -192,7 +193,8 @@ def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_
             subset_score = gradual_train_dist_groups(
                 x_source, y_source,
                 x_target, y_target,
-                base_model=base_model, dists=dists, group_size=1, subset_size=x, conf=conf
+                base_model=base_model, dists=dists, group_size=1, subset_size=x, conf=conf,
+                few_shot_size=few_shot_size
             )
             final_accuracies.append(subset_score)
             accuracies_ti[x] = subset_score
@@ -202,11 +204,12 @@ def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_
 
     # group train last model version
     if (subset_range is None) and (group_range is not None):
-        for i in range(group_range[0] + 1, group_range[1] + 1):
+        for i in group_range:
             gradual_scores = gradual_train_dist_groups(
                 x_source, y_source,
                 x_target, y_target,
-                base_model=base_model, dists=dists, group_size=i, subset_size=None, conf=conf, few_shot_size=few_shot_size
+                base_model=base_model, dists=dists, group_size=i, subset_size=None, conf=conf,
+                few_shot_size=few_shot_size
             )
             final_accuracies.append(gradual_scores[-1])
             accuracies_ti[i] = gradual_scores
