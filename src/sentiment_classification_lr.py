@@ -35,7 +35,7 @@ if __name__ == '__main__':
                 x_source_raw=bert_dict[source_feature_name], y_source_raw=y_dict[source_label_name],
                 x_target_raw=bert_dict[target_feature_name], y_target_raw=y_dict[target_label_name],
                 base_model=lr, data_size=data_size, group_range=None, plot_hist=False, dist_type="l2",
-                conf=0.1, subset_range=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+                conf=0.1, subset_range=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], few_shot_size=0.01
             )
 
             final_accuracies_all_domains[train_name] = final_accuracies
@@ -43,7 +43,7 @@ if __name__ == '__main__':
             dists_all_domains[train_name] = dists
 
     print(accuracies_ti_all_domains)
-    with open("../outputs/accuracies_subset_all_domains_conf1_lr_c0.1_l2.json", "w") as outfile:
+    with open("../outputs/accuracies_subset_all_domains_conf1_lr_c0.1_l2_fs1.json", "w") as outfile:
         json.dump(accuracies_ti_all_domains, outfile, indent=4)
 
     # # Self-train label as final prediction label.

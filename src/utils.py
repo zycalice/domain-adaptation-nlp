@@ -90,13 +90,13 @@ def get_dist(x_source, x_target, dist_type):
 
 # Pseudo labeling (self train) and gradual train.
 
-def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_num=0):
+def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_size=0):
     # TODO: add NER version; NER version inputs are dictionaries
     base_model = model
 
-    if few_shot_num == 0:
+    if few_shot_size != 0:
         idx = np.arany(len(y_ti))
-        selected_idx = np.array(random.sample(list(idx), few_shot_num))
+        selected_idx = np.array(random.sample(list(idx), int(few_shot_size * len(y_ti))))
         selected_label = y_ti[selected_idx]
         selected_features = x_ti[selected_idx]
         x_source = np.concatenate((x_source, selected_features), 0)
@@ -115,7 +115,7 @@ def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_num=
 
 
 def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model, dists,
-                              group_size=5, conf=0, subset_size=None, few_shot_num=0):
+                              group_size=5, conf=0, subset_size=None, few_shot_size=0):
     """
     For a particular group size
     When subset size activates, there is only one group
@@ -137,7 +137,7 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
         x_ti = x_target[subset_tf]
         y_ti = y_target[subset_tf]
         x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, y_ti, model,
-                                                             conf, few_shot_num)
+                                                             conf, few_shot_size)
         subset_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
         return subset_score
 
@@ -162,7 +162,7 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
 
 
 def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model, data_size,
-                             group_range, subset_range, conf, dist_type, plot_hist=True, few_shot_num=0):
+                             group_range, subset_range, conf, dist_type, plot_hist=True, few_shot_size=0):
     # initial data and model
     data_size = min(len(x_source_raw), len(x_target_raw), data_size)
     print(data_size)
@@ -206,7 +206,7 @@ def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_
             gradual_scores = gradual_train_dist_groups(
                 x_source, y_source,
                 x_target, y_target,
-                base_model=base_model, dists=dists, group_size=i, subset_size=None, conf=conf, few_shot_num=few_shot_num
+                base_model=base_model, dists=dists, group_size=i, subset_size=None, conf=conf, few_shot_size=few_shot_size
             )
             final_accuracies.append(gradual_scores[-1])
             accuracies_ti[i] = gradual_scores
