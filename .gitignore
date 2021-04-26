@@ -4,6 +4,7 @@
 #Data
 data/
 *.npy
+model*
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks

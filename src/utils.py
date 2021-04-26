@@ -90,7 +90,7 @@ def get_dist(x_source, x_target, dist_type):
 
 # Pseudo labeling (self train) and gradual train.
 
-def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_size=0):
+def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_size=0, label_final=False):
     # TODO: add NER version; NER version inputs are dictionaries
     base_model = model
 
@@ -113,11 +113,14 @@ def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_size
     x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
     y_source_updated = np.concatenate((y_source, y_pred), 0)
 
-    return x_source_updated, y_source_updated
+    if label_final:
+        return x_source_updated, y_source_updated, y_pred
+    return x_source_updated, y_source_updated, None
 
 
 def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model, dists,
-                              group_size=5, conf=0, subset_size=None, few_shot_size=0):
+                              group_size=5, conf=0, subset_size=None, few_shot_size=0,
+                              label_final=False):
     """
     For a particular group size
     When subset size activates, there is only one group
@@ -138,8 +141,8 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
         subset_tf = dists_rank <= len(y_source) * subset_size
         x_ti = x_target[subset_tf]
         y_ti = y_target[subset_tf]
-        x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, y_ti, model,
-                                                             conf, few_shot_size)
+        x_source_updated, y_source_updated, _ = psuedo_labeling(x_source_updated, y_source_updated, x_ti, y_ti,
+                                                                model, conf, few_shot_size)
         subset_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
         return subset_score
 
@@ -148,6 +151,7 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
         x_target_groups = []
         y_target_groups = []
         gradual_scores = []
+        y_preds = []
 
         for i in range(group_size):
             subset_tf = (dists_rank >= step * i) & (dists_rank < step * (i + 1))
@@ -155,17 +159,27 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
             y_ti = y_target[subset_tf]
             x_target_groups.append(x_ti)
             y_target_groups.append(y_ti)
-            x_source_updated, y_source_updated = psuedo_labeling(x_source_updated, y_source_updated, x_ti, y_ti, model,
-                                                                 conf, few_shot_size)
-            gradual_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
-            gradual_scores.append(gradual_score)
-        return gradual_scores
+            x_source_updated, y_source_updated, y_pred = psuedo_labeling(x_source_updated, y_source_updated, x_ti, y_ti,
+                                                                         model, conf, few_shot_size, label_final)
+            # print(len(y_pred))
+            y_preds.append(y_pred)
+            gradual_score_label_final = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
+            gradual_scores.append(gradual_score_label_final)
+
+        if label_final:
+            model.fit(x_source_updated, y_source_updated)
+            print(len(y_preds))
+            gradual_score_label_final = accuracy_score(y_preds, y_target)
+            return gradual_score_label_final
+        else:
+            return gradual_scores
 
     raise ValueError("Check input; one of group size or subset size should be none.")
 
 
 def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model, data_size,
-                             group_range, subset_range, conf, dist_type, plot_hist=True, few_shot_size=0):
+                             group_range, subset_range, conf, dist_type, plot_hist=True, few_shot_size=0,
+                             label_final=False):
     # initial data and model
     data_size = min(len(x_source_raw), len(x_target_raw), data_size)
     print(data_size)
@@ -196,7 +210,7 @@ def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_
                 x_source, y_source,
                 x_target, y_target,
                 base_model=base_model, dists=dists, group_size=1, subset_size=x, conf=conf,
-                few_shot_size=few_shot_size
+                few_shot_size=few_shot_size,
             )
             final_accuracies.append(subset_score)
             accuracies_ti[x] = subset_score
@@ -211,7 +225,7 @@ def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_
                 x_source, y_source,
                 x_target, y_target,
                 base_model=base_model, dists=dists, group_size=i, subset_size=None, conf=conf,
-                few_shot_size=few_shot_size
+                few_shot_size=few_shot_size, label_final=label_final
             )
             final_accuracies.append(gradual_scores[-1])
             accuracies_ti[i] = gradual_scores
@@ -225,7 +239,7 @@ def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_
 
 # Self-Train and use pseudo level as final labels, and use conf as groups.
 
-def psuedo_labeling_label_final(x_s, y_s, x_t, y_t, model, conf):
+def psuedo_labeling_label_final_conf(x_s, y_s, x_t, y_t, model, conf, few_shot_size=0):
     # TODO: add NER version; NER version inputs are dictionaries
     base_model = model
     model.fit(x_s, y_s)
@@ -234,6 +248,16 @@ def psuedo_labeling_label_final(x_s, y_s, x_t, y_t, model, conf):
     x_ti_not_keep = []
     y_ti_keep = []
     y_ti_not_keep = []
+
+    if few_shot_size != 0:
+        idx = np.arange(len(y_t))
+        selected_idx = np.array(random.sample(list(idx), int(few_shot_size * len(y_t))))
+        selected_label = y_t[selected_idx]
+        selected_features = x_t[selected_idx]
+        x_s = np.concatenate((x_s, selected_features), 0)
+        y_s = np.concatenate((y_s, selected_label), 0)
+        x_t = x_t[~selected_idx]
+        y_t = y_t[~selected_idx]
 
     # if no data past the conf requirement, lower the requirement by 0.1
     while len(x_ti_keep) == 0:
@@ -252,7 +276,9 @@ def psuedo_labeling_label_final(x_s, y_s, x_t, y_t, model, conf):
     return x_source_updated, y_source_updated, y_pred, y_ti_keep, x_ti_not_keep, y_ti_not_keep
 
 
-def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model, data_size, conf):
+def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model,
+                                              data_size, conf,
+                                              few_shot_size=0):
     # initiate values
     data_size = min(len(x_source_raw), len(x_target_raw), data_size)
     print(data_size)
@@ -267,8 +293,8 @@ def gradual_train_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target
 
     # repeat self-train until all target data are computed
     while len(x_target) > 0:
-        x_source, y_source, y_pred, y_true, x_target, y_target = psuedo_labeling_label_final(
-            x_source, y_source, x_target, y_target, base_model, conf
+        x_source, y_source, y_pred, y_true, x_target, y_target = psuedo_labeling_label_final_conf(
+            x_source, y_source, x_target, y_target, base_model, conf, few_shot_size
         )
         y_pred_all.extend(list(y_pred))
         y_true_all.extend(list(y_true))
