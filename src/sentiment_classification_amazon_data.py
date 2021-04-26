@@ -26,7 +26,7 @@ if __name__ == '__main__':
                 x_source_raw=source[0], y_source_raw=source[1],
                 x_target_raw=target[0], y_target_raw=target[1],
                 base_model=lr, data_size=data_size, group_range=self_train_groups, plot_hist=False,
-                dist_type="cos", conf=0.1, subset_range=None, few_shot_size=0, label_final=True,
+                dist_type="cos", conf=0.1, subset_range=None, few_shot_size=0.0025, label_final=False,
             )
 
             final_accuracies_all_domains[train_name] = final_accuracies
@@ -34,7 +34,7 @@ if __name__ == '__main__':
             dists_all_domains[train_name] = dists
 
     print(accuracies_ti_all_domains)
-    with open("../outputs/accuracies_ti_amazon_label_final_conf1_c0.1.json", "w") as outfile:
+    with open("../outputs/accuracies_ti_amazon_conf1_c0.1_fs0.0025.json", "w") as outfile:
         json.dump(accuracies_ti_all_domains, outfile, indent=4)
 
     # # final label with conf

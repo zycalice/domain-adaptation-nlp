@@ -105,17 +105,22 @@ def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_size
         y_ti = y_ti[~selected_idx]
 
     model.fit(x_source, y_source)
-    y_prob = base_model.predict_proba(x_ti)[:, 0]
-    x_ti_keep = x_ti[(y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)]
-    if len(x_ti_keep) == 0:
-        x_ti_keep = x_ti
-    y_pred = model.predict(x_ti_keep)
-    x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
-    y_source_updated = np.concatenate((y_source, y_pred), 0)
 
     if label_final:
+        y_pred = model.predict(x_ti)
+        x_source_updated = np.concatenate((x_source, x_ti), 0)
+        y_source_updated = np.concatenate((y_source, y_pred), 0)
         return x_source_updated, y_source_updated, y_pred
-    return x_source_updated, y_source_updated, None
+
+    else:
+        y_prob = base_model.predict_proba(x_ti)[:, 0]
+        x_ti_keep = x_ti[(y_prob >= 0.5 + conf) | (y_prob < 0.5 - conf)]
+        if len(x_ti_keep) == 0:
+            x_ti_keep = x_ti
+        y_pred = model.predict(x_ti_keep)
+        x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
+        y_source_updated = np.concatenate((y_source, y_pred), 0)
+        return x_source_updated, y_source_updated, None
 
 
 def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model, dists,
@@ -152,6 +157,7 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
         y_target_groups = []
         gradual_scores = []
         y_preds = []
+        y_ordered_target = []
 
         for i in range(group_size):
             subset_tf = (dists_rank >= step * i) & (dists_rank < step * (i + 1))
@@ -161,16 +167,18 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
             y_target_groups.append(y_ti)
             x_source_updated, y_source_updated, y_pred = psuedo_labeling(x_source_updated, y_source_updated, x_ti, y_ti,
                                                                          model, conf, few_shot_size, label_final)
-            # print(len(y_pred))
-            y_preds.append(y_pred)
-            gradual_score_label_final = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
-            gradual_scores.append(gradual_score_label_final)
+            if label_final:
+                y_preds.extend(y_pred)
+                y_ordered_target.extend(y_ti)
+            else:
+                gradual_score = model.fit(x_source_updated, y_source_updated).score(x_target, y_target)
+                gradual_scores.append(gradual_score)
 
         if label_final:
             model.fit(x_source_updated, y_source_updated)
             print(len(y_preds))
-            gradual_score_label_final = accuracy_score(y_preds, y_target)
-            return gradual_score_label_final
+            gradual_score = [accuracy_score(y_preds, y_ordered_target)]
+            return gradual_score
         else:
             return gradual_scores
 
@@ -218,7 +226,7 @@ def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_
                   '{:.2f}%'.format(subset_score * 100))
         return final_accuracies, accuracies_ti, dists
 
-    # group train last model version
+    # group train version
     if (subset_range is None) and (group_range is not None):
         for i in group_range:
             gradual_scores = gradual_train_dist_groups(
