@@ -96,7 +96,8 @@ def psuedo_labeling(x_source, y_source, x_ti, y_ti, model, conf=0, few_shot_size
 
     if few_shot_size != 0:
         idx = np.arange(len(y_ti))
-        selected_idx = np.array(random.sample(list(idx), int(few_shot_size * len(y_ti))))
+        selected_idx = np.array(random.sample(list(idx), max(1, int(few_shot_size * len(y_ti)))))
+        # print(selected_idx)
         selected_label = y_ti[selected_idx]
         selected_features = x_ti[selected_idx]
         x_source = np.concatenate((x_source, selected_features), 0)
