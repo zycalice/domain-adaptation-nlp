@@ -11,7 +11,7 @@ from collections import Counter
 import re
 import pickle
 from bert_embedding import *
-from dataset import load_ner_data
+from dataset_multi import load_ner_data
 from sklearn.model_selection import train_test_split
 
 # # Load tokenizer and model
