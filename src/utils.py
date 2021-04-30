@@ -46,21 +46,6 @@ def l2_dist(x_source, x_target):
     return dists
 
 
-def mmd_dist(x_source, x_target):
-    dists = []
-    return dists
-
-
-def fld_dist(x_source, x_target):
-    dists = []
-    return dists
-
-
-def mixed_dist(x_source, x_target):
-    dists = []
-    return dists
-
-
 def get_dist(x_source, x_target, dist_type):
     """
     get dist function
@@ -77,13 +62,6 @@ def get_dist(x_source, x_target, dist_type):
         dists = cosine_dist(x_source, x_target)
     if dist_type == "l2":
         dists = l2_dist(x_source, x_target)
-    if dist_type == "mmd":
-        dists = mmd_dist(x_source, x_target)
-    if dist_type == "fld":
-        dists = fld_dist(x_source, x_target)
-
-    if dist_type == "mixed":
-        dists = mixed_dist(x_source, x_target)
 
     return dists
 

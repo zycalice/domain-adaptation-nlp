@@ -7,39 +7,39 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-def score(X, y, w):
-    return y * (X @ w)
+def score(x, y, w):
+    return y * (x @ w)
 
 
-def compute_loss(X, y, w):
-    logloss = - sum(np.log(sigmoid(score(X, y, w)))) / len(y)
-    return logloss
+def compute_loss(x, y, w):
+    log_loss = - sum(np.log(sigmoid(score(x, y, w)))) / len(y)
+    return log_loss
 
 
-def compute_gradients(X, y, w):
-    dw = - sigmoid(- score(X, y, w)) * y @ X / len(y)
+def compute_gradients(x, y, w):
+    dw = - sigmoid(- score(x, y, w)) * y @ x / len(y)
     return dw
 
 
-def prediction(X, w):
-    return sigmoid(X @ w)
+def prediction(x, w):
+    return sigmoid(x @ w)
 
 
 def decision_boundary(prob):
     return 1 if prob >= .5 else -1
 
 
-def classify(predictions, decision_boundary):
-    '''
+def classify(predictions, decision_rule):
+    """
     input  - N element array of predictions between 0 and 1
     output - N element array of -1s and 1s
-    '''
-    db = np.vectorize(decision_boundary)
+    """
+    db = np.vectorize(decision_rule)
     return db(predictions).flatten()
 
 
-def accuracy(X, y, w):
-    y_pred = np.sign(X @ w)
+def accuracy(x, y, w):
+    y_pred = np.sign(x @ w)
     diff = y_pred - y
     # if diff is zero, then correct
     return 1 - float(np.count_nonzero(diff)) / len(diff)
@@ -47,10 +47,11 @@ def accuracy(X, y, w):
 
 def train_logistic(x_train, y_train, x_test, y_test, lr, iterations=50):
     # Compute Loss
-    accuracies_test = []
     accuracies_train = []
-    losses_test = []
+    accuracies_test = []
+
     losses_train = []
+    losses_test = []
 
     for _ in range(iterations):
         w = np.ones(len(x_train.shape[1]))
@@ -73,7 +74,7 @@ def train_logistic(x_train, y_train, x_test, y_test, lr, iterations=50):
         losses_test.append(loss_test)
         losses_train.append(loss_train)
 
-    ##Plot Loss and Accuracy
+    # Plot Loss and Accuracy
     plt.plot(accuracies_test, label="Test Accuracy")
     plt.plot(accuracies_train, label="Train Accuracy")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)

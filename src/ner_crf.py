@@ -135,7 +135,7 @@ if __name__ == '__main__':
     train_wiki, test_wiki = train_test_split(wiki, random_state=7)
     train_sec, test_sec = train_test_split(sec, random_state=7)
 
-    crf = sklearn_crfsuite.CRF(
+    crf_model = sklearn_crfsuite.CRF(
         c1=0.1,
         c2=0.2,
         algorithm='lbfgs',
@@ -144,11 +144,11 @@ if __name__ == '__main__':
         # all_possible_states=True,
     )
 
-    run_crf(train_wiki, test_wiki, crf, "../outputs/wiki_sec_crf_results.txt",
+    run_crf(train_wiki, test_wiki, crf_model, "../outputs/wiki_sec_crf_results.txt",
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
-    run_crf(train_wiki, test_sec, crf, "../outputs/wiki_sec_crf_results.txt",
+    run_crf(train_wiki, test_sec, crf_model, "../outputs/wiki_sec_crf_results.txt",
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
-    run_crf(train_sec, test_sec, crf, "../outputs/wiki_sec_crf_results.txt",
+    run_crf(train_sec, test_sec, crf_model, "../outputs/wiki_sec_crf_results.txt",
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
