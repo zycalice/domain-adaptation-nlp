@@ -28,7 +28,7 @@ if __name__ == '__main__':
             if (".test" in file) or (".train" in file) or (".test" in file):
                 domain = file.split(".")[0]
                 if domain in freq_used:
-                    all_data[file] = load_data(folder_path + "/" + file)
+                    all_data[domain] = load_data(folder_path + "/" + file)
 
     # output clean data
     with open("../data/all_cleaned/amazon_data_dict.txt", "w") as f:
