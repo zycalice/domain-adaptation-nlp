@@ -1,0 +1,98 @@
+{
+    "Home_and_Kitchen.train_to_Home_and_Kitchen.train": [
+        0.93,
+        0.93,
+        0.93,
+        0.931
+    ],
+    "Home_and_Kitchen.train_to_Movies_and_TV.train": [
+        0.93,
+        0.9265,
+        0.878,
+        0.7325
+    ],
+    "Home_and_Kitchen.train_to_Electronics.train": [
+        0.93,
+        0.915,
+        0.887,
+        0.7945
+    ],
+    "Home_and_Kitchen.train_to_Books.train": [
+        0.93,
+        0.9415,
+        0.8965,
+        0.722
+    ],
+    "Movies_and_TV.train_to_Home_and_Kitchen.train": [
+        0.9265,
+        0.93,
+        0.868,
+        0.7375
+    ],
+    "Movies_and_TV.train_to_Movies_and_TV.train": [
+        0.9265,
+        0.9265,
+        0.9265,
+        0.9255
+    ],
+    "Movies_and_TV.train_to_Electronics.train": [
+        0.9265,
+        0.915,
+        0.8155,
+        0.766
+    ],
+    "Movies_and_TV.train_to_Books.train": [
+        0.9265,
+        0.9415,
+        0.9165,
+        0.735
+    ],
+    "Electronics.train_to_Home_and_Kitchen.train": [
+        0.915,
+        0.93,
+        0.917,
+        0.767
+    ],
+    "Electronics.train_to_Movies_and_TV.train": [
+        0.915,
+        0.9265,
+        0.902,
+        0.698
+    ],
+    "Electronics.train_to_Electronics.train": [
+        0.915,
+        0.915,
+        0.915,
+        0.9085
+    ],
+    "Electronics.train_to_Books.train": [
+        0.915,
+        0.9415,
+        0.8925,
+        0.6705
+    ],
+    "Books.train_to_Home_and_Kitchen.train": [
+        0.9415,
+        0.93,
+        0.848,
+        0.732
+    ],
+    "Books.train_to_Movies_and_TV.train": [
+        0.9415,
+        0.9265,
+        0.902,
+        0.7495
+    ],
+    "Books.train_to_Electronics.train": [
+        0.9415,
+        0.915,
+        0.8045,
+        0.7445
+    ],
+    "Books.train_to_Books.train": [
+        0.9415,
+        0.9415,
+        0.9415,
+        0.94
+    ]
+}

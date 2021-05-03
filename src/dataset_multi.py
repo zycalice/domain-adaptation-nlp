@@ -50,11 +50,11 @@ def unique_words_tags(data):
 
 
 # get words and tags distributions
-def distributions_words_tags(data):
+def distributions_words_tags(data_input):
     unique_words = {}
     unique_tags = {}
-    for i in range(len(data) - 1):
-        sent = data[i]
+    for i in range(len(data_input) - 1):
+        sent = data_input[i]
         for t in sent:
             word = t[0]
             tag = t[-1]

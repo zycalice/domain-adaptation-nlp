@@ -1,6 +1,6 @@
 import json
 from transformers import DistilBertTokenizer, DistilBertModel
-from utils import *
+from src.utils import *
 
 
 def output_bert_embeddings(domain_types, data_size):
@@ -20,9 +20,13 @@ def tokenize_encode_bert_sentences(tokenizer, model, input_sentences, output_pat
     return output
 
 
-def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences):
+def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences, cls_only=True):
     encoded_input = tokenizer(input_sentences, return_tensors='pt', truncation=True, padding=True)
-    output = model(**encoded_input)[0][:, 0, :].detach().numpy()
+    output = model(**encoded_input)[0]
+    if cls_only:
+        output = output[:, 0, :].detach().numpy()
+    else:
+        output = output.detach().numpy()
     return output
 
 
