@@ -3,96 +3,96 @@
         0.93,
         0.93,
         0.93,
-        0.931
+        0.93
     ],
     "Home_and_Kitchen.train_to_Movies_and_TV.train": [
         0.93,
         0.9265,
         0.878,
-        0.7355
+        0.8775
     ],
     "Home_and_Kitchen.train_to_Electronics.train": [
         0.93,
         0.915,
         0.887,
-        0.795
+        0.885
     ],
     "Home_and_Kitchen.train_to_Books.train": [
         0.93,
         0.9415,
         0.8965,
-        0.723
+        0.906
     ],
     "Movies_and_TV.train_to_Home_and_Kitchen.train": [
         0.9265,
         0.93,
         0.868,
-        0.738
+        0.8725
     ],
     "Movies_and_TV.train_to_Movies_and_TV.train": [
         0.9265,
         0.9265,
         0.9265,
-        0.9255
+        0.926
     ],
     "Movies_and_TV.train_to_Electronics.train": [
         0.9265,
         0.915,
         0.8155,
-        0.7675
+        0.8125
     ],
     "Movies_and_TV.train_to_Books.train": [
         0.9265,
         0.9415,
         0.9165,
-        0.736
+        0.919
     ],
     "Electronics.train_to_Home_and_Kitchen.train": [
         0.915,
         0.93,
         0.917,
-        0.768
+        0.918
     ],
     "Electronics.train_to_Movies_and_TV.train": [
         0.915,
         0.9265,
         0.902,
-        0.703
+        0.9065
     ],
     "Electronics.train_to_Electronics.train": [
         0.915,
         0.915,
         0.915,
-        0.9085
+        0.9155
     ],
     "Electronics.train_to_Books.train": [
         0.915,
         0.9415,
         0.8925,
-        0.6805
+        0.9005
     ],
     "Books.train_to_Home_and_Kitchen.train": [
         0.9415,
         0.93,
         0.848,
-        0.7385
+        0.851
     ],
     "Books.train_to_Movies_and_TV.train": [
         0.9415,
         0.9265,
         0.902,
-        0.7495
+        0.9035
     ],
     "Books.train_to_Electronics.train": [
         0.9415,
         0.915,
         0.8045,
-        0.745
+        0.8065
     ],
     "Books.train_to_Books.train": [
         0.9415,
         0.9415,
         0.9415,
-        0.94
+        0.9415
     ]
 }

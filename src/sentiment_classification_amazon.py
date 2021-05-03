@@ -87,4 +87,3 @@ if __name__ == '__main__':
     # print(accuracies_all_domains)
     # with open("../outputs/accuracies_ti_amazon_S2T_p4_adj_blc_c0.1.json", "w") as outfile:
     #     json.dump(accuracies_all_domains, outfile, indent=4)
-

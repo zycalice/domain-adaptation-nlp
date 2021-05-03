@@ -309,7 +309,7 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
 # Balanced conf.
 
 def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
-                               few_shot_size=0):
+                               few_shot_size=0):  # y_ti and few_shot_size not used currently
     # get predictions
     base_model = model
     model.fit(x_source, y_source)
@@ -348,13 +348,21 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
             # find ranks
             order = np.argsort(y_prob_sign)
             rank = np.argsort(order)
-            threshold = len(rank) - keep_n
-            x_ti_sign_keep = x_ti_sign[rank >= threshold]
-            x_ti_sign_left = x_ti_sign[rank < threshold]
-            y_pred_sign_keep = y_pred_sign[rank >= threshold]  # keep top n for model training
-            y_pred_sign_left = y_pred_sign[rank < threshold]  # not selected in this round
 
-            # save to the result
+            if s:
+                threshold = len(rank) - keep_n
+                x_ti_sign_keep = x_ti_sign[rank >= threshold]
+                x_ti_sign_left = x_ti_sign[rank < threshold]
+                y_pred_sign_keep = y_pred_sign[rank >= threshold]  # keep top n for model training
+                y_pred_sign_left = y_pred_sign[rank < threshold]  # not selected in this round
+            else:
+                threshold = keep_n
+                x_ti_sign_keep = x_ti_sign[rank < threshold]
+                x_ti_sign_left = x_ti_sign[rank >= threshold]
+                y_pred_sign_keep = y_pred_sign[rank < threshold]  # keep top n for model training
+                y_pred_sign_left = y_pred_sign[rank >= threshold]  # not selected in this round
+
+                # save to the result
             y_ti_pseudo_keep.extend(list(y_pred_sign_keep))
             y_ti_pseudo_left.extend(list(y_pred_sign_left))
             x_ti_keep.extend(list(x_ti_sign_keep))
@@ -441,12 +449,17 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, mod
         y_train = np.concatenate((y_train, y_pred_keep), axis=0)
         y_pred_store += y_pred_keep
         y_test_store += [y_test[i] for i in keep_index]
-        # print('total:', len(y_pred_keep), 'accuracy',
-        #       round(accuracy_score(y_pred_keep, [y_test[i] for i in keep_index]), 2),
-        #       'true_true', sum([y_test[i] for i in keep_index]),
-        #       'min_P', round(max([val[1] for val in y_prob_P]), 2),
-        #       'min_N', round(min([val[1] for val in y_prob_N]), 2),
-        #       )
+
+        # yz added try except
+        try:
+            print('total:', len(y_pred_keep), 'accuracy',
+                  round(accuracy_score(y_pred_keep, [y_test[i] for i in keep_index]), 2),
+                  'true_true', sum([y_test[i] for i in keep_index]),
+                  'min_P', round(max([val[1] for val in y_prob_P]), 2),
+                  'min_N', round(min([val[1] for val in y_prob_N]), 2),
+                  )
+        except:
+            pass
         X_test = [X_test[i] for i in not_keep_index]
         y_test = [y_test[i] for i in not_keep_index]
         if X_test == previous_r_target:
