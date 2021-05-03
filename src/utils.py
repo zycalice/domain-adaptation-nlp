@@ -363,6 +363,7 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
                 x_ti_sign_left = x_ti_sign[rank >= threshold]
                 y_pred_sign_keep = y_pred_sign[rank < threshold]  # keep top n for model training
                 y_pred_sign_left = y_pred_sign[rank >= threshold]  # not selected in this round
+
             # save to the result
             y_ti_pseudo_keep.extend(list(y_pred_sign_keep))
             y_ti_pseudo_left.extend(list(y_pred_sign_left))
