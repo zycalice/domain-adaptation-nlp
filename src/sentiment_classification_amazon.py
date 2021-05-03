@@ -3,7 +3,8 @@ import json
 from utils import *
 from sklearn.linear_model import LogisticRegression
 
-def run_yz_version():
+
+def run_check_version():
     # initiate.
     with open("../data/amazon_reviews/amazon_4.pickle", "rb") as fr:
         all_data = pickle.load(fr)
@@ -28,7 +29,7 @@ def run_yz_version():
         json.dump(accuracies_all_domains, outfile, indent=4)
 
 
-def run_jc_version():
+def run_main_version():
     # initiate.
     with open("../data/amazon_reviews/amazon_4.pickle", "rb") as fr:
         all_data = pickle.load(fr)
@@ -91,5 +92,5 @@ if __name__ == '__main__':
     # with open("../data/amazon_reviews/amazon_4.pickle", "rb") as fr:
     #     all_data = pickle.load(fr)
 
-    run_yz_version()
+    run_check_version()
 
