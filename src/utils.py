@@ -322,7 +322,7 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
     x_ti = np.array(x_ti)
 
     # initiate values
-    signs = y_pred >= 0.5
+    signs = y_prob_ti >= 0.5
     y_ti_pseudo_keep = []
     y_ti_pseudo_left = []
     x_ti_keep = []
@@ -349,20 +349,21 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
             order = np.argsort(y_prob_sign)
             rank = np.argsort(order)
 
-            if not s:  # if not s then produce better result?
+            # if sign = True, means positive, the larger the rank the better
+            if s:
                 threshold = len(rank) - keep_n
                 x_ti_sign_keep = x_ti_sign[rank >= threshold]
                 x_ti_sign_left = x_ti_sign[rank < threshold]
                 y_pred_sign_keep = y_pred_sign[rank >= threshold]  # keep top n for model training
                 y_pred_sign_left = y_pred_sign[rank < threshold]  # not selected in this round
+            # if sign = False, means negative, the lower the rank the better
             else:
                 threshold = keep_n
                 x_ti_sign_keep = x_ti_sign[rank < threshold]
                 x_ti_sign_left = x_ti_sign[rank >= threshold]
                 y_pred_sign_keep = y_pred_sign[rank < threshold]  # keep top n for model training
                 y_pred_sign_left = y_pred_sign[rank >= threshold]  # not selected in this round
-
-                # save to the result
+            # save to the result
             y_ti_pseudo_keep.extend(list(y_pred_sign_keep))
             y_ti_pseudo_left.extend(list(y_pred_sign_left))
             x_ti_keep.extend(list(x_ti_sign_keep))
