@@ -310,11 +310,13 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
 
 def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
                                few_shot_size=0):
-    # 100
+    # get predictions
     base_model = model
     model.fit(x_source, y_source)
     y_prob_ti = base_model.predict_proba(x_ti)[:, 0]
     y_pred = base_model.predict(x_ti)
+
+    # change to arrays
     x_source = np.array(x_source)
     y_source = np.array(y_source)
     x_ti = np.array(x_ti)
@@ -332,27 +334,35 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
     x_ti_p = x_ti[signs]
     x_ti_n = x_ti[~signs]
     keep_n = min(len(x_ti_p), len(x_ti_n), top_n)
-    print("keep", keep_n)
-
+    print("\nkeep", keep_n)
+    
+    # continue only if the keep pool is greater than 0
     if keep_n > 0:
         for s in list(set(signs)):
+            # subset data based on negative and positive
             y_pred_sign = y_pred[signs == s]
             y_prob_sign = y_prob_ti[signs == s]
-            print("Total target len:", len(y_pred), "Total " + str(s), len(y_pred_sign))
             x_ti_sign = x_ti[signs == s]
+            print("Total target len:", len(y_pred), ";", str(s) + " len:", len(y_pred_sign))
+
+            # find ranks
             order = np.argsort(y_prob_sign)
             rank = np.argsort(order)
-            # print(s, len(x_ti_sign))
             threshold = len(rank) - keep_n
             x_ti_sign_keep = x_ti_sign[rank >= threshold]
             x_ti_sign_left = x_ti_sign[rank < threshold]
             y_pred_sign_keep = y_pred_sign[rank >= threshold]  # keep top n for model training
             y_pred_sign_left = y_pred_sign[rank < threshold]  # not selected in this round
 
+            # save to the result
             y_ti_pseudo_keep.extend(list(y_pred_sign_keep))
             y_ti_pseudo_left.extend(list(y_pred_sign_left))
             x_ti_keep.extend(list(x_ti_sign_keep))
             x_ti_left.extend(list(x_ti_sign_left))
+
+        print("Combined keep and left for checking:",
+              "y_keep_len, x_keep_len:", (len(y_ti_pseudo_keep), len(x_ti_keep)),
+              "y_left_len, x_left_len:", (len(y_ti_pseudo_left), len(x_ti_left)))
 
         x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
         y_source_updated = np.concatenate((y_source, y_ti_pseudo_keep), 0)
@@ -378,7 +388,7 @@ def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_
         x_source, y_source, x_target, y_target = pseudo_label_balanced_conf(
             x_source, y_source, x_target, y_target, base_model, top_n, few_shot_size
         )
-        print("x_target", len(x_target))
+        print("Total target len after this iteration:", len(x_target))
 
     # calculate accuracy
     s2t_score = base_model.fit(x_source_raw, y_source_raw).score(x_target_raw, y_target_raw)
