@@ -309,7 +309,8 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
 # Balanced conf.
 
 def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
-                               few_shot_size=0):  # y_ti and few_shot_size not used currently
+                               few_shot=False):
+
     # get predictions
     base_model = model
     model.fit(x_source, y_source)
@@ -320,6 +321,10 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
     x_source = np.array(x_source)
     y_source = np.array(y_source)
     x_ti = np.array(x_ti)
+
+    # group variables
+    targets = [(i, prob, x_ti[i], y_ti[i]) for i, prob in enumerate(y_prob_ti)]
+    sorted_targets = sorted(targets, key=lambda x: x[1])
 
     # initiate values
     signs = y_prob_ti >= 0.5
@@ -343,6 +348,7 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
             y_pred_sign = y_pred[signs == s]
             y_prob_sign = y_prob_ti[signs == s]
             x_ti_sign = x_ti[signs == s]
+            y_ti_sign = y_ti[signs == s]
             print("Total target len:", len(y_pred), ";", str(s) + " len:", len(y_pred_sign))
 
             # find ranks
@@ -356,6 +362,7 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
                 x_ti_sign_left = x_ti_sign[rank < threshold]
                 y_pred_sign_keep = y_pred_sign[rank >= threshold]  # keep top n for model training
                 y_pred_sign_left = y_pred_sign[rank < threshold]  # not selected in this round
+
             # if sign = False, means negative, the lower the rank the better
             else:
                 threshold = keep_n
@@ -364,11 +371,16 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
                 y_pred_sign_keep = y_pred_sign[rank < threshold]  # keep top n for model training
                 y_pred_sign_left = y_pred_sign[rank >= threshold]  # not selected in this round
 
+            if few_shot:
+                idx = random.sample(list(np.arrange(len(x_ti_sign_keep))), 1)
+                x_ti_fs, y_ti_fs = x_ti_sign_keep[idx], y_ti_sign_keep[idx]  # to update to index
+
             # save to the result
             y_ti_pseudo_keep.extend(list(y_pred_sign_keep))
             y_ti_pseudo_left.extend(list(y_pred_sign_left))
             x_ti_keep.extend(list(x_ti_sign_keep))
             x_ti_left.extend(list(x_ti_sign_left))
+
 
         print("Combined keep and left for checking:",
               "y_keep_len, x_keep_len:", (len(y_ti_pseudo_keep), len(x_ti_keep)),
@@ -382,7 +394,7 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
 
 def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model,
                                            data_size, top_n,
-                                           few_shot_size=0):
+                                           few_shot=False):
     # initiate values
     data_size = min(len(x_source_raw), len(x_target_raw), data_size)
     print(data_size)
@@ -396,7 +408,7 @@ def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_
     # repeat self-train until all target data are computed
     while len(x_target) > 0:
         x_source, y_source, x_target, y_target = pseudo_label_balanced_conf(
-            x_source, y_source, x_target, y_target, base_model, top_n, few_shot_size
+            x_source, y_source, x_target, y_target, base_model, top_n, few_shot
         )
         print("Total target len after this iteration:", len(x_target))
 
@@ -434,17 +446,17 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, mod
         y_prob = lr_clf.predict_proba(X_test)[:, 0]
         y_prob = [(i, val, y_pred[i]) for i, val in enumerate(y_prob)]
         # pos and neg
-        y_prob_P = [val for val in y_prob if val[1] < 0.5]
-        y_prob_P = sorted(y_prob_P, key=lambda x: x[1])
+        y_prob_neg = [val for val in y_prob if val[1] < 0.5]
+        y_prob_neg = sorted(y_prob_neg, key=lambda x: x[1])
         # y_prob_P = sorted(y_prob_P, key=lambda x: x[1], reverse=True)
-        print(y_prob_P)
-        y_prob_P = y_prob_P[:top_n]  # YZ: here is 0.00003, XXX
-        y_prob_N = [val for val in y_prob if val[1] >= 0.5]
-        y_prob_N = sorted(y_prob_N, key=lambda x: x[1], reverse=True)
+        print(y_prob_neg)
+        y_prob_neg = y_prob_neg[:top_n]  # YZ: here is 0.00003, XXX
+        y_prob_pos = [val for val in y_prob if val[1] >= 0.5]
+        y_prob_pos = sorted(y_prob_pos, key=lambda x: x[1], reverse=True)
         # y_prob_N = sorted(y_prob_N, key=lambda x: x[1])
-        print(y_prob_N)  # YZ: here is 0.99, XXX
-        y_prob_N = y_prob_N[:top_n]
-        keep_index = [val[0] for val in y_prob_P] + [val[0] for val in y_prob_N]
+        print(y_prob_pos)  # YZ: here is 0.99, XXX
+        y_prob_pos = y_prob_pos[:top_n]
+        keep_index = [val[0] for val in y_prob_neg] + [val[0] for val in y_prob_pos]
         not_keep_index = [i for i in range(len(y_pred)) if i not in keep_index]
         if len(keep_index) + len(not_keep_index) != len(y_pred):
             raise ValueError('top_n error!')
@@ -461,8 +473,8 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, mod
             print('total:', len(y_pred_keep), 'accuracy',
                   round(accuracy_score(y_pred_keep, [y_test[i] for i in keep_index]), 2),
                   'true_true', sum([y_test[i] for i in keep_index]),
-                  'min_P', round(max([val[1] for val in y_prob_P]), 2),
-                  'min_N', round(min([val[1] for val in y_prob_N]), 2),
+                  'min_P', round(max([val[1] for val in y_prob_neg]), 2),
+                  'min_N', round(min([val[1] for val in y_prob_pos]), 2),
                   )
         except:
             pass

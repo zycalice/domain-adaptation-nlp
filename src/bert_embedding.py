@@ -1,5 +1,6 @@
 import json
 from transformers import DistilBertTokenizer, DistilBertModel
+from transformers import BertTokenizer, BertModel
 from src.utils import *
 
 
@@ -34,6 +35,8 @@ if __name__ == '__main__':
     data_path = "../data/"
     tokenizer_d = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
     model_d = DistilBertModel.from_pretrained('distilbert-base-uncased')
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    model = BertModel.from_pretrained('bert-base-uncased')
 
     # Classification.
     domains = ["tw", "az", "mv", "fi"]
