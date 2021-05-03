@@ -319,33 +319,44 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
     y_source = np.array(y_source)
     x_ti = np.array(x_ti)
 
-    # rank the probabilities and select top n to include in predictions in source
+    # initiate values
     signs = y_pred >= 0.5
     y_ti_pseudo_keep = []
     y_ti_pseudo_left = []
     x_ti_keep = []
     x_ti_left = []
+    x_source_updated = x_source.copy()
+    y_source_updated = y_source.copy()
 
-    for s in list(set(signs)):
-        y_pred_sign = y_pred[signs == s]
-        y_prob_sign = y_prob_ti[signs == s]
-        x_ti_sign = x_ti[signs == s]
-        order = np.argsort(y_prob_sign)
-        rank = np.argsort(order)
-        # print(s, len(x_ti_sign))
-        x_ti_sign_keep = x_ti_sign[rank >= (len(rank) - top_n)]
-        x_ti_sign_left = x_ti_sign[rank < (len(rank) - top_n)]
-        y_pred_sign_keep = y_pred_sign[rank >= len(rank) - top_n]  # keep top n for model training
-        y_pred_sign_left = y_pred_sign[rank < len(rank) - top_n]  # not selected in this round
-        print(len(x_ti_sign_keep), len(x_ti_sign_keep))
+    # separate n and p pools
+    x_ti_p = x_ti[signs]
+    x_ti_n = x_ti[~signs]
+    keep_n = min(len(x_ti_p), len(x_ti_n), top_n)
+    print("keep", keep_n)
 
-        y_ti_pseudo_keep.extend(list(y_pred_sign_keep))
-        y_ti_pseudo_left.extend(list(y_pred_sign_left))
-        x_ti_keep.extend(list(x_ti_sign_keep))
-        x_ti_left.extend(list(x_ti_sign_left))
+    if keep_n > 0:
+        for s in list(set(signs)):
+            y_pred_sign = y_pred[signs == s]
+            y_prob_sign = y_prob_ti[signs == s]
+            print("Total target len:", len(y_pred), "Total " + str(s), len(y_pred_sign))
+            x_ti_sign = x_ti[signs == s]
+            order = np.argsort(y_prob_sign)
+            rank = np.argsort(order)
+            # print(s, len(x_ti_sign))
+            threshold = len(rank) - keep_n
+            x_ti_sign_keep = x_ti_sign[rank >= threshold]
+            x_ti_sign_left = x_ti_sign[rank < threshold]
+            y_pred_sign_keep = y_pred_sign[rank >= threshold]  # keep top n for model training
+            y_pred_sign_left = y_pred_sign[rank < threshold]  # not selected in this round
 
-    x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
-    y_source_updated = np.concatenate((y_source, y_ti_pseudo_keep), 0)
+            y_ti_pseudo_keep.extend(list(y_pred_sign_keep))
+            y_ti_pseudo_left.extend(list(y_pred_sign_left))
+            x_ti_keep.extend(list(x_ti_sign_keep))
+            x_ti_left.extend(list(x_ti_sign_left))
+
+        x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
+        y_source_updated = np.concatenate((y_source, y_ti_pseudo_keep), 0)
+
     return x_source_updated, y_source_updated, x_ti_left, y_ti_pseudo_left
 
 
@@ -363,10 +374,11 @@ def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_
     x_target, y_target = x_target_raw.copy(), y_target_raw.copy()
 
     # repeat self-train until all target data are computed
-    while len(x_target) >= 100:
+    while len(x_target) > 0:
         x_source, y_source, x_target, y_target = pseudo_label_balanced_conf(
             x_source, y_source, x_target, y_target, base_model, top_n, few_shot_size
         )
+        print("x_target", len(x_target))
 
     # calculate accuracy
     s2t_score = base_model.fit(x_source_raw, y_source_raw).score(x_target_raw, y_target_raw)
@@ -377,16 +389,12 @@ def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_
     return s2s_score, t2t_score, s2t_score, gradual_score
 
 
-
 #######################################################################################################################
 def cos_dist(A, B):
     return 1 - (np.dot(A, B) / (np.norm(A) * np.norm(B)))
 
 
 def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, model, num_i):
-    #######################################
-    ###########    Standard        ########
-    #######################################
     top_n = num_i
     original_score = model.fit(train_features, train_labels).score(test_features, test_labels)
 
@@ -423,12 +431,12 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, mod
         y_train = np.concatenate((y_train, y_pred_keep), axis=0)
         y_pred_store += y_pred_keep
         y_test_store += [y_test[i] for i in keep_index]
-        print('total:', len(y_pred_keep), 'accuracy',
-              round(accuracy_score(y_pred_keep, [y_test[i] for i in keep_index]), 2),
-              'true_true', sum([y_test[i] for i in keep_index]),
-              'min_P', round(max([val[1] for val in y_prob_P]), 2),
-              'min_N', round(min([val[1] for val in y_prob_N]), 2),
-              )
+        # print('total:', len(y_pred_keep), 'accuracy',
+        #       round(accuracy_score(y_pred_keep, [y_test[i] for i in keep_index]), 2),
+        #       'true_true', sum([y_test[i] for i in keep_index]),
+        #       'min_P', round(max([val[1] for val in y_prob_P]), 2),
+        #       'min_N', round(min([val[1] for val in y_prob_N]), 2),
+        #       )
         X_test = [X_test[i] for i in not_keep_index]
         y_test = [y_test[i] for i in not_keep_index]
         if X_test == previous_r_target:
@@ -449,78 +457,78 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, mod
     return lm_score, gradual_score
 
 
-def S2T_p4_adj_blc_old(train_features, train_labels, test_features, test_labels, base_model, top_n,
-                       few_shot_size=0):
-    top_n = top_n
-    lr_original = base_model
-    original_score = lr_original.fit(train_features, train_labels).score(test_features, test_labels)
-
-    # gradual training
-    x_source = train_features.copy()
-    y_source = train_labels.copy()
-    x_ti = test_features.copy()
-    y_ti = test_labels.copy()
-    y_ti_reordered = []
-    y_pred_store = []
-    y_test_store = []
-    previous_r_target = []
-
-    while len(x_ti) > 0:
-
-        # randomly select a few labels
-        if few_shot_size != 0:
-            idx = np.arange(len(y_ti))
-            selected_idx = np.array(random.sample(list(idx), max(1, int(few_shot_size * len(y_ti)))))
-            # print(selected_idx)
-            # print(type(y_ti))
-            selected_label = np.array(y_ti)[selected_idx]
-            selected_features = np.array(x_ti)[selected_idx]
-            x_source = np.concatenate((x_source, selected_features), 0)
-            y_source = np.concatenate((y_source, selected_label), 0)
-            x_ti = np.delete(np.array(x_ti), selected_idx, 0)
-            y_ti = np.delete(np.array(y_ti), selected_idx, 0)
-            y_ti_reordered.extend(y_ti)
-
-        lr_clf = base_model
-        lr_clf.fit(x_source, y_source)
-
-        y_pred = lr_clf.predict(x_ti)
-        y_prob = lr_clf.predict_proba(x_ti)[:, 0]
-        y_prob = [(i, val, y_pred[i]) for i, val in enumerate(y_prob)]
-        y_prob_p = [val for val in y_prob if val[1] < 0.5]
-        y_prob_p = sorted(y_prob_p, key=lambda x: x[1])
-        y_prob_p = [val[0] for val in y_prob_p[:top_n]]
-        y_prob_n = [val for val in y_prob if val[1] >= 0.5]
-        y_prob_n = sorted(y_prob_n, key=lambda x: x[1], reverse=True)
-        y_prob_n = [val[0] for val in y_prob_n[:top_n]]
-        keep_index = y_prob_p + y_prob_n
-        not_keep_index = [i for i in range(len(y_pred)) if i not in keep_index]
-        if len(keep_index) + len(not_keep_index) != len(y_pred):
-            raise ValueError('top_n error!')
-
-        x_test_keep = [x_ti[i] for i in keep_index]
-        y_pred_keep = [y_pred[i] for i in keep_index]
-        x_source = np.concatenate((x_source, x_test_keep), axis=0)
-        y_source = np.concatenate((y_source, y_pred_keep), axis=0)
-        y_pred_store += y_pred_keep
-        y_test_store += [y_ti[i] for i in keep_index]
-        print('total:', len(y_pred_keep), 'pred_true', sum(y_pred_keep), 'true_true',
-              sum([y_ti[i] for i in keep_index]))
-        x_ti = [x_ti[i] for i in not_keep_index]
-        y_ti = [y_ti[i] for i in not_keep_index]
-        if x_ti == previous_r_target:
-            break
-        previous_r_target = x_ti[:]
-    if len(y_pred_store) != len(y_ti_reordered):
-        raise ValueError('output dimension error!')
-    output_score = [y_pred_store[i] == y_test_store[i] for i in range(len(y_test_store))]
-    gradual_score = sum(output_score) / len(output_score)
-
-    lr_lm = base_model
-    lr_lm.fit(x_source, y_source)
-    y_pred = lr_lm.predict(test_features)
-    lm_score = [y_pred[i] == y_ti_reordered[i] for i in range(len(y_ti_reordered))]
-    lm_score = sum(lm_score) / len(lm_score)
-    print(lm_score, gradual_score)
-
-    return original_score, lm_score, gradual_score
+# def S2T_p4_adj_blc_old(train_features, train_labels, test_features, test_labels, base_model, top_n,
+#                        few_shot_size=0):
+#     top_n = top_n
+#     lr_original = base_model
+#     original_score = lr_original.fit(train_features, train_labels).score(test_features, test_labels)
+#
+#     # gradual training
+#     x_source = train_features.copy()
+#     y_source = train_labels.copy()
+#     x_ti = test_features.copy()
+#     y_ti = test_labels.copy()
+#     y_ti_reordered = []
+#     y_pred_store = []
+#     y_test_store = []
+#     previous_r_target = []
+#
+#     while len(x_ti) > 0:
+#
+#         # randomly select a few labels
+#         if few_shot_size != 0:
+#             idx = np.arange(len(y_ti))
+#             selected_idx = np.array(random.sample(list(idx), max(1, int(few_shot_size * len(y_ti)))))
+#             # print(selected_idx)
+#             # print(type(y_ti))
+#             selected_label = np.array(y_ti)[selected_idx]
+#             selected_features = np.array(x_ti)[selected_idx]
+#             x_source = np.concatenate((x_source, selected_features), 0)
+#             y_source = np.concatenate((y_source, selected_label), 0)
+#             x_ti = np.delete(np.array(x_ti), selected_idx, 0)
+#             y_ti = np.delete(np.array(y_ti), selected_idx, 0)
+#             y_ti_reordered.extend(y_ti)
+#
+#         lr_clf = base_model
+#         lr_clf.fit(x_source, y_source)
+#
+#         y_pred = lr_clf.predict(x_ti)
+#         y_prob = lr_clf.predict_proba(x_ti)[:, 0]
+#         y_prob = [(i, val, y_pred[i]) for i, val in enumerate(y_prob)]
+#         y_prob_p = [val for val in y_prob if val[1] < 0.5]
+#         y_prob_p = sorted(y_prob_p, key=lambda x: x[1])
+#         y_prob_p = [val[0] for val in y_prob_p[:top_n]]
+#         y_prob_n = [val for val in y_prob if val[1] >= 0.5]
+#         y_prob_n = sorted(y_prob_n, key=lambda x: x[1], reverse=True)
+#         y_prob_n = [val[0] for val in y_prob_n[:top_n]]
+#         keep_index = y_prob_p + y_prob_n
+#         not_keep_index = [i for i in range(len(y_pred)) if i not in keep_index]
+#         if len(keep_index) + len(not_keep_index) != len(y_pred):
+#             raise ValueError('top_n error!')
+#
+#         x_test_keep = [x_ti[i] for i in keep_index]
+#         y_pred_keep = [y_pred[i] for i in keep_index]
+#         x_source = np.concatenate((x_source, x_test_keep), axis=0)
+#         y_source = np.concatenate((y_source, y_pred_keep), axis=0)
+#         y_pred_store += y_pred_keep
+#         y_test_store += [y_ti[i] for i in keep_index]
+#         print('total:', len(y_pred_keep), 'pred_true', sum(y_pred_keep), 'true_true',
+#               sum([y_ti[i] for i in keep_index]))
+#         x_ti = [x_ti[i] for i in not_keep_index]
+#         y_ti = [y_ti[i] for i in not_keep_index]
+#         if x_ti == previous_r_target:
+#             break
+#         previous_r_target = x_ti[:]
+#     if len(y_pred_store) != len(y_ti_reordered):
+#         raise ValueError('output dimension error!')
+#     output_score = [y_pred_store[i] == y_test_store[i] for i in range(len(y_test_store))]
+#     gradual_score = sum(output_score) / len(output_score)
+#
+#     lr_lm = base_model
+#     lr_lm.fit(x_source, y_source)
+#     y_pred = lr_lm.predict(test_features)
+#     lm_score = [y_pred[i] == y_ti_reordered[i] for i in range(len(y_ti_reordered))]
+#     lm_score = sum(lm_score) / len(lm_score)
+#     print(lm_score, gradual_score)
+#
+#     return original_score, lm_score, gradual_score
