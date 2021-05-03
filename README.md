@@ -11,7 +11,7 @@ This data contains 2000 samples of the four categories in the amazon reviews dat
 * Movies and TV
 
 For each domain in the data, it contains three items: 
-* [0] bert embeddings
+* [0] bert embeddings ([CLS] layer)
 * [1] y labels (1 means negative and 2 means positive)
 * [2] domain name
 
