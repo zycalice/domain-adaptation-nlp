@@ -2,97 +2,81 @@
     "Home_and_Kitchen.train_to_Home_and_Kitchen.train": [
         0.93,
         0.93,
-        0.93,
-        0.9255
+        0.93
     ],
     "Home_and_Kitchen.train_to_Movies_and_TV.train": [
-        0.93,
-        0.9265,
         0.878,
-        0.9035
+        0.8775,
+        0.8785
     ],
     "Home_and_Kitchen.train_to_Electronics.train": [
-        0.93,
-        0.915,
         0.887,
-        0.8995
+        0.885,
+        0.887
     ],
     "Home_and_Kitchen.train_to_Books.train": [
-        0.93,
-        0.9415,
         0.8965,
-        0.9145
+        0.906,
+        0.8975
     ],
     "Movies_and_TV.train_to_Home_and_Kitchen.train": [
-        0.9265,
-        0.93,
         0.868,
-        0.892
+        0.8725,
+        0.868
     ],
     "Movies_and_TV.train_to_Movies_and_TV.train": [
         0.9265,
-        0.9265,
-        0.9265,
+        0.926,
         0.9265
     ],
     "Movies_and_TV.train_to_Electronics.train": [
-        0.9265,
-        0.915,
         0.8155,
-        0.8905
+        0.81,
+        0.8155
     ],
     "Movies_and_TV.train_to_Books.train": [
-        0.9265,
-        0.9415,
         0.9165,
-        0.923
+        0.919,
+        0.9165
     ],
     "Electronics.train_to_Home_and_Kitchen.train": [
-        0.915,
-        0.93,
         0.917,
-        0.916
+        0.918,
+        0.917
     ],
     "Electronics.train_to_Movies_and_TV.train": [
-        0.915,
-        0.9265,
         0.902,
-        0.91
+        0.9065,
+        0.902
     ],
     "Electronics.train_to_Electronics.train": [
         0.915,
-        0.915,
-        0.915,
-        0.9105
+        0.9155,
+        0.915
     ],
     "Electronics.train_to_Books.train": [
-        0.915,
-        0.9415,
         0.8925,
-        0.9185
+        0.9005,
+        0.8925
     ],
     "Books.train_to_Home_and_Kitchen.train": [
-        0.9415,
-        0.93,
         0.848,
-        0.8885
+        0.8505,
+        0.8475
     ],
     "Books.train_to_Movies_and_TV.train": [
-        0.9415,
-        0.9265,
         0.902,
-        0.913
+        0.9035,
+        0.902
     ],
     "Books.train_to_Electronics.train": [
-        0.9415,
-        0.915,
         0.8045,
-        0.88
+        0.806,
+        0.8045
     ],
     "Books.train_to_Books.train": [
         0.9415,
         0.9415,
-        0.9415,
-        0.94
+        0.9415
     ]
 }

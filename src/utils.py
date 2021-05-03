@@ -349,7 +349,7 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
             order = np.argsort(y_prob_sign)
             rank = np.argsort(order)
 
-            if s:
+            if not s:  # if not s then produce better result?
                 threshold = len(rank) - keep_n
                 x_ti_sign_keep = x_ti_sign[rank >= threshold]
                 x_ti_sign_left = x_ti_sign[rank < threshold]
@@ -434,9 +434,13 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, mod
         # pos and neg
         y_prob_P = [val for val in y_prob if val[1] < 0.5]
         y_prob_P = sorted(y_prob_P, key=lambda x: x[1])
-        y_prob_P = y_prob_P[:top_n]
+        # y_prob_P = sorted(y_prob_P, key=lambda x: x[1], reverse=True)
+        print(y_prob_P)
+        y_prob_P = y_prob_P[:top_n]  # YZ: here is 0.00003, XXX
         y_prob_N = [val for val in y_prob if val[1] >= 0.5]
         y_prob_N = sorted(y_prob_N, key=lambda x: x[1], reverse=True)
+        # y_prob_N = sorted(y_prob_N, key=lambda x: x[1])
+        print(y_prob_N)  # YZ: here is 0.99, XXX
         y_prob_N = y_prob_N[:top_n]
         keep_index = [val[0] for val in y_prob_P] + [val[0] for val in y_prob_N]
         not_keep_index = [i for i in range(len(y_pred)) if i not in keep_index]
@@ -477,7 +481,7 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, mod
     lm_score = sum(lm_score) / len(lm_score)
     print(lm_score, gradual_score)
 
-    return lm_score, gradual_score
+    return original_score, lm_score, gradual_score
 
 
 # def S2T_p4_adj_blc_old(train_features, train_labels, test_features, test_labels, base_model, top_n,
