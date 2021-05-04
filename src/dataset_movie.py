@@ -4,7 +4,7 @@ from os import listdir
 from os.path import isfile, join
 from sklearn.model_selection import train_test_split
 from src.utils import *
-
+from src.bert_embedding import *
 
 if __name__ == '__main__':
     data_main_path = "../data/movie_reviews/aclImdb/"
@@ -51,3 +51,10 @@ if __name__ == '__main__':
 
     # self define train test with shuffle
     X_train_val, X_test, y_train_val, y_test = train_test_split(all_data, all_label, test_size=0.33, random_state=7)
+    bert_train = tokenize_encode_bert_sentences(tokenizer, model, list(X_train_val[:2000]),
+                                                "../outputs/" + "encoded_stf_movie_train_2000")
+    bert_test = tokenize_encode_bert_sentences(tokenizer, model, list(X_test[:2000]),
+                                               "../outputs/" + "encoded_stf_movie_train_2000")
+
+    aclimbd_array = np.array([bert_train, y_train_val[:2000], "aclimbd"])
+    np.save(aclimbd_array, data_main_path + "movie_review.npy")

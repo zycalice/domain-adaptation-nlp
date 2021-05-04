@@ -310,12 +310,11 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
 
 def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
                                few_shot=False):
-
     # get predictions
     base_model = model
     model.fit(x_source, y_source)
     y_prob_ti = base_model.predict_proba(x_ti)[:, 0]
-    y_pred = base_model.predict(x_ti)
+    y_pred_ti = base_model.predict(x_ti)
 
     # change to arrays
     x_source = np.array(x_source)
@@ -323,73 +322,16 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
     x_ti = np.array(x_ti)
 
     # group variables
-    targets = [(i, prob, x_ti[i], y_ti[i]) for i, prob in enumerate(y_prob_ti)]
+    targets = [(i, prob, x_ti[i], y_ti[i], y_pred_ti[i]) for i, prob in enumerate(y_prob_ti)]
     sorted_targets = sorted(targets, key=lambda x: x[1])
+    keep_n = min(sum(y_prob_ti < 0.5), sum(y_prob_ti >= 0.5), top_n)
+    targets_keep = sorted_targets[:keep_n] + sorted_targets[-keep_n:]  # top 100 and bottom 100
+    targets_left = sorted_targets[keep_n:-keep_n]
 
-    # initiate values
-    signs = y_prob_ti >= 0.5
-    y_ti_pseudo_keep = []
-    y_ti_pseudo_left = []
-    x_ti_keep = []
-    x_ti_left = []
-    x_source_updated = x_source.copy()
-    y_source_updated = y_source.copy()
+    x_source_updated = np.concatenate((x_source, np.array([t[2] for t in targets_keep])), 0)
+    y_source_updated = np.concatenate((y_source, np.array([t[4] for t in targets_keep])), 0)
 
-    # separate n and p pools
-    x_ti_p = x_ti[signs]
-    x_ti_n = x_ti[~signs]
-    keep_n = min(len(x_ti_p), len(x_ti_n), top_n)
-    print("\nkeep", keep_n)
-    
-    # continue only if the keep pool is greater than 0
-    if keep_n > 0:
-        for s in list(set(signs)):
-            # subset data based on negative and positive
-            y_pred_sign = y_pred[signs == s]
-            y_prob_sign = y_prob_ti[signs == s]
-            x_ti_sign = x_ti[signs == s]
-            y_ti_sign = y_ti[signs == s]
-            print("Total target len:", len(y_pred), ";", str(s) + " len:", len(y_pred_sign))
-
-            # find ranks
-            order = np.argsort(y_prob_sign)
-            rank = np.argsort(order)
-
-            # if sign = True, means positive, the larger the rank the better
-            if s:
-                threshold = len(rank) - keep_n
-                x_ti_sign_keep = x_ti_sign[rank >= threshold]
-                x_ti_sign_left = x_ti_sign[rank < threshold]
-                y_pred_sign_keep = y_pred_sign[rank >= threshold]  # keep top n for model training
-                y_pred_sign_left = y_pred_sign[rank < threshold]  # not selected in this round
-
-            # if sign = False, means negative, the lower the rank the better
-            else:
-                threshold = keep_n
-                x_ti_sign_keep = x_ti_sign[rank < threshold]
-                x_ti_sign_left = x_ti_sign[rank >= threshold]
-                y_pred_sign_keep = y_pred_sign[rank < threshold]  # keep top n for model training
-                y_pred_sign_left = y_pred_sign[rank >= threshold]  # not selected in this round
-
-            if few_shot:
-                idx = random.sample(list(np.arrange(len(x_ti_sign_keep))), 1)
-                x_ti_fs, y_ti_fs = x_ti_sign_keep[idx], y_ti_sign_keep[idx]  # to update to index
-
-            # save to the result
-            y_ti_pseudo_keep.extend(list(y_pred_sign_keep))
-            y_ti_pseudo_left.extend(list(y_pred_sign_left))
-            x_ti_keep.extend(list(x_ti_sign_keep))
-            x_ti_left.extend(list(x_ti_sign_left))
-
-
-        print("Combined keep and left for checking:",
-              "y_keep_len, x_keep_len:", (len(y_ti_pseudo_keep), len(x_ti_keep)),
-              "y_left_len, x_left_len:", (len(y_ti_pseudo_left), len(x_ti_left)))
-
-        x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
-        y_source_updated = np.concatenate((y_source, y_ti_pseudo_keep), 0)
-
-    return x_source_updated, y_source_updated, x_ti_left, y_ti_pseudo_left
+    return x_source_updated, y_source_updated, [t[2] for t in targets_left], [t[4] for t in targets_left]
 
 
 def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model,

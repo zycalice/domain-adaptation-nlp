@@ -1,8 +1,10 @@
 # domain-adaptation-nlp
 
 ## Dataset
-Our dataset can be downloaded [here](https://drive.google.com/file/d/1zq_ltCCvozTCrdGReCefkhgZR-ueszda/view?usp=sharing).
+Our amazon dataset can be downloaded [here](https://drive.google.com/file/d/1zq_ltCCvozTCrdGReCefkhgZR-ueszda/view?usp=sharing).
 Put this file in a folder called "data/amazon_reviews".
+
+Our movie dataset can be downloaded [here](TOADD)
 
 This data contains 2000 samples of the four categories in the amazon reviews data:
 * Books
