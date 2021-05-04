@@ -328,6 +328,7 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
     targets_keep = sorted_targets[:keep_n] + sorted_targets[-keep_n:]  # top 100 and bottom 100
     targets_left = sorted_targets[keep_n:-keep_n]
 
+    # update
     x_source_updated = np.concatenate((x_source, np.array([t[2] for t in targets_keep])), 0)
     y_source_updated = np.concatenate((y_source, np.array([t[4] for t in targets_keep])), 0)
 
