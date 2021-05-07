@@ -247,16 +247,13 @@ def pseudo_labeling_label_final_conf(x_source, y_source, x_ti, y_ti, model, conf
 
     if few_shot_size != 0:
         idx = np.arange(len(y_ti))
-        # print(len(x_ti), type(x_ti), x_ti.shape)
         selected_idx = np.array(random.sample(list(idx), max(1, int(few_shot_size * len(y_ti)))))
-        # print(selected_idx)
         selected_label = y_ti[selected_idx]
         selected_features = x_ti[selected_idx]
         x_source = np.concatenate((x_source, selected_features), 0)
         y_source = np.concatenate((y_source, selected_label), 0)
         x_ti = np.delete(np.array(x_ti), selected_idx, 0)
         y_ti = np.delete(np.array(y_ti), selected_idx, 0)
-        # print(len(x_ti), len(y_ti))
 
     # if no data past the conf requirement, lower the requirement by 0.1
     while len(x_ti_keep) == 0:
@@ -271,7 +268,6 @@ def pseudo_labeling_label_final_conf(x_source, y_source, x_ti, y_ti, model, conf
     y_pred = model.predict(x_ti_keep)
     x_source_updated = np.concatenate((x_source, x_ti_keep), 0)
     y_source_updated = np.concatenate((y_source, y_pred), 0)
-    # print(len(x_ti_not_keep))
     return x_source_updated, y_source_updated, y_pred, y_ti_keep, x_ti_not_keep, y_ti_not_keep
 
 
@@ -307,12 +303,27 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
 
 
 # Balanced conf.
+def self_train(x_source, y_source, x_ti, y_ti, base_model):
+    base_model.fit(x_source, y_source)
+    y_pred_ti = base_model.predict(x_ti)
+    base_model.fit(np.concatenate((x_source, x_ti), 0), np.concatenate((y_source, y_pred_ti), 0))
+    self_train_score = base_model.score(x_ti, y_ti)
+    return self_train_score
 
-def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
-                               few_shot=False):
+
+def fs_train(x_source, y_source, x_ti, y_ti, indexes, base_model):
+    x_source_fs_least = np.concatenate((x_source, x_ti[indexes]), 0)
+    y_source_fs_least = np.concatenate((y_source, y_ti[indexes]), 0)
+    x_target_fs_least = np.delete(x_ti, [indexes], 0)
+    y_target_fs_least = np.delete(y_ti, [indexes], 0)
+    print(x_source_fs_least.shape, y_source_fs_least.shape, x_target_fs_least.shape, y_target_fs_least.shape)
+    score = base_model.fit(x_source_fs_least, y_source_fs_least).score(x_target_fs_least, y_target_fs_least)
+    return score
+
+
+def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, base_model, top_n, few_shot=None):
     # get predictions
-    base_model = model
-    model.fit(x_source, y_source)
+    base_model.fit(x_source, y_source)
     y_prob_ti = base_model.predict_proba(x_ti)[:, 0]
     y_pred_ti = base_model.predict(x_ti)
 
@@ -327,17 +338,38 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, model, top_n,
     keep_n = min(sum(y_prob_ti < 0.5), sum(y_prob_ti >= 0.5), top_n)
     targets_keep = sorted_targets[:keep_n] + sorted_targets[-keep_n:]  # top 100 and bottom 100
     targets_left = sorted_targets[keep_n:-keep_n]
+    fs_idx = None
 
     # update
+    if few_shot is not None:
+        if few_shot == "random":
+            keep_idx = [t[0] for t in targets_keep]
+            fs_idx = random.choice(keep_idx)
+        if few_shot == "least_conf":
+            least_neg = sorted_targets[0]
+            least_pos = sorted_targets[-1]
+            if abs(least_neg[4] - 0.5) < abs(least_pos[4] - 0.5):
+                fs_idx = least_neg[0]
+            else:
+                fs_idx = least_pos[0]
+
+        targets_keep = [t for t in targets_keep if t[0] != fs_idx]
+        print(x_source.shape, y_source.shape)
+        x_source = np.concatenate((x_source, x_ti[fs_idx].reshape(1, -1)), 0)
+        print(x_source.shape, y_source.shape)
+        y_source = np.concatenate((y_source, [y_ti[fs_idx]]), 0)
+
     x_source_updated = np.concatenate((x_source, np.array([t[2] for t in targets_keep])), 0)
     y_source_updated = np.concatenate((y_source, np.array([t[4] for t in targets_keep])), 0)
+    x_ti_left = [t[2] for t in targets_left]
+    y_ti_left = [t[3] for t in targets_left]
 
-    return x_source_updated, y_source_updated, [t[2] for t in targets_left], [t[4] for t in targets_left]
+    return x_source_updated, y_source_updated, x_ti_left, y_ti_left, fs_idx
 
 
 def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model,
                                            data_size, top_n,
-                                           few_shot=False):
+                                           few_shot=None):
     # initiate values
     data_size = min(len(x_source_raw), len(x_target_raw), data_size)
     print(data_size)
@@ -349,19 +381,62 @@ def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_
     x_target, y_target = x_target_raw.copy(), y_target_raw.copy()
 
     # repeat self-train until all target data are computed
+    num_iter = 0
+    fs_indexes = []
     while len(x_target) > 0:
-        x_source, y_source, x_target, y_target = pseudo_label_balanced_conf(
+        x_source, y_source, x_target, y_target, fs_idx = pseudo_label_balanced_conf(
             x_source, y_source, x_target, y_target, base_model, top_n, few_shot
         )
+        num_iter += 1
+        fs_indexes.append(fs_idx)
         print("Total target len after this iteration:", len(x_target))
 
     # calculate accuracy
-    s2t_score = base_model.fit(x_source_raw, y_source_raw).score(x_target_raw, y_target_raw)
-    s2s_score = base_model.fit(x_source_raw, y_source_raw).score(x_source_raw, y_source_raw)
-    t2t_score = base_model.fit(x_target_raw, y_target_raw).score(x_target_raw, y_target_raw)
-    gradual_score = base_model.fit(x_source, y_source).score(x_target_raw, y_target_raw)
-    print(s2s_score, t2t_score, s2t_score, gradual_score)
-    return s2s_score, t2t_score, s2t_score, gradual_score
+    if few_shot is None:
+        s2t_score = base_model.fit(x_source_raw, y_source_raw).score(x_target_raw, y_target_raw)
+        s2s_score = base_model.fit(x_source_raw, y_source_raw).score(x_source_raw, y_source_raw)
+        t2t_score = base_model.fit(x_target_raw, y_target_raw).score(x_target_raw, y_target_raw)
+        self_train_score = self_train(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model)
+        gradual_score = base_model.fit(x_source, y_source).score(x_target_raw, y_target_raw)
+        print(s2s_score, t2t_score, s2t_score, gradual_score)
+
+        all_scores = {
+            's2s': s2s_score,
+            't2t': t2t_score,
+            's2t': s2t_score,
+            'self_train': self_train_score,
+            'gradual_self_train': gradual_score,
+            'num_iter': num_iter
+        }
+
+    else:
+        # fs using the same index
+        fs_same_idx_sc = fs_train(x_source_raw, y_source_raw, x_target_raw, y_target_raw, fs_indexes, base_model)
+
+        # fs using random labels
+        random_indexes = random.sample(list(np.arange(len(y_target_raw))), len(fs_indexes))
+        fs_random_idx_sc = fs_train(x_source_raw, y_source_raw, x_target_raw, y_target_raw, random_indexes, base_model)
+
+        # fs using the least confident labels
+        y_prob_abs = abs(base_model.fit(x_source_raw, y_source_raw).predict_proba(x_target_raw)[:, 0] - 0.5)
+        y_idx_prob_abs = [(i, e) for i, e in enumerate(y_prob_abs)]
+        y_idx_prob_abs = sorted(y_idx_prob_abs, key=lambda x: x[1])
+        least_indexes = [t[0] for t in y_idx_prob_abs[:len(fs_indexes)]]
+        fs_least_idx_sc = fs_train(x_source_raw, y_source_raw, x_target_raw, y_target_raw, least_indexes, base_model)
+
+        # gradual train score
+        x_target_fs_least = np.delete(x_target_raw, [fs_indexes], 0)
+        y_target_fs_least = np.delete(y_target_raw, [fs_indexes], 0)
+        gradual_score = base_model.fit(x_source, y_source).score(x_target_fs_least, y_target_fs_least)
+
+        all_scores = {
+            "fs_same_index": fs_same_idx_sc,
+            "fs_random_index": fs_random_idx_sc,
+            "fs_least_index": fs_least_idx_sc,
+            "fs_gradual_self_train": gradual_score,
+        }
+
+    return all_scores
 
 
 #######################################################################################################################
@@ -439,80 +514,3 @@ def S2T_p4_adj_blc(train_features, train_labels, test_features, test_labels, mod
     print(lm_score, gradual_score)
 
     return original_score, lm_score, gradual_score
-
-
-# def S2T_p4_adj_blc_old(train_features, train_labels, test_features, test_labels, base_model, top_n,
-#                        few_shot_size=0):
-#     top_n = top_n
-#     lr_original = base_model
-#     original_score = lr_original.fit(train_features, train_labels).score(test_features, test_labels)
-#
-#     # gradual training
-#     x_source = train_features.copy()
-#     y_source = train_labels.copy()
-#     x_ti = test_features.copy()
-#     y_ti = test_labels.copy()
-#     y_ti_reordered = []
-#     y_pred_store = []
-#     y_test_store = []
-#     previous_r_target = []
-#
-#     while len(x_ti) > 0:
-#
-#         # randomly select a few labels
-#         if few_shot_size != 0:
-#             idx = np.arange(len(y_ti))
-#             selected_idx = np.array(random.sample(list(idx), max(1, int(few_shot_size * len(y_ti)))))
-#             # print(selected_idx)
-#             # print(type(y_ti))
-#             selected_label = np.array(y_ti)[selected_idx]
-#             selected_features = np.array(x_ti)[selected_idx]
-#             x_source = np.concatenate((x_source, selected_features), 0)
-#             y_source = np.concatenate((y_source, selected_label), 0)
-#             x_ti = np.delete(np.array(x_ti), selected_idx, 0)
-#             y_ti = np.delete(np.array(y_ti), selected_idx, 0)
-#             y_ti_reordered.extend(y_ti)
-#
-#         lr_clf = base_model
-#         lr_clf.fit(x_source, y_source)
-#
-#         y_pred = lr_clf.predict(x_ti)
-#         y_prob = lr_clf.predict_proba(x_ti)[:, 0]
-#         y_prob = [(i, val, y_pred[i]) for i, val in enumerate(y_prob)]
-#         y_prob_p = [val for val in y_prob if val[1] < 0.5]
-#         y_prob_p = sorted(y_prob_p, key=lambda x: x[1])
-#         y_prob_p = [val[0] for val in y_prob_p[:top_n]]
-#         y_prob_n = [val for val in y_prob if val[1] >= 0.5]
-#         y_prob_n = sorted(y_prob_n, key=lambda x: x[1], reverse=True)
-#         y_prob_n = [val[0] for val in y_prob_n[:top_n]]
-#         keep_index = y_prob_p + y_prob_n
-#         not_keep_index = [i for i in range(len(y_pred)) if i not in keep_index]
-#         if len(keep_index) + len(not_keep_index) != len(y_pred):
-#             raise ValueError('top_n error!')
-#
-#         x_test_keep = [x_ti[i] for i in keep_index]
-#         y_pred_keep = [y_pred[i] for i in keep_index]
-#         x_source = np.concatenate((x_source, x_test_keep), axis=0)
-#         y_source = np.concatenate((y_source, y_pred_keep), axis=0)
-#         y_pred_store += y_pred_keep
-#         y_test_store += [y_ti[i] for i in keep_index]
-#         print('total:', len(y_pred_keep), 'pred_true', sum(y_pred_keep), 'true_true',
-#               sum([y_ti[i] for i in keep_index]))
-#         x_ti = [x_ti[i] for i in not_keep_index]
-#         y_ti = [y_ti[i] for i in not_keep_index]
-#         if x_ti == previous_r_target:
-#             break
-#         previous_r_target = x_ti[:]
-#     if len(y_pred_store) != len(y_ti_reordered):
-#         raise ValueError('output dimension error!')
-#     output_score = [y_pred_store[i] == y_test_store[i] for i in range(len(y_test_store))]
-#     gradual_score = sum(output_score) / len(output_score)
-#
-#     lr_lm = base_model
-#     lr_lm.fit(x_source, y_source)
-#     y_pred = lr_lm.predict(test_features)
-#     lm_score = [y_pred[i] == y_ti_reordered[i] for i in range(len(y_ti_reordered))]
-#     lm_score = sum(lm_score) / len(lm_score)
-#     print(lm_score, gradual_score)
-#
-#     return original_score, lm_score, gradual_score

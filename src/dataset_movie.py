@@ -5,9 +5,13 @@ from os.path import isfile, join
 from sklearn.model_selection import train_test_split
 from src.utils import *
 from src.bert_embedding import *
+from transformers import BertTokenizer, BertModel
+
 
 if __name__ == '__main__':
     data_main_path = "../data/movie_reviews/aclImdb/"
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    model = BertModel.from_pretrained('bert-base-uncased')
 
     # get file names
     train_pos_files = [f for f in listdir(data_main_path + "train/pos/") if

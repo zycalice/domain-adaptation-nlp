@@ -4,15 +4,15 @@
         "t2t": 0.93,
         "s2t": 0.93,
         "self_train": 0.93,
-        "gradual_self_train": 0.926,
-        "num_iter": 12
+        "gradual_self_train": 0.927,
+        "num_iter": 13
     },
     "Home_and_Kitchen.train_to_Movies_and_TV.train": {
         "s2s": 0.93,
         "t2t": 0.9265,
         "s2t": 0.878,
         "self_train": 0.877,
-        "gradual_self_train": 0.9035,
+        "gradual_self_train": 0.904,
         "num_iter": 13
     },
     "Home_and_Kitchen.train_to_Electronics.train": {
@@ -20,7 +20,7 @@
         "t2t": 0.915,
         "s2t": 0.887,
         "self_train": 0.885,
-        "gradual_self_train": 0.8985,
+        "gradual_self_train": 0.8975,
         "num_iter": 14
     },
     "Home_and_Kitchen.train_to_Books.train": {
@@ -28,23 +28,23 @@
         "t2t": 0.9415,
         "s2t": 0.8965,
         "self_train": 0.904,
-        "gradual_self_train": 0.914,
-        "num_iter": 13
+        "gradual_self_train": 0.9155,
+        "num_iter": 14
     },
     "Movies_and_TV.train_to_Home_and_Kitchen.train": {
         "s2s": 0.9265,
         "t2t": 0.93,
         "s2t": 0.868,
         "self_train": 0.8725,
-        "gradual_self_train": 0.8905,
-        "num_iter": 14
+        "gradual_self_train": 0.891,
+        "num_iter": 13
     },
     "Movies_and_TV.train_to_Movies_and_TV.train": {
         "s2s": 0.9265,
         "t2t": 0.9265,
         "s2t": 0.9265,
         "self_train": 0.926,
-        "gradual_self_train": 0.9255,
+        "gradual_self_train": 0.926,
         "num_iter": 12
     },
     "Movies_and_TV.train_to_Electronics.train": {
@@ -52,23 +52,23 @@
         "t2t": 0.915,
         "s2t": 0.8155,
         "self_train": 0.81,
-        "gradual_self_train": 0.8905,
-        "num_iter": 13
+        "gradual_self_train": 0.889,
+        "num_iter": 14
     },
     "Movies_and_TV.train_to_Books.train": {
         "s2s": 0.9265,
         "t2t": 0.9415,
         "s2t": 0.9165,
         "self_train": 0.919,
-        "gradual_self_train": 0.9235,
-        "num_iter": 15
+        "gradual_self_train": 0.9245,
+        "num_iter": 13
     },
     "Electronics.train_to_Home_and_Kitchen.train": {
         "s2s": 0.915,
         "t2t": 0.93,
         "s2t": 0.917,
         "self_train": 0.918,
-        "gradual_self_train": 0.914,
+        "gradual_self_train": 0.915,
         "num_iter": 13
     },
     "Electronics.train_to_Movies_and_TV.train": {
@@ -76,7 +76,7 @@
         "t2t": 0.9265,
         "s2t": 0.902,
         "self_train": 0.9065,
-        "gradual_self_train": 0.91,
+        "gradual_self_train": 0.911,
         "num_iter": 13
     },
     "Electronics.train_to_Electronics.train": {
@@ -85,14 +85,14 @@
         "s2t": 0.915,
         "self_train": 0.9155,
         "gradual_self_train": 0.9105,
-        "num_iter": 12
+        "num_iter": 13
     },
     "Electronics.train_to_Books.train": {
         "s2s": 0.915,
         "t2t": 0.9415,
         "s2t": 0.8925,
         "self_train": 0.9005,
-        "gradual_self_train": 0.9195,
+        "gradual_self_train": 0.919,
         "num_iter": 13
     },
     "Books.train_to_Home_and_Kitchen.train": {
@@ -101,30 +101,30 @@
         "s2t": 0.848,
         "self_train": 0.8495,
         "gradual_self_train": 0.8875,
-        "num_iter": 14
+        "num_iter": 13
     },
     "Books.train_to_Movies_and_TV.train": {
         "s2s": 0.9415,
         "t2t": 0.9265,
         "s2t": 0.902,
         "self_train": 0.9035,
-        "gradual_self_train": 0.9115,
-        "num_iter": 15
+        "gradual_self_train": 0.9125,
+        "num_iter": 14
     },
     "Books.train_to_Electronics.train": {
         "s2s": 0.9415,
         "t2t": 0.915,
         "s2t": 0.8045,
         "self_train": 0.8055,
-        "gradual_self_train": 0.8785,
-        "num_iter": 18
+        "gradual_self_train": 0.883,
+        "num_iter": 14
     },
     "Books.train_to_Books.train": {
         "s2s": 0.9415,
         "t2t": 0.9415,
         "s2t": 0.9415,
         "self_train": 0.9415,
-        "gradual_self_train": 0.9395,
+        "gradual_self_train": 0.939,
         "num_iter": 12
     }
 }

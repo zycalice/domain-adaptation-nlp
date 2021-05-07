@@ -4,7 +4,7 @@ from utils import *
 from sklearn.linear_model import LogisticRegression
 
 
-def run_check_version():
+def run_check_version(few_shot, output_path):
     # initiate.
     with open("../data/amazon_reviews/amazon_4.pickle", "rb") as fr:
         all_data = pickle.load(fr)
@@ -21,11 +21,12 @@ def run_check_version():
             accuracies_all_domains[train_name] = run_gradual_train_balanced_conf_groups(
                 x_source_raw=source[0], y_source_raw=source[1],
                 x_target_raw=target[0], y_target_raw=target[1],
-                base_model=lr, data_size=data_size, top_n=100
+                base_model=lr, data_size=data_size, top_n=100,
+                few_shot=few_shot,
             )
 
     print(accuracies_all_domains)
-    with open("../outputs/accuracies_ti_amazon_conf_blc_c0.1.json", "w") as outfile:
+    with open(output_path, "w") as outfile:
         json.dump(accuracies_all_domains, outfile, indent=4)
 
 
@@ -92,5 +93,6 @@ if __name__ == '__main__':
     # with open("../data/amazon_reviews/amazon_4.pickle", "rb") as fr:
     #     all_data = pickle.load(fr)
 
-    run_check_version()
+    run_check_version(few_shot="least_conf",
+                      output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")
 
