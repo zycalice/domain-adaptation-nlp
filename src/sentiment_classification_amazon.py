@@ -93,6 +93,6 @@ if __name__ == '__main__':
     # with open("../data/amazon_reviews/amazon_4.pickle", "rb") as fr:
     #     all_data = pickle.load(fr)
 
-    run_check_version(few_shot="least_conf",
-                      output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")
+    run_check_version(few_shot=None,
+                      output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1.json")
 
