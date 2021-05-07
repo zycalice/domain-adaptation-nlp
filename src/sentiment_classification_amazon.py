@@ -4,9 +4,9 @@ from utils import *
 from sklearn.linear_model import LogisticRegression
 
 
-def run_check_version(few_shot, output_path):
+def run_check_version(input_path, few_shot, output_path):
     # initiate.
-    with open("../data/amazon_reviews/amazon_4.pickle", "rb") as fr:
+    with open(input_path, "rb") as fr:
         all_data = pickle.load(fr)
 
     lr = LogisticRegression(C=0.1, max_iter=200000)
@@ -59,12 +59,16 @@ if __name__ == '__main__':
     pass
 
     # run balanced conf and few labels.
+    amazon_data_path = "../data/amazon_reviews/amazon_4.pickle"
 
-    run_check_version(few_shot=None,
+    run_check_version(input_path=amazon_data_path,
+                      few_shot=None,
                       output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1.json")
 
-    run_check_version(few_shot="random",
+    run_check_version(input_path=amazon_data_path,
+                      few_shot="random",
                       output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
 
-    run_check_version(few_shot="least",
+    run_check_version(input_path=amazon_data_path,
+                      few_shot="least",
                       output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")

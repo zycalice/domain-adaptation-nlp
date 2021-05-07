@@ -2,7 +2,7 @@
 
 ## Dataset
 Our amazon dataset can be downloaded [here](https://drive.google.com/file/d/1zq_ltCCvozTCrdGReCefkhgZR-ueszda/view?usp=sharing).
-Put this file in a folder called "data/amazon_reviews".
+Put this file in a folder called "[root]/data/amazon_reviews".
 
 This data contains 2000 samples of the four categories in the amazon reviews data:
 * Books
@@ -31,6 +31,9 @@ For each element in the amazon data, and for the movie data, the structure is as
 * [2] domain name
 
 
-## Balanced Conf model and Few labels model
+## Balanced Conf Model and Few Labels Models
+Run sentiment_classification_amazon.py from the root directory.
 
+## Householder Transformation
+[To do]
 
