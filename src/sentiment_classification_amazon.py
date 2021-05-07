@@ -58,5 +58,13 @@ def run_main_version():
 if __name__ == '__main__':
     pass
 
+    # run balanced conf and few labels.
+
     run_check_version(few_shot=None,
                       output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1.json")
+
+    run_check_version(few_shot="random",
+                      output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
+
+    run_check_version(few_shot="least",
+                      output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")

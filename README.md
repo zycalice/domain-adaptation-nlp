@@ -30,4 +30,7 @@ For each element in the amazon data, and for the movie data, the structure is as
 * [1] y labels (1 means negative and 2 means positive)
 * [2] domain name
 
-    
+
+## Balanced Conf model and Few labels model
+
+
