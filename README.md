@@ -27,7 +27,7 @@ with open("../data/amazon_reviews/amazon_4.pickle", "rb") as fr:
 
 For each element in the amazon data, and for the movie data, the structure is as follows:
 * [0] bert embeddings ([CLS] layer)
-* [1] y labels (1 means negative and 2 means positive)
+* [1] y labels (0 means negative and 1 means positive)
 * [2] domain name
 
 
