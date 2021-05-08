@@ -196,7 +196,6 @@ def run_gradual_train_ranges(x_source_raw, y_source_raw, x_target_raw, y_target_
     # save accuracies
     final_accuracies = [no_self_train_adaptation_score]
     accuracies_ti = {"no_self_train_adaptation_score": no_self_train_adaptation_score}
-    data_size = data_size
     base_model = base_model
 
     # subset version
@@ -345,9 +344,11 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, base_model, top_n
         if few_shot == "random":
             keep_idx = [t[0] for t in targets_keep]
             fs_idx = random.choice(keep_idx)
-        if few_shot == "least_conf":
+
+        if few_shot == "least":
             least_neg = sorted_targets[0]
             least_pos = sorted_targets[-1]
+
             if abs(least_neg[4] - 0.5) < abs(least_pos[4] - 0.5):
                 fs_idx = least_neg[0]
             else:
@@ -434,6 +435,7 @@ def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_
             "fs_random_index": fs_random_idx_sc,
             "fs_least_index": fs_least_idx_sc,
             "fs_gradual_self_train": gradual_score,
+            "num_iter": num_iter,
         }
 
     return all_scores
