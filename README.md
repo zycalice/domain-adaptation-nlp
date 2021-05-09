@@ -10,12 +10,7 @@ This data contains 2000 samples of the four categories in the amazon reviews dat
 * Home and Kitchen
 * Movies and TV
 
-
-
 We choose these categories because they are frequently used in nlp sentiment analysis domain adaptation papers.
-
-Our movie dataset can be downloaded [here](https://drive.google.com/file/d/199vK4As0u8MR6_BVXkNqRS2wXcBgA5Jo/view?usp=sharing)
-The original dataset is [here](https://ai.stanford.edu/~amaas/data/sentiment/).
 
 You can open the data (for example the amazon data) using the following code, 
 although this step should be already included in any function you need to run.
@@ -32,6 +27,7 @@ For each element in the amazon data, and for the movie data, the structure is as
 
 
 ## Balanced Conf Model and Few Labels Models
+Create an output folder under this directory.
 Run sentiment_classification_amazon.py from the root directory.
 
 ## Householder Transformation
