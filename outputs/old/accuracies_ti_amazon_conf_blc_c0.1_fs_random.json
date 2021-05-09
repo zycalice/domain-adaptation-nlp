@@ -1,0 +1,114 @@
+{
+    "Home_and_Kitchen.train_to_Home_and_Kitchen.train": {
+        "fs_same_index": 0.9300804828973843,
+        "fs_random_index": 0.9300804828973843,
+        "fs_least_index": 0.9336016096579477,
+        "fs_gradual_self_train": 0.926056338028169,
+        "num_iter": 12
+    },
+    "Home_and_Kitchen.train_to_Movies_and_TV.train": {
+        "fs_same_index": 0.9033719174635129,
+        "fs_random_index": 0.8897280966767371,
+        "fs_least_index": 0.8947633434038268,
+        "fs_gradual_self_train": 0.9063915450427781,
+        "num_iter": 14
+    },
+    "Home_and_Kitchen.train_to_Electronics.train": {
+        "fs_same_index": 0.8862606945143432,
+        "fs_random_index": 0.8887210473313192,
+        "fs_least_index": 0.8892245720040282,
+        "fs_gradual_self_train": 0.8968293910417715,
+        "num_iter": 14
+    },
+    "Home_and_Kitchen.train_to_Books.train": {
+        "fs_same_index": 0.8958228485153498,
+        "fs_random_index": 0.8973326623049824,
+        "fs_least_index": 0.8933064921992954,
+        "fs_gradual_self_train": 0.9164569703069955,
+        "num_iter": 13
+    },
+    "Movies_and_TV.train_to_Home_and_Kitchen.train": {
+        "fs_same_index": 0.8796576032225579,
+        "fs_random_index": 0.8816717019133937,
+        "fs_least_index": 0.8836858006042296,
+        "fs_gradual_self_train": 0.8937562940584088,
+        "num_iter": 14
+    },
+    "Movies_and_TV.train_to_Movies_and_TV.train": {
+        "fs_same_index": 0.9270256668344238,
+        "fs_random_index": 0.9255158530447911,
+        "fs_least_index": 0.9285354806240563,
+        "fs_gradual_self_train": 0.9265223955712129,
+        "num_iter": 13
+    },
+    "Movies_and_TV.train_to_Electronics.train": {
+        "fs_same_index": 0.8530447911424258,
+        "fs_random_index": 0.8529707955689829,
+        "fs_least_index": 0.8499496475327291,
+        "fs_gradual_self_train": 0.8892803220936084,
+        "num_iter": 14
+    },
+    "Movies_and_TV.train_to_Books.train": {
+        "fs_same_index": 0.9133064516129032,
+        "fs_random_index": 0.9248991935483871,
+        "fs_least_index": 0.9269153225806451,
+        "fs_gradual_self_train": 0.9233870967741935,
+        "num_iter": 16
+    },
+    "Electronics.train_to_Home_and_Kitchen.train": {
+        "fs_same_index": 0.9149471565173629,
+        "fs_random_index": 0.918429003021148,
+        "fs_least_index": 0.918932527693857,
+        "fs_gradual_self_train": 0.9139406139909411,
+        "num_iter": 14
+    },
+    "Electronics.train_to_Movies_and_TV.train": {
+        "fs_same_index": 0.8937562940584088,
+        "fs_random_index": 0.9012096774193549,
+        "fs_least_index": 0.8986895161290323,
+        "fs_gradual_self_train": 0.9108761329305136,
+        "num_iter": 16
+    },
+    "Electronics.train_to_Electronics.train": {
+        "fs_same_index": 0.9144869215291751,
+        "fs_random_index": 0.9159959758551308,
+        "fs_least_index": 0.9164989939637826,
+        "fs_gradual_self_train": 0.9109657947686117,
+        "num_iter": 12
+    },
+    "Electronics.train_to_Books.train": {
+        "fs_same_index": 0.8892803220936084,
+        "fs_random_index": 0.9028686462003019,
+        "fs_least_index": 0.9028686462003019,
+        "fs_gradual_self_train": 0.9194765978862607,
+        "num_iter": 13
+    },
+    "Books.train_to_Home_and_Kitchen.train": {
+        "fs_same_index": 0.8700251889168765,
+        "fs_random_index": 0.8584382871536524,
+        "fs_least_index": 0.8695214105793451,
+        "fs_gradual_self_train": 0.8906801007556675,
+        "num_iter": 15
+    },
+    "Books.train_to_Movies_and_TV.train": {
+        "fs_same_index": 0.9103274559193955,
+        "fs_random_index": 0.9007056451612904,
+        "fs_least_index": 0.9133064516129032,
+        "fs_gradual_self_train": 0.9143576826196473,
+        "num_iter": 16
+    },
+    "Books.train_to_Electronics.train": {
+        "fs_same_index": 0.8359335681932561,
+        "fs_random_index": 0.828384499245093,
+        "fs_least_index": 0.8626069451434323,
+        "fs_gradual_self_train": 0.883241066935078,
+        "num_iter": 13
+    },
+    "Books.train_to_Books.train": {
+        "fs_same_index": 0.9411468812877264,
+        "fs_random_index": 0.9401408450704225,
+        "fs_least_index": 0.943158953722334,
+        "fs_gradual_self_train": 0.9391348088531187,
+        "num_iter": 12
+    }
+}

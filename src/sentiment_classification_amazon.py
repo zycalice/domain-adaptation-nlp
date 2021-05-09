@@ -65,18 +65,18 @@ if __name__ == '__main__':
     #                   few_shot=None,
     #                   use_dist=True,
     #                   output_path="../outputs/accuracies_ti_amazon_dist_blc_c0.1.json")
-
-    run_check_version(input_path=amazon_data_path,
-                      few_shot=None,
-                      use_dist=False,
-                      output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1.json")
-
-    # run_check_version(input_path=amazon_data_path,
-    #                   few_shot="random",
-    #                   use_dist=False,
-    #                   output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
     #
     # run_check_version(input_path=amazon_data_path,
-    #                   few_shot="least",
+    #                   few_shot=None,
     #                   use_dist=False,
-    #                   output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")
+    #                   output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1t.json")
+
+    run_check_version(input_path=amazon_data_path,
+                      few_shot="random",
+                      use_dist=False,
+                      output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
+
+    run_check_version(input_path=amazon_data_path,
+                      few_shot="least",
+                      use_dist=False,
+                      output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")
