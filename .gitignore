@@ -5,7 +5,7 @@
 data/
 *.npy
 *model.sav
-.xlsx
+*.xlsx
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
