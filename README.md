@@ -29,6 +29,7 @@ For each element in the amazon data, and for the movie data, the structure is as
 ## Balanced Conf Model and Few Labels Models
 Create an output folder under this directory.
 Run sentiment_classification_amazon.py from the root directory.
+More ablations and experiments could be found in notebook XXXX under the notebook directory.
 
 ## Householder Transformation
 [To do]
