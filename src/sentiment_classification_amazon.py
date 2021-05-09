@@ -4,7 +4,7 @@ from utils import *
 from sklearn.linear_model import LogisticRegression
 
 
-def run_experiments(input_path, few_shot, use_dist, output_path):
+def run_experiments(input_path, few_shot, use_dist, balanced, output_path):
     # initiate.
     with open(input_path, "rb") as fr:
         all_data = pickle.load(fr)
@@ -18,11 +18,11 @@ def run_experiments(input_path, few_shot, use_dist, output_path):
             train_name = source[2] + "_to_" + target[2]
             print("\n", train_name)
 
-            accuracies_all_domains[train_name] = run_gradual_train_balanced_conf_groups(
+            accuracies_all_domains[train_name] = run_gradual_train_groups(
                 x_source_raw=source[0], y_source_raw=source[1],
                 x_target_raw=target[0], y_target_raw=target[1],
                 base_model=lr, data_size=data_size, top_n=100,
-                use_dist=use_dist, few_shot=few_shot,
+                balanced=balanced, use_dist=use_dist, few_shot=few_shot,
             )
 
     print(accuracies_all_domains)
@@ -61,22 +61,38 @@ if __name__ == '__main__':
     # run balanced conf and few labels.
     amazon_data_path = "../data/amazon_reviews/amazon_4.pickle"
 
-    run_experiments(input_path=amazon_data_path,
-                    few_shot=None,
-                    use_dist=True,
-                    output_path="../outputs/accuracies_ti_amazon_dist_blc_c0.1.json")
+    # run_experiments(input_path=amazon_data_path,
+    #                 few_shot=None,
+    #                 use_dist=True,
+    #                 balanced=False,
+    #                 output_path="../outputs/accuracies_ti_amazon_dist_unblc_c0.1.json")
 
     run_experiments(input_path=amazon_data_path,
                     few_shot=None,
                     use_dist=False,
-                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1t.json")
+                    balanced=False,
+                    output_path="../outputs/accuracies_ti_amazon_conf_unblc_c0.1.json")
 
-    run_experiments(input_path=amazon_data_path,
-                    few_shot="random",
-                    use_dist=False,
-                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
-
-    run_experiments(input_path=amazon_data_path,
-                    few_shot="least",
-                    use_dist=False,
-                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")
+    # run_experiments(input_path=amazon_data_path,
+    #                 few_shot=None,
+    #                 use_dist=True,
+    #                 balanced=True,
+    #                 output_path="../outputs/accuracies_ti_amazon_dist_blc_c0.1.json")
+    #
+    # run_experiments(input_path=amazon_data_path,
+    #                 few_shot=None,
+    #                 use_dist=False,
+    #                 balanced=True,
+    #                 output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1t.json")
+    #
+    # run_experiments(input_path=amazon_data_path,
+    #                 few_shot="random",
+    #                 use_dist=False,
+    #                 balanced=True,
+    #                 output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
+    #
+    # run_experiments(input_path=amazon_data_path,
+    #                 few_shot="least",
+    #                 use_dist=False,
+    #                 balanced=True,
+    #                 output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")

@@ -143,7 +143,6 @@ def gradual_train_dist_groups(x_source, y_source, x_target, y_target, base_model
         y_t_new = []
 
         for i in range(group_size):
-            # TODO take balanced neg and pos points
             subset_tf = (dists_rank >= step * i) & (dists_rank < step * (i + 1))
             x_ti = x_target[subset_tf]
             y_ti = y_target[subset_tf]
@@ -301,6 +300,9 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
     gradual_score = accuracy_score(y_true_all, y_pred_all)
     return s2s_score, t2t_score, s2t_score, gradual_score
 
+##################################################################################################################
+# Used in actual report.
+
 
 def self_train(x_source, y_source, x_ti, y_ti, base_model):
     base_model.fit(x_source, y_source)
@@ -321,8 +323,8 @@ def fs_train(x_source, y_source, x_ti, y_ti, indexes, base_model):
 
 
 # Balanced conf.
-def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, base_model, top_n,
-                               use_dist, few_shot=None):
+def pseudo_label_balanced(x_source, y_source, x_ti, y_ti, base_model, top_n,
+                          use_dist, few_shot=None):
     # get predictions
     base_model.fit(x_source, y_source)
     y_prob_ti = base_model.predict_proba(x_ti)[:, 0]
@@ -399,8 +401,77 @@ def pseudo_label_balanced_conf(x_source, y_source, x_ti, y_ti, base_model, top_n
     return x_source_updated, y_source_updated, x_ti_left, y_ti_left, fs_idx
 
 
-def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model,
-                                           data_size, top_n, use_dist=False, few_shot=None):
+def pseudo_label_unbalanced(x_source, y_source, x_ti, y_ti, base_model, top_n,
+                            use_dist, few_shot=None):
+    # get predictions
+    base_model.fit(x_source, y_source)
+    y_prob_ti = base_model.predict_proba(x_ti)[:, 0]
+    y_pred_ti = base_model.predict(x_ti)
+
+    # add dist
+    dist = get_dist(x_source, x_ti, "cos")
+
+    # change to arrays
+    x_source = np.array(x_source)
+    y_source = np.array(y_source)
+    x_ti = np.array(x_ti)
+
+    # group variables
+    if use_dist:
+        targets = [(i, dist, x_ti[i], y_ti[i], y_pred_ti[i]) for i, dist in enumerate(dist)]
+        sorted_targets = sorted(targets, key=lambda x: x[1])
+        keep_n = min(len(y_prob_ti), 2 * top_n)
+        targets_keep = sorted_targets[:keep_n]  # top 200
+        targets_left = sorted_targets[keep_n:]
+        fs_idx = None
+    else:
+        targets = [(i, abs(prob - 0.5), x_ti[i], y_ti[i], y_pred_ti[i]) for i, prob in enumerate(y_prob_ti)]
+        sorted_targets = sorted(targets, key=lambda x: x[1], reverse=True)
+        keep_n = min(len(y_prob_ti), 2 * top_n)
+        targets_keep = sorted_targets[:keep_n]  # largest 200
+        targets_left = sorted_targets[keep_n:]
+        fs_idx = None
+
+    # update
+    if few_shot is not None:
+        if few_shot == "random":
+            keep_idx = [t[0] for t in targets_keep]
+            fs_idx = random.choice(keep_idx)
+
+        if few_shot == "least":
+            if use_dist:
+                fs_idx = targets_keep[0]
+            else:
+                least_neg = sorted_targets[0]
+                least_pos = sorted_targets[-1]
+
+                if abs(least_neg[4] - 0.5) < abs(least_pos[4] - 0.5):
+                    fs_idx = least_neg[0]
+                else:
+                    fs_idx = least_pos[0]
+
+        targets_keep = [t for t in targets_keep if t[0] != fs_idx]
+        print(x_source.shape, y_source.shape)
+        x_source = np.concatenate((x_source, x_ti[fs_idx].reshape(1, -1)), 0)
+        print(x_source.shape, y_source.shape)
+        y_source = np.concatenate((y_source, [y_ti[fs_idx]]), 0)
+
+    if keep_n != 0:
+        x_source_updated = np.concatenate((x_source, np.array([t[2] for t in targets_keep])), 0)
+        y_source_updated = np.concatenate((y_source, np.array([t[4] for t in targets_keep])), 0)
+        x_ti_left = [t[2] for t in targets_left]
+        y_ti_left = [t[3] for t in targets_left]
+    else:
+        x_source_updated = x_source
+        y_source_updated = y_source
+        x_ti_left = []
+        y_ti_left = []
+
+    return x_source_updated, y_source_updated, x_ti_left, y_ti_left, fs_idx
+
+
+def run_gradual_train_groups(x_source_raw, y_source_raw, x_target_raw, y_target_raw, base_model,
+                             data_size, top_n, balanced=True, use_dist=False, few_shot=None):
     # initiate values
     data_size = min(len(x_source_raw), len(x_target_raw), data_size)
     print(data_size)
@@ -415,9 +486,14 @@ def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_
     num_iter = 0
     fs_indexes = []
     while len(x_target) > 0:
-        x_source, y_source, x_target, y_target, fs_idx = pseudo_label_balanced_conf(
-            x_source, y_source, x_target, y_target, base_model, top_n, use_dist, few_shot
-        )
+        if balanced:
+            x_source, y_source, x_target, y_target, fs_idx = pseudo_label_balanced(
+                x_source, y_source, x_target, y_target, base_model, top_n, use_dist, few_shot
+            )
+        else:
+            x_source, y_source, x_target, y_target, fs_idx = pseudo_label_unbalanced(
+                x_source, y_source, x_target, y_target, base_model, top_n, use_dist, few_shot
+            )
         num_iter += 1
         fs_indexes.append(fs_idx)
         print("Total target len after this iteration:", len(x_target))
@@ -469,6 +545,7 @@ def run_gradual_train_balanced_conf_groups(x_source_raw, y_source_raw, x_target_
         }
 
     return all_scores
+
 
 #######################################################################################################################
 def cos_dist(A, B):
