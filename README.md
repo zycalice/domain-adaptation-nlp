@@ -7,8 +7,8 @@ Put this file in a folder called "[root]/data/amazon_reviews".
 This data contains 2000 samples of the four categories in the amazon reviews data:
 * Books
 * Electronics
-* Home and Kitchen
-* Movies and TV
+* Home and Kitchen (Kitchen)
+* Movies and TV (DVDs)
 
 We choose these categories because they are frequently used in nlp sentiment analysis domain adaptation papers.
 
