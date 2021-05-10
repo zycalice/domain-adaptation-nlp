@@ -69,7 +69,6 @@ if __name__ == '__main__':
                     output_path="../outputs/accuracies_ti_amazon_dist_unblc_c0.1.json")
 
     # Confidence unbalanced.
-
     run_experiments(input_path=amazon_data_path,
                     few_shot=None,
                     use_dist=False,
@@ -77,7 +76,6 @@ if __name__ == '__main__':
                     output_path="../outputs/accuracies_ti_amazon_conf_unblc_c0.1.json")
 
     # Distance balanced.
-
     run_experiments(input_path=amazon_data_path,
                     few_shot=None,
                     use_dist=True,
@@ -85,23 +83,22 @@ if __name__ == '__main__':
                     output_path="../outputs/accuracies_ti_amazon_dist_blc_c0.1.json")
 
     # Confidence balanced.
-
     run_experiments(input_path=amazon_data_path,
                     few_shot=None,
                     use_dist=False,
                     balanced=True,
-                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1t.json")
+                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1.json")
 
-    # Few shots on confidence balanced.
-
-    run_experiments(input_path=amazon_data_path,
-                    few_shot="random",
-                    use_dist=False,
-                    balanced=True,
-                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
-
+    # Few shots on confidence balanced (least).
     run_experiments(input_path=amazon_data_path,
                     few_shot="least",
                     use_dist=False,
                     balanced=True,
                     output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")
+
+    # Few shots on confidence balanced (random).
+    run_experiments(input_path=amazon_data_path,
+                    few_shot="random",
+                    use_dist=False,
+                    balanced=True,
+                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
