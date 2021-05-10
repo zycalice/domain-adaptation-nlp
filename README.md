@@ -31,8 +31,6 @@ For each element in the amazon data, and for the movie data, the structure is as
 * Create an output folder under this root directory if it does not exist.
 * Run sentiment_classification_amazon.py from the root directory.
 
-More ablations and experiments could be found in notebook XXXX under the notebook directory.
-
 ### Householder Transformation
 * Adjust the n of n_fold want to use(default: 1000).
 * Run domain_space_alignment.py from the root directory.
