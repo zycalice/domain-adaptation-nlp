@@ -34,4 +34,5 @@ For each element in the amazon data, and for the movie data, the structure is as
 More ablations and experiments could be found in notebook XXXX under the notebook directory.
 
 ### Householder Transformation
-[To do]
+* Adjust the n of n_fold want to use(default: 1000).
+* Run domain_space_alignment.py from the root directory.
