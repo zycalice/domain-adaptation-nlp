@@ -33,7 +33,8 @@ def load_bert(data_path, domains, data_size):
     return bert_dataset
 
 
-# distances
+# Distances.
+
 def cosine_dist(x_source, x_target):
     source_center = np.mean(x_source, 0)
     dists = [1 - cosine_similarity(source_center.reshape(1, -1), x.reshape(1, -1))[0][0] for x in x_target]
