@@ -61,11 +61,14 @@ if __name__ == '__main__':
     # run balanced conf and few labels.
     amazon_data_path = "../data/amazon_reviews/amazon_4.pickle"
 
-    # run_experiments(input_path=amazon_data_path,
-    #                 few_shot=None,
-    #                 use_dist=True,
-    #                 balanced=False,
-    #                 output_path="../outputs/accuracies_ti_amazon_dist_unblc_c0.1.json")
+    # Distance unbalanced.
+    run_experiments(input_path=amazon_data_path,
+                    few_shot=None,
+                    use_dist=True,
+                    balanced=False,
+                    output_path="../outputs/accuracies_ti_amazon_dist_unblc_c0.1.json")
+
+    # Confidence unbalanced.
 
     run_experiments(input_path=amazon_data_path,
                     few_shot=None,
@@ -73,26 +76,32 @@ if __name__ == '__main__':
                     balanced=False,
                     output_path="../outputs/accuracies_ti_amazon_conf_unblc_c0.1.json")
 
-    # run_experiments(input_path=amazon_data_path,
-    #                 few_shot=None,
-    #                 use_dist=True,
-    #                 balanced=True,
-    #                 output_path="../outputs/accuracies_ti_amazon_dist_blc_c0.1.json")
-    #
-    # run_experiments(input_path=amazon_data_path,
-    #                 few_shot=None,
-    #                 use_dist=False,
-    #                 balanced=True,
-    #                 output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1t.json")
-    #
-    # run_experiments(input_path=amazon_data_path,
-    #                 few_shot="random",
-    #                 use_dist=False,
-    #                 balanced=True,
-    #                 output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
-    #
-    # run_experiments(input_path=amazon_data_path,
-    #                 few_shot="least",
-    #                 use_dist=False,
-    #                 balanced=True,
-    #                 output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")
+    # Distance balanced.
+
+    run_experiments(input_path=amazon_data_path,
+                    few_shot=None,
+                    use_dist=True,
+                    balanced=True,
+                    output_path="../outputs/accuracies_ti_amazon_dist_blc_c0.1.json")
+
+    # Confidence balanced.
+
+    run_experiments(input_path=amazon_data_path,
+                    few_shot=None,
+                    use_dist=False,
+                    balanced=True,
+                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1t.json")
+
+    # Few shots on confidence balanced.
+
+    run_experiments(input_path=amazon_data_path,
+                    few_shot="random",
+                    use_dist=False,
+                    balanced=True,
+                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_random.json")
+
+    run_experiments(input_path=amazon_data_path,
+                    few_shot="least",
+                    use_dist=False,
+                    balanced=True,
+                    output_path="../outputs/accuracies_ti_amazon_conf_blc_c0.1_fs_least.json")
