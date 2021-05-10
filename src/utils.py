@@ -55,7 +55,7 @@ def get_dist(x_source, x_target, dist_type):
     :param dist_type: cosine similarity, l2 norm,  maximum mean discrepancy, fisher
     :return:
     """
-    if dist_type not in ["cos", "l2", "mmd", 'fld', 'mixed']:
+    if dist_type not in ["cos", "l2"]:
         raise ValueError("")
 
     dists = None
