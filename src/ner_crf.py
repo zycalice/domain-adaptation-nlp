@@ -8,11 +8,12 @@
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
 from collections import Counter
-import re
 import pickle
 from bert_embedding import *
 from dataset_multi import load_ner_data
 from sklearn.model_selection import train_test_split
+from src.domain_space_alignment import ht_lr
+import sys
 
 # # Load tokenizer and model
 
@@ -52,6 +53,19 @@ def sent2labels(sent):
     return [t[-1] for t in sent]
 
 
+def get_features_labels(train_sents, test_sents, test_ht=False):
+    X_train = [sent2features(s) for s in train_sents]
+    y_train = [sent2labels(s) for s in train_sents]
+
+    X_test = [sent2features(s) for s in test_sents]
+    y_test = [sent2labels(s) for s in test_sents]
+
+    if test_ht:
+        X_test = ht_lr(X_train, y_train, X_test, y_test)
+
+    return X_train, y_train, X_test, y_test
+
+
 def print_transitions(trans_features):
     for (label_from, label_to), weight in trans_features:
         print("%-6s -> %-7s %0.6f" % (label_from, label_to, weight))
@@ -71,17 +85,13 @@ def output_predictions_to_file(sents, output_name, y_pred):
         out.write("\n")
 
 
-def run_crf(train_data, dev_data, model, output_name, crf_f1_report=True, crf_transition_analysis=False,
-            output_predictions=False):
+def run_crf(train_data, dev_data, model, test_ht, output_name=None, crf_f1_report=True, crf_transition_analysis=False,
+            output_predictions=False, save_model=False):
     # Load the training data
     train_sents = train_data
     dev_sents = dev_data
 
-    X_train = [sent2features(s) for s in train_sents]
-    y_train = [sent2labels(s) for s in train_sents]
-
-    X_dev = [sent2features(s) for s in dev_sents]
-    y_dev = [sent2labels(s) for s in dev_sents]
+    X_train, y_train, X_dev, y_dev = get_features_labels(train_sents, dev_sents, test_ht)
 
     crf = model
     crf.fit(X_train, y_train)
@@ -102,10 +112,12 @@ def run_crf(train_data, dev_data, model, output_name, crf_f1_report=True, crf_tr
             key=lambda name: (name[1:], name[0])
         )
 
+        print("== Train ==")
         print(metrics.flat_classification_report(
             y_train, y_pred_train, labels=sorted_labels, digits=3
         ))
 
+        print("== Dev ==")
         print(metrics.flat_classification_report(
             y_dev, y_pred_dev, labels=sorted_labels, digits=3
         ))
@@ -117,15 +129,18 @@ def run_crf(train_data, dev_data, model, output_name, crf_f1_report=True, crf_tr
         print("\nTop unlikely transitions:")
         print_transitions(Counter(crf.transition_features_).most_common()[-20:])
 
-    print("Saving model")
-    model_filename = '../outputs/ner_model.sav'
-    pickle.dump(model, open(model_filename, 'wb'))
+    if save_model:
+        print("Saving model")
+        model_filename = '../outputs/ner_model.sav'
+        pickle.dump(model, open(model_filename, 'wb'))
 
     if output_predictions:
         print("Writing to results.txt")
         output_predictions_to_file(dev_sents, output_name, y_pred_dev)
 
-    # print("Now run: python conlleval.py results.txt")
+
+#  TODO: probability layer can be obtained using
+#  https://sklearn-crfsuite.readthedocs.io/en/latest/_modules/sklearn_crfsuite/estimator.html#CRF.predict_marginals
 
 
 if __name__ == '__main__':
@@ -135,6 +150,7 @@ if __name__ == '__main__':
     train_wiki, test_wiki = train_test_split(wiki, random_state=7)
     train_sec, test_sec = train_test_split(sec, random_state=7)
 
+    # model
     crf_model = sklearn_crfsuite.CRF(
         c1=0.1,
         c2=0.2,
@@ -144,11 +160,40 @@ if __name__ == '__main__':
         # all_possible_states=True,
     )
 
-    run_crf(train_wiki, test_wiki, crf_model, "../outputs/wiki_sec_crf_results.txt",
+    # In domain
+    sys.stdout = open("../outputs/" + "ner" + '.txt', 'w')
+    print("\nIn domain: train_sec, test_sec")
+    run_crf(train_sec, test_sec, crf_model, test_ht=False,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
-    run_crf(train_wiki, test_sec, crf_model, "../outputs/wiki_sec_crf_results.txt",
+    print("\nIn domain: train_wiki, test_wiki")
+    run_crf(train_wiki, test_wiki, crf_model, test_ht=False,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
-    run_crf(train_sec, test_sec, crf_model, "../outputs/wiki_sec_crf_results.txt",
+    # print("In domain: train_wiki, test_wiki_ht")
+    # run_crf(train_wiki, test_wiki, crf_model, test_ht=True,
+    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    #
+    # print("In domain: train_sec, test_sec_ht")
+    # run_crf(train_sec, test_sec, crf_model, test_ht=True,
+    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    # Out domain
+    print("\nOut domain: train_wiki, test_sec")
+    run_crf(train_wiki, test_sec, crf_model, test_ht=False,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    # print("Out domain: train_wiki, test_sec_ht")
+    # run_crf(train_wiki, test_sec, crf_model, test_ht=True,
+    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    print("\nOut domain: train_sec, test_wiki")
+    run_crf(train_sec, test_wiki, crf_model, test_ht=False,
+            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    # print("Out domain: train_sec, test_wiki_ht")
+    # run_crf(train_sec, test_wiki, crf_model, test_ht=True,
+    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    sys.stdout.close()
+    sys.stdout = sys.__stdout__
