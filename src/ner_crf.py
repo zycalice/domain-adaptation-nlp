@@ -1,10 +1,3 @@
-# from nltk.corpus import conll2002
-# from sklearn.feature_extraction import DictVectorizer
-# from sklearn.linear_model import Perceptron
-# from sklearn.linear_model import LogisticRegression
-# from sklearn.ensemble import RandomForestClassifier
-# from sklearn.model_selection import RandomizedSearchCV
-# from sklearn.metrics import precision_recall_fscore_support, make_scorer
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
 from collections import Counter
@@ -14,8 +7,6 @@ from dataset_multi import load_ner_data
 from sklearn.model_selection import train_test_split
 from src.domain_space_alignment import ht_lr
 import sys
-
-# # Load tokenizer and model
 
 # Load pre-computed bert embeddings.
 data_path = "../data/"
