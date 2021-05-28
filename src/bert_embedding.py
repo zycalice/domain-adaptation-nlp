@@ -4,7 +4,7 @@ from transformers import BertTokenizer, BertModel
 from src.utils import *
 
 
-def output_bert_embeddings(domain_types, data_size):
+def output_bert_embeddings(domain_types, data_size, X_dict):
     for domain in domain_types:
         _ = tokenize_encode_bert_sentences(tokenizer_d, model_d, list(X_dict["X_train_" + domain][:data_size]),
                                            data_path + "all_bert/" + "encoded_" + domain + "_train_" +
@@ -37,17 +37,21 @@ if __name__ == '__main__':
     model_d = DistilBertModel.from_pretrained('distilbert-base-uncased')
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     model = BertModel.from_pretrained('bert-base-uncased')
+    tokenizer_cased = BertTokenizer.from_pretrained('bert-base-cased')
+    model_cased = BertModel.from_pretrained('bert-base-cased')
 
-    # Classification.
+    # Sentiment Classification.
     domains = ["tw", "az", "mv", "fi"]
     clf_data_size = 3000
 
     X_dict = load_np_files(data_path=data_path, domains=domains, data_types=["train", "dev"], load_feature=True)
-    output_bert_embeddings(domains, clf_data_size)
+    output_bert_embeddings(domains, clf_data_size, X_dict)
 
     # NER.
     with open(data_path + "wiki_sec_word2idx.json") as file:
         word2idx = json.load(file)
     words_list = list(word2idx.keys())
-    encoded_ner_corpus = tokenize_encode_bert_sentences(tokenizer_d, model_d, words_list,
-                                                        "../data/all_bert/encoded_ner_corpus")
+    encoded_ner_corpus = tokenize_encode_bert_sentences(tokenizer, model, words_list,
+                                                        "../data/all_bert/bert_uncased_encoded_ner_corpus")
+    cased_encoded_ner_corpus = tokenize_encode_bert_sentences(tokenizer_cased, model_cased, words_list,
+                                                              "../data/all_bert/bert_cased_encoded_ner_corpus")

@@ -1,0 +1,108 @@
+
+In domain: train_sec, test_sec
+[['I-PER', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['I-LOC', 'I-LOC', 'I-LOC', 'I-LOC', 'I-LOC', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-ORG', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O']]
+== Train ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.961     0.902     0.931       275
+      I-MISC      1.000     1.000     1.000         6
+       I-ORG      0.944     0.907     0.926       281
+       I-PER      0.993     0.986     0.990       591
+
+   micro avg      0.974     0.947     0.960      1153
+   macro avg      0.975     0.949     0.961      1153
+weighted avg      0.974     0.947     0.960      1153
+
+== Dev ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.938     0.753     0.836        81
+      I-MISC      1.000     1.000     1.000         1
+       I-ORG      0.944     0.650     0.770       103
+       I-PER      0.995     0.984     0.990       192
+
+   micro avg      0.972     0.844     0.903       377
+   macro avg      0.969     0.847     0.899       377
+weighted avg      0.969     0.844     0.897       377
+
+
+In domain: train_wiki, test_wiki
+[['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-ORG', 'I-ORG', 'I-ORG', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-PER', 'I-PER', 'O', 'O', 'I-MISC', 'O', 'O', 'O', 'I-LOC', 'O', 'O', 'O', 'O', 'O', 'O', 'I-LOC', 'O', 'I-MISC', 'I-MISC', 'I-MISC', 'I-MISC', 'I-MISC', 'O', 'O', 'O', 'O', 'O', 'I-PER', 'I-PER', 'O', 'I-PER', 'I-PER', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-PER', 'O', 'O', 'O'], ['I-ORG', 'O', 'O', 'O', 'I-ORG', 'I-ORG', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-ORG', 'I-ORG', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'I-ORG', 'I-ORG', 'O', 'O', 'O', 'I-ORG', 'I-ORG', 'I-ORG', 'I-ORG', 'O', 'O', 'I-ORG', 'I-ORG', 'O'], ['I-MISC', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O']]
+== Train ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.764     0.732     0.748      1053
+      I-MISC      0.655     0.348     0.455      1051
+       I-ORG      0.651     0.521     0.578      1452
+       I-PER      0.884     0.895     0.890      1263
+
+   micro avg      0.754     0.628     0.685      4819
+   macro avg      0.738     0.624     0.668      4819
+weighted avg      0.737     0.628     0.670      4819
+
+== Dev ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.702     0.609     0.652       394
+      I-MISC      0.427     0.317     0.364       341
+       I-ORG      0.522     0.397     0.451       506
+       I-PER      0.777     0.836     0.805       371
+
+   micro avg      0.623     0.533     0.574      1612
+   macro avg      0.607     0.540     0.568      1612
+weighted avg      0.605     0.533     0.563      1612
+
+
+Out domain: train_wiki, test_sec
+[['O', 'O', 'O', 'O', 'O', 'O', 'I-ORG', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-LOC', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-PER', 'O', 'O', 'O', 'O'], ['I-ORG', 'I-ORG', 'I-ORG', 'O', 'O', 'O', 'I-PER', 'O', 'O', 'O'], ['O', 'O', 'I-ORG'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-ORG', 'I-ORG', 'I-ORG', 'O']]
+== Train ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.764     0.732     0.748      1053
+      I-MISC      0.655     0.348     0.455      1051
+       I-ORG      0.651     0.521     0.578      1452
+       I-PER      0.884     0.895     0.890      1263
+
+   micro avg      0.754     0.628     0.685      4819
+   macro avg      0.738     0.624     0.668      4819
+weighted avg      0.737     0.628     0.670      4819
+
+== Dev ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.731     0.469     0.571        81
+      I-MISC      0.000     0.000     0.000         1
+       I-ORG      0.269     0.272     0.271       103
+       I-PER      0.366     0.078     0.129       192
+
+   micro avg      0.393     0.215     0.278       377
+   macro avg      0.341     0.205     0.243       377
+weighted avg      0.417     0.215     0.262       377
+
+
+Out domain: train_sec, test_wiki
+[['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-LOC', 'O', 'O', 'O', 'O', 'O', 'O', 'I-LOC', 'O', 'I-LOC', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-PER', 'I-PER', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'I-LOC', 'I-LOC', 'I-LOC', 'I-LOC', 'I-LOC', 'I-LOC', 'I-LOC', 'I-LOC', 'O'], ['I-LOC', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O'], ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O']]
+== Train ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.961     0.902     0.931       275
+      I-MISC      1.000     1.000     1.000         6
+       I-ORG      0.944     0.907     0.926       281
+       I-PER      0.993     0.986     0.990       591
+
+   micro avg      0.974     0.947     0.960      1153
+   macro avg      0.975     0.949     0.961      1153
+weighted avg      0.974     0.947     0.960      1153
+
+== Dev ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.382     0.612     0.470       394
+      I-MISC      0.800     0.070     0.129       341
+       I-ORG      0.328     0.125     0.181       506
+       I-PER      0.795     0.251     0.381       371
+
+   micro avg      0.434     0.261     0.326      1612
+   macro avg      0.576     0.264     0.290      1612
+weighted avg      0.549     0.261     0.287      1612
+

@@ -13,7 +13,7 @@ data_path = "../data/"
 with open(data_path + "wiki_sec_word2idx.json") as f:
     word2idx = json.load(f)
 
-ner_bert = np.load("../data/all_bert/encoded_ner_corpus.npy")
+ner_bert = np.load("../data/all_bert/bert_uncased_encoded_ner_corpus.npy")
 
 assert(len(ner_bert) == len(word2idx))
 
@@ -91,8 +91,9 @@ def run_crf(train_data, dev_data, model, test_ht, output_name=None, crf_f1_repor
     labels.remove('O')  # why remove 0?
     y_pred_train = crf.predict(X_train)
     y_pred_dev = crf.predict(X_dev)
+    print(y_pred_dev[:10])
 
-    crf.fit(X_train + X_dev, y_train + y_dev)
+    # crf.fit(X_train + X_dev, y_train + y_dev)
 
     # f1 score different way
     if crf_f1_report:
@@ -152,7 +153,7 @@ if __name__ == '__main__':
     )
 
     # In domain
-    sys.stdout = open("../outputs/" + "ner" + '.txt', 'w')
+    sys.stdout = open("../outputs/" + "ner_uncased" + '.txt', 'w')
     print("\nIn domain: train_sec, test_sec")
     run_crf(train_sec, test_sec, crf_model, test_ht=False,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)

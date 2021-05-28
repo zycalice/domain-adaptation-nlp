@@ -8,4 +8,21 @@ from sklearn.model_selection import train_test_split
 from src.domain_space_alignment import ht_lr
 import sys
 
-# https://medium.com/@yingbiao/ner-with-bert-in-action-936ff275bc73#:~:text=NER%20is%20a%20task%20in,model%20for%20NER%20downstream%20task.
+# embedding need 1) sentence id, 2) position, 3) bert word embedding
+
+
+def multiclass_one_all(base_model, features, labels):
+    """
+
+    :param base_model: logistic regression
+    :param features: on the word level; each word has a set of features
+    :param labels: word labels
+    :return:
+    """
+    unique_labels = sorted(list(set(labels)))
+    binary_labels = np.zeros(len(labels))
+    for label in unique_labels:
+        binary_labels[labels == label] = 1
+        base_model.fit(features, binary_labels)
+        base_model.predict_prob(features)
+    pass
