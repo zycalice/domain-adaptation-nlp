@@ -141,6 +141,7 @@ def run_crf(train_data, dev_data, model, use_crf, test_ht=False, output_name=Non
 
 def run_multiclass(train_data, dev_data, model, use_crf, test_ht, output_name=None, f1_report=True,
                    transition_analysis=False, output_predictions=False, save_model=False):
+    # TODO
     # Load the training data
     train_sents = train_data
     dev_sents = dev_data
@@ -218,30 +219,14 @@ if __name__ == '__main__':
     run_crf(train_wiki, test_wiki, crf_model, test_ht=False, use_crf=True,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
-    # print("In domain: train_wiki, test_wiki_ht")
-    # run_crf(train_wiki, test_wiki, crf_model, test_ht=True,
-    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
-    #
-    # print("In domain: train_sec, test_sec_ht")
-    # run_crf(train_sec, test_sec, crf_model, test_ht=True,
-    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
-
     # Out domain
     print("\nOut domain: train_wiki, test_sec")
     run_crf(train_wiki, test_sec, crf_model, test_ht=False, use_crf=True,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
-    # print("Out domain: train_wiki, test_sec_ht")
-    # run_crf(train_wiki, test_sec, crf_model, test_ht=True,
-    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
-
     print("\nOut domain: train_sec, test_wiki")
     run_crf(train_sec, test_wiki, crf_model, test_ht=False, use_crf=True,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
-
-    # print("Out domain: train_sec, test_wiki_ht")
-    # run_crf(train_sec, test_wiki, crf_model, test_ht=True,
-    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
     sys.stdout.close()
     sys.stdout = sys.__stdout__
