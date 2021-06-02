@@ -1,4 +1,4 @@
-import numpy as np
+# import numpy as np
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
 from collections import Counter
@@ -53,16 +53,16 @@ def sent2labels(sent):
 
 
 def get_features_labels(train_sents, test_sents, use_crf, test_ht=False):
-    X_train = [sent2features(s, use_crf) for s in train_sents]
+    x_train = [sent2features(s, use_crf) for s in train_sents]
     y_train = [sent2labels(s) for s in train_sents]
 
-    X_test = [sent2features(s, use_crf) for s in test_sents]
+    x_test = [sent2features(s, use_crf) for s in test_sents]
     y_test = [sent2labels(s) for s in test_sents]
 
     if test_ht:
-        X_test = ht_lr(X_train, y_train, X_test, y_test)
+        x_test = ht_lr(x_train, y_train, x_test, y_test)
 
-    return X_train, y_train, X_test, y_test
+    return x_train, y_train, x_test, y_test
 
 
 def print_transitions(trans_features):
@@ -90,18 +90,16 @@ def run_crf(train_data, dev_data, model, use_crf, test_ht=False, output_name=Non
     train_sents = train_data
     dev_sents = dev_data
 
-    X_train, y_train, X_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)
+    x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)
 
     crf = model
-    crf.fit(X_train, y_train)
+    crf.fit(x_train, y_train)
 
     labels = list(crf.classes_)
     labels.remove('O')  # why remove 0?
-    y_pred_train = crf.predict(X_train)
-    y_pred_dev = crf.predict(X_dev)
+    y_pred_train = crf.predict(x_train)
+    y_pred_dev = crf.predict(x_dev)
     print(y_pred_dev[:10])
-
-    # crf.fit(X_train + X_dev, y_train + y_dev)
 
     # f1 score different way
     if crf_f1_report:
@@ -132,37 +130,43 @@ def run_crf(train_data, dev_data, model, use_crf, test_ht=False, output_name=Non
     if save_model:
         print("Saving model")
         model_filename = '../outputs/ner_model.sav'
-        pickle.dump(model, open(model_filename, 'wb'))
+        pickle.dump(crf, open(model_filename, 'wb'))
 
     if output_predictions:
         print("Writing to results.txt")
         output_predictions_to_file(dev_sents, output_name, y_pred_dev)
 
 
-def run_multiclass(train_data, dev_data, model, use_crf, test_ht, output_name=None, f1_report=True,
-                   transition_analysis=False, output_predictions=False, save_model=False):
+def run_multiclass(train_data, dev_data, use_crf, test_ht, output_name=None, f1_report=True,
+                   output_predictions=False, save_model=False):
     # TODO
     # Load the training data
     train_sents = train_data
     dev_sents = dev_data
 
-    X_train, y_train, X_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)
+    x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)  # list of list
 
     crf = model
-    crf.fit(X_train, y_train)
+    crf.fit(x_train, y_train)
 
-    labels = list(crf.classes_)
+    # flat the data
+    x_train_multiclass = [x for sent in x_train for x in sent]
+    y_train_multiclass = [y for sent in y_train for y in sent]
+    x_dev_multiclass = [x for sent in x_dev for x in sent]
+    y_dev_multiclass = [y for sent in y_train for y in sent]
+
+    labels = sorted(list(set(y_train_multiclass)))
     labels.remove('O')  # why remove 0?
-    y_pred_train = crf.predict(X_train)
-    y_pred_dev = crf.predict(X_dev)
+    y_pred_train = crf.predict(x_train)
+    y_pred_dev = crf.predict(x_dev)
     print(y_pred_dev[:10])
 
-    crf.fit(X_train + X_dev, y_train + y_dev)
+    crf.fit(x_train + x_dev, y_train + y_dev)
 
     # f1 score different way
     if f1_report:
         # metrics.flat_f1_score(y_test, y_pred, average="weighted", labels=labels)
-        
+        # group B and I results
         sorted_labels = sorted(
             labels,
             key=lambda name: (name[1:], name[0])
