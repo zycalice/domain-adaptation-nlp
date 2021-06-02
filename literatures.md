@@ -9,6 +9,7 @@
 
 # Dataset
 * [CrossNER](https://zihanliu1026.medium.com/crossner-evaluating-cross-domain-named-entity-recognition-1a3ee2c1c42b)
-    * need to edit the categories
+  * need to edit the categories
   
 * [NER](https://lionbridge.ai/datasets/15-free-datasets-and-corpora-for-named-entity-recognition-ner/)
+  * used wikigold and SEC-filings
