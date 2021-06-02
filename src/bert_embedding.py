@@ -31,6 +31,10 @@ def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences, cls
     return output
 
 
+def fine_tune_bert():
+    pass
+
+
 if __name__ == '__main__':
     data_path = "../data/"
     tokenizer_d = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
