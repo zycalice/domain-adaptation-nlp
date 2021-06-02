@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
+from src.domain_space_alignment import ht_lr
 
 
 # Helper functions.
@@ -300,6 +301,55 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
     t2t_score = base_model.fit(x_target_raw, y_target_raw).score(x_target_raw, y_target_raw)
     gradual_score = accuracy_score(y_true_all, y_pred_all)
     return s2s_score, t2t_score, s2t_score, gradual_score
+
+
+# Multiclass Self-Train with ht
+def multiclass_self_train(base_model, train_features, train_labels, test_features, test_labels, conf, ht=False):
+    """
+
+    :param base_model:
+    :param train_features: on the word level; each word has a set of features
+    :param train_labels: word labels
+    :param test_features:
+    :param test_labels:
+    :param ht: True or False
+    :param conf: confidence level
+    :return:
+    """
+    unique_labels = sorted(list(set(train_labels)))
+    train_binary_labels = np.zeros(len(train_labels))
+    test_binary_labels = np.zeros(len(test_labels))
+
+    logs = []
+    for label in unique_labels:
+        train_binary_labels[train_labels == label] = 1
+        test_binary_labels[test_labels == label] = 1
+
+        # pseudo labels and ht transformation
+        base_model.fit(train_features, train_binary_labels)
+        if ht:
+            test_features = ht_lr(train_features, train_binary_labels, test_features, test_binary_labels)
+
+        # fit using transformed test features
+        features = np.concatenate((train_features, test_features), 0)
+        binary_labels = np.concatenate((train_binary_labels, test_binary_labels), 0)
+        base_model.fit(features, binary_labels)
+
+        # produce probabilities on the test features only
+        y_prob = base_model.predict_prob(test_features)  # probabilities
+        y_combo = [(i, x) for i, x in enumerate(y_prob)]
+
+        logs.append(y_prob)
+
+    logs = np.array(logs)
+    pred_logs = logs/np.sum(logs, 0)
+    pred = np.argmax(pred_logs, 0)
+
+    # TODO convert from numbers to categories
+    # TODO Output in list of list structure
+
+    return pred
+
 
 ##################################################################################################################
 # Used in actual report.

@@ -1,3 +1,4 @@
+import numpy as np
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
 from collections import Counter
@@ -15,10 +16,10 @@ with open(data_path + "wiki_sec_word2idx.json") as f:
 
 ner_bert = np.load("../data/all_bert/bert_uncased_encoded_ner_corpus.npy")
 
-assert(len(ner_bert) == len(word2idx))
+assert (len(ner_bert) == len(word2idx))
 
 
-def word2features(sent, i):
+def word2features(sent, i, use_crf):
     """
     The function generates all features
     for the word at position i in the
@@ -31,24 +32,30 @@ def word2features(sent, i):
     #     print(word, word2idx[word]-1)
     #     raise ValueError
     features = {}
+
+    if not use_crf:
+        # embedding need 1) position, 2) bert word embedding, TODO add sentence id
+        embedding = np.concatenate((embedding, [i]), 0)
+
     for j in range(len(embedding)):
         features[str(j)] = embedding[j]
+
     return features
 
 
-def sent2features(sent):
-    return [word2features(sent, i) for i in range(len(sent))]
+def sent2features(sent, use_crf):
+    return [word2features(sent, i, use_crf) for i in range(len(sent))]
 
 
 def sent2labels(sent):
     return [t[-1] for t in sent]
 
 
-def get_features_labels(train_sents, test_sents, test_ht=False):
-    X_train = [sent2features(s) for s in train_sents]
+def get_features_labels(train_sents, test_sents, use_crf, test_ht=False):
+    X_train = [sent2features(s, use_crf) for s in train_sents]
     y_train = [sent2labels(s) for s in train_sents]
 
-    X_test = [sent2features(s) for s in test_sents]
+    X_test = [sent2features(s, use_crf) for s in test_sents]
     y_test = [sent2labels(s) for s in test_sents]
 
     if test_ht:
@@ -76,13 +83,13 @@ def output_predictions_to_file(sents, output_name, y_pred):
         out.write("\n")
 
 
-def run_crf(train_data, dev_data, model, test_ht, output_name=None, crf_f1_report=True, crf_transition_analysis=False,
-            output_predictions=False, save_model=False):
+def run_crf(train_data, dev_data, model, use_crf, test_ht=False, output_name=None, crf_f1_report=True,
+            crf_transition_analysis=False, output_predictions=False, save_model=False):
     # Load the training data
     train_sents = train_data
     dev_sents = dev_data
 
-    X_train, y_train, X_dev, y_dev = get_features_labels(train_sents, dev_sents, test_ht)
+    X_train, y_train, X_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)
 
     crf = model
     crf.fit(X_train, y_train)
@@ -131,6 +138,54 @@ def run_crf(train_data, dev_data, model, test_ht, output_name=None, crf_f1_repor
         output_predictions_to_file(dev_sents, output_name, y_pred_dev)
 
 
+def run_multiclass(train_data, dev_data, model, use_crf, test_ht, output_name=None, f1_report=True,
+                   transition_analysis=False, output_predictions=False, save_model=False):
+    # Load the training data
+    train_sents = train_data
+    dev_sents = dev_data
+
+    X_train, y_train, X_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)
+
+    crf = model
+    crf.fit(X_train, y_train)
+
+    labels = list(crf.classes_)
+    labels.remove('O')  # why remove 0?
+    y_pred_train = crf.predict(X_train)
+    y_pred_dev = crf.predict(X_dev)
+    print(y_pred_dev[:10])
+
+    crf.fit(X_train + X_dev, y_train + y_dev)
+
+    # f1 score different way
+    if f1_report:
+        # metrics.flat_f1_score(y_test, y_pred, average="weighted", labels=labels)
+        # group B and I results
+        sorted_labels = sorted(
+            labels,
+            key=lambda name: (name[1:], name[0])
+        )
+
+        print("== Train ==")
+        print(metrics.flat_classification_report(
+            y_train, y_pred_train, labels=sorted_labels, digits=3
+        ))
+
+        print("== Dev ==")
+        print(metrics.flat_classification_report(
+            y_dev, y_pred_dev, labels=sorted_labels, digits=3
+        ))
+
+    if save_model:
+        print("Saving model")
+        model_filename = '../outputs/ner_model.sav'
+        pickle.dump(model, open(model_filename, 'wb'))
+
+    if output_predictions:
+        print("Writing to results.txt")
+        output_predictions_to_file(dev_sents, output_name, y_pred_dev)
+
+
 #  TODO: probability layer can be obtained using
 #  https://sklearn-crfsuite.readthedocs.io/en/latest/_modules/sklearn_crfsuite/estimator.html#CRF.predict_marginals
 
@@ -155,11 +210,11 @@ if __name__ == '__main__':
     # In domain
     sys.stdout = open("../outputs/" + "ner_uncased" + '.txt', 'w')
     print("\nIn domain: train_sec, test_sec")
-    run_crf(train_sec, test_sec, crf_model, test_ht=False,
+    run_crf(train_sec, test_sec, crf_model, test_ht=False, use_crf=True,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
     print("\nIn domain: train_wiki, test_wiki")
-    run_crf(train_wiki, test_wiki, crf_model, test_ht=False,
+    run_crf(train_wiki, test_wiki, crf_model, test_ht=False, use_crf=True,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
     # print("In domain: train_wiki, test_wiki_ht")
@@ -172,7 +227,7 @@ if __name__ == '__main__':
 
     # Out domain
     print("\nOut domain: train_wiki, test_sec")
-    run_crf(train_wiki, test_sec, crf_model, test_ht=False,
+    run_crf(train_wiki, test_sec, crf_model, test_ht=False, use_crf=True,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
     # print("Out domain: train_wiki, test_sec_ht")
@@ -180,7 +235,7 @@ if __name__ == '__main__':
     #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
     print("\nOut domain: train_sec, test_wiki")
-    run_crf(train_sec, test_wiki, crf_model, test_ht=False,
+    run_crf(train_sec, test_wiki, crf_model, test_ht=False, use_crf=True,
             crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
 
     # print("Out domain: train_sec, test_wiki_ht")
