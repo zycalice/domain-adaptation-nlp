@@ -304,6 +304,7 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
 
 
 # Multiclass Self-Train with ht
+# TODO change input to list of list (sentence level) as opposed to word level
 def multiclass_self_train(base_model, train_features, train_labels, test_features, test_labels, conf, ht=False):
     """
 
