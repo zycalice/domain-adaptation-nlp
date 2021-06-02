@@ -326,7 +326,7 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
         train_binary_labels[train_labels == label] = 1
         test_binary_labels[test_labels == label] = 1
 
-        # pseudo labels and ht transformation
+        # pseudo labels and ht transformation # TODO get pseudo labels
         base_model.fit(train_features, train_binary_labels)
         if ht:
             test_features = ht_lr(train_features, train_binary_labels, test_features, test_binary_labels)

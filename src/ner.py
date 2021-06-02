@@ -34,7 +34,8 @@ def word2features(sent, i, use_crf):
     features = {}
 
     if not use_crf:
-        # embedding need 1) position, 2) bert word embedding, TODO add sentence id
+        # embedding need 1) position or relative position, 2) (fine-tuned or not) bert word embedding,
+        # TODO add sentence id; may or may not need position; +-1 context; first word, or last word
         embedding = np.concatenate((embedding, [i]), 0)
 
     for j in range(len(embedding)):
