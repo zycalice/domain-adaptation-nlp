@@ -9,3 +9,4 @@
 
 # Dataset
 * [CrossNER](https://zihanliu1026.medium.com/crossner-evaluating-cross-domain-named-entity-recognition-1a3ee2c1c42b)
+    * need to edit the categories
