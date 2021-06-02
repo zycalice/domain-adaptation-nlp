@@ -162,7 +162,7 @@ def run_multiclass(train_data, dev_data, model, use_crf, test_ht, output_name=No
     # f1 score different way
     if f1_report:
         # metrics.flat_f1_score(y_test, y_pred, average="weighted", labels=labels)
-        # group B and I results
+        
         sorted_labels = sorted(
             labels,
             key=lambda name: (name[1:], name[0])
