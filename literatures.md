@@ -1,6 +1,6 @@
 # Literatures
 ## NER
-* 
+* [BERT(please read NER example in section 5.3)](https://arxiv.org/pdf/1810.04805.pdf)
 ## Domain alignment
 * 
 
