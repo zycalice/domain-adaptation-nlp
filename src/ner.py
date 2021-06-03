@@ -137,26 +137,37 @@ def run_crf(train_data, dev_data, model, use_crf, test_ht=False, output_name=Non
         output_predictions_to_file(dev_sents, output_name, y_pred_dev)
 
 
-def run_multiclass(train_data, dev_data, use_crf, test_ht, output_name=None, f1_report=True,
+def run_multiclass(train_data, base_model, dev_data, use_crf, test_ht, conf, output_name=None, f1_report=True,
                    output_predictions=False, save_model=False):
-
     # Load the training data
     train_sents = train_data
     dev_sents = dev_data
 
     x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)  # list of list
 
-    # TODO switch to multi class model
-    crf = model
-    crf.fit(x_train, y_train)
+    # flat the data
+    x_train_multiclass = [x for sent in x_train for x in sent]
+    y_train_multiclass = [y for sent in y_train for y in sent]
+    x_test_multiclass = [x for sent in x_dev for x in sent]
+    y_test_multiclass = [y for sent in y_dev for y in sent]
 
     labels = sorted(list(set(y_train_multiclass)))
     labels.remove('O')  # why remove 0?
-    y_pred_train = crf.predict(x_train)
-    y_pred_dev = crf.predict(x_dev)
-    print(y_pred_dev[:10])
 
-    crf.fit(x_train + x_dev, y_train + y_dev)
+    # predictions # TODO make this list to a list of list
+    y_pred_train = multiclass_self_train(base_model,
+                                         x_train_multiclass, y_train_multiclass,
+                                         x_train_multiclass, x_train_multiclass,
+                                         conf, False)
+
+    y_pred_dev = multiclass_self_train(base_model,
+                                       x_train_multiclass, y_train_multiclass,
+                                       x_test_multiclass, y_test_multiclass,
+                                       conf, test_ht)
+
+    # y_pred_train = crf.predict(x_train)
+    # y_pred_dev = crf.predict(x_dev)
+    print(y_pred_dev[:10])
 
     # f1 score different way
     if f1_report:
