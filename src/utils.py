@@ -304,19 +304,28 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
 
 
 # Multiclass Self-Train with ht
-# TODO change input to list of list (sentence level) as opposed to word level
-def multiclass_self_train(base_model, train_features, train_labels, test_features, test_labels, conf, ht=False):
+# TODO change input to list but with sentence id
+def multiclass_self_train(base_model, train_features_list, train_labels_list, test_features_list, test_labels_list,
+                          conf, ht=False):
     """
 
     :param base_model:
-    :param train_features: on the word level; each word has a set of features
-    :param train_labels: word labels
-    :param test_features:
-    :param test_labels:
+    :param train_features_list: on the word level; each word has a set of features
+    :param train_labels_list: word labels
+    :param test_features_list:
+    :param test_labels_list:
     :param ht: True or False
     :param conf: confidence level
     :return:
     """
+
+    # flat the data
+    train_features = [x for sent in train_features_list for x in sent]
+    train_labels = [y for sent in train_labels_list for y in sent]
+    test_features = [x for sent in test_features_list for x in sent]
+    test_labels = [y for sent in test_labels_list for y in sent]
+
+    # initiate labels
     unique_labels = sorted(list(set(train_labels)))
     train_binary_labels = np.zeros(len(train_labels))
     test_binary_labels = np.zeros(len(test_labels))
