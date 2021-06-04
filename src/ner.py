@@ -154,7 +154,7 @@ def run_multiclass(train_data, base_model, dev_data, use_crf, test_ht, conf, out
     labels = sorted(list(set(y_train_multiclass)))
     labels.remove('O')  # why remove 0?
 
-    # predictions # TODO make this list to a list of list
+    # predictions
     y_pred_train = multiclass_self_train(base_model,
                                          x_train_multiclass, y_train_multiclass,
                                          x_train_multiclass, x_train_multiclass,
@@ -164,6 +164,8 @@ def run_multiclass(train_data, base_model, dev_data, use_crf, test_ht, conf, out
                                        x_train_multiclass, y_train_multiclass,
                                        x_test_multiclass, y_test_multiclass,
                                        conf, test_ht)
+
+    # TODO make this list to a list of list
 
     # y_pred_train = crf.predict(x_train)
     # y_pred_dev = crf.predict(x_dev)
