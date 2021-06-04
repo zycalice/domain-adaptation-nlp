@@ -146,23 +146,23 @@ def run_multiclass(train_data, base_model, dev_data, use_crf, test_ht, conf, out
     x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)  # list of list
 
     # flat the data
-    x_train_multiclass = [x for sent in x_train for x in sent]
-    y_train_multiclass = [y for sent in y_train for y in sent]
-    x_test_multiclass = [x for sent in x_dev for x in sent]
-    y_test_multiclass = [y for sent in y_dev for y in sent]
+    x_train_multiclass = [(i, x) for i, sent in enumerate(x_train) for x in sent]
+    y_train_multiclass = [(i, y) for i, sent in enumerate(y_train) for y in sent]
+    x_test_multiclass = [(i, x) for i, sent in enumerate(x_dev) for x in sent]
+    y_test_multiclass = [(i, y) for i, sent in enumerate(y_dev) for y in sent]
 
-    labels = sorted(list(set(y_train_multiclass)))
+    labels = sorted(list(set([t[1] for t in y_train_multiclass])))
     labels.remove('O')  # why remove 0?
 
     # predictions
     y_pred_train = multiclass_self_train(base_model,
-                                         x_train_multiclass, y_train_multiclass,
-                                         x_train_multiclass, x_train_multiclass,
+                                         [t[1] for t in x_train_multiclass], [t[1] for t in y_train_multiclass],
+                                         [t[1] for t in x_train_multiclass], [t[1] for t in y_train_multiclass],
                                          conf, False)
 
     y_pred_dev = multiclass_self_train(base_model,
-                                       x_train_multiclass, y_train_multiclass,
-                                       x_test_multiclass, y_test_multiclass,
+                                       [t[1] for t in x_train_multiclass], [t[1] for t in y_train_multiclass],
+                                       [t[1] for t in x_test_multiclass], [t[1] for t in y_test_multiclass],
                                        conf, test_ht)
 
     # TODO make this list to a list of list
