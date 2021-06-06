@@ -33,10 +33,10 @@ def word2features(sent, i, use_crf):
     #     raise ValueError
     features = {}
 
-    if not use_crf:
-        # embedding need 1) position or relative position, 2) (fine-tuned or not) bert word embedding,
-        # TODO add sentence id; may or may not need position; +-1 context; first word, or last word
-        embedding = np.concatenate((embedding, [i]), 0)
+    # if not use_crf:
+    #     # embedding need 1) position or relative position, 2) (fine-tuned or not) bert word embedding,
+    #     # TODO add sentence id; may or may not need position; +-1 context; first word, or last word
+    #     embedding = np.concatenate((embedding, [i]), 0)
 
     for j in range(len(embedding)):
         features[str(j)] = embedding[j]
@@ -140,13 +140,15 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     train_sents = train_data
     dev_sents = dev_data
 
-    x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, False)  # list of list
+    x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, False)
 
-    # flat the data
-    x_train_multiclass = [x for sent in x_train for x in sent]
+    # flat the data TODO: need to work on input format
+    x_train_multiclass = [list(x.values()) for sent in x_train for x in sent]
     y_train_multiclass = [y for sent in y_train for y in sent]
-    x_dev_multiclass = [x for sent in x_dev for x in sent]
+    x_dev_multiclass = [list(x.values()) for sent in x_dev for x in sent]
     y_dev_multiclass = [y for sent in y_dev for y in sent]
+
+    print(y_train_multiclass)
 
     train_idx = [i for i, sent in enumerate(y_train) for _ in sent]
     dev_idx = [i for i, sent in enumerate(y_dev) for _ in sent]
@@ -155,17 +157,16 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     labels.remove('O')  # why remove 0?
 
     # predictions
-    print(x_train_multiclass)
     y_pred_train_list = multiclass_self_train(
         base_model,
-        x_train_multiclass[0].values(), y_train_multiclass,
-        x_train_multiclass[0].values(), y_train_multiclass,
+        x_train_multiclass, y_train_multiclass,
+        x_train_multiclass, y_train_multiclass,
         conf, False)
 
     y_pred_dev_list = multiclass_self_train(
         base_model,
-        x_train_multiclass[0].values(), y_train_multiclass,
-        x_dev_multiclass[0].values(), y_dev_multiclass,
+        x_train_multiclass, y_train_multiclass,
+        x_dev_multiclass, y_dev_multiclass,
         conf, test_ht)
 
     y_pred_train = []
@@ -212,11 +213,6 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
         print(metrics.flat_classification_report(
             y_dev, y_pred_dev, labels=sorted_labels, digits=3
         ))
-
-    if save_model:
-        print("Saving model")
-        model_filename = '../outputs/ner_model.sav'
-        pickle.dump(model, open(model_filename, 'wb'))
 
     if output_predictions:
         print("Writing to results.txt")
