@@ -1,12 +1,12 @@
 # import numpy as np
 import sklearn_crfsuite
+from sklearn.linear_model import LogisticRegression
 from sklearn_crfsuite import metrics
 from collections import Counter
 import pickle
 from bert_embedding import *
 from dataset_multi import load_ner_data
 from sklearn.model_selection import train_test_split
-from src.domain_space_alignment import ht_lr
 import sys
 
 # Load pre-computed bert embeddings.
@@ -14,7 +14,7 @@ data_path = "../data/"
 with open(data_path + "wiki_sec_word2idx.json") as f:
     word2idx = json.load(f)
 
-ner_bert = np.load("../data/all_bert/bert_uncased_encoded_ner_corpus.npy")
+ner_bert = np.load("../data/all_bert/bert_cased_encoded_ner_corpus.npy")  # cased result is better than uncased for crf
 
 assert (len(ner_bert) == len(word2idx))
 
@@ -52,15 +52,12 @@ def sent2labels(sent):
     return [t[-1] for t in sent]
 
 
-def get_features_labels(train_sents, test_sents, use_crf, test_ht=False):
+def get_features_labels(train_sents, test_sents, use_crf):
     x_train = [sent2features(s, use_crf) for s in train_sents]
     y_train = [sent2labels(s) for s in train_sents]
 
     x_test = [sent2features(s, use_crf) for s in test_sents]
     y_test = [sent2labels(s) for s in test_sents]
-
-    if test_ht:
-        x_test = ht_lr(x_train, y_train, x_test, y_test)
 
     return x_train, y_train, x_test, y_test
 
@@ -84,16 +81,16 @@ def output_predictions_to_file(sents, output_name, y_pred):
         out.write("\n")
 
 
-def run_crf(train_data, dev_data, model, use_crf, test_ht=False, output_name=None, crf_f1_report=True,
+def run_crf(train_data, dev_data, base_model, output_name=None, crf_f1_report=True,
             crf_transition_analysis=False, output_predictions=False, save_model=False):
     # Load the training data
     train_sents = train_data
     dev_sents = dev_data
 
-    x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)
+    x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, True)
 
-    crf = model
-    crf.fit(x_train, y_train)
+    crf = base_model
+    base_model.fit(x_train, y_train)
 
     labels = list(crf.classes_)
     labels.remove('O')  # why remove 0?
@@ -137,38 +134,63 @@ def run_crf(train_data, dev_data, model, use_crf, test_ht=False, output_name=Non
         output_predictions_to_file(dev_sents, output_name, y_pred_dev)
 
 
-def run_multiclass(train_data, base_model, dev_data, use_crf, test_ht, conf, output_name=None, f1_report=True,
+def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=None, f1_report=True,
                    output_predictions=False, save_model=False):
     # Load the training data
     train_sents = train_data
     dev_sents = dev_data
 
-    x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, use_crf, test_ht)  # list of list
+    x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, False)  # list of list
 
     # flat the data
-    x_train_multiclass = [(i, x) for i, sent in enumerate(x_train) for x in sent]
-    y_train_multiclass = [(i, y) for i, sent in enumerate(y_train) for y in sent]
-    x_test_multiclass = [(i, x) for i, sent in enumerate(x_dev) for x in sent]
-    y_test_multiclass = [(i, y) for i, sent in enumerate(y_dev) for y in sent]
+    x_train_multiclass = [x for i, sent in enumerate(x_train) for x in sent]
+    y_train_multiclass = [y for i, sent in enumerate(y_train) for y in sent]
+    x_dev_multiclass = [x for i, sent in enumerate(x_dev) for x in sent]
+    y_dev_multiclass = [y for i, sent in enumerate(y_dev) for y in sent]
+
+    train_idx = [i for i, sent in enumerate(y_train) for _ in sent]
+    dev_idx = [i for i, sent in enumerate(y_dev) for _ in sent]
 
     labels = sorted(list(set([t[1] for t in y_train_multiclass])))
     labels.remove('O')  # why remove 0?
 
     # predictions
-    y_pred_train = multiclass_self_train(base_model,
-                                         [t[1] for t in x_train_multiclass], [t[1] for t in y_train_multiclass],
-                                         [t[1] for t in x_train_multiclass], [t[1] for t in y_train_multiclass],
-                                         conf, False)
+    y_pred_train_list = multiclass_self_train(
+        base_model,
+        x_train_multiclass, y_train_multiclass,
+        x_train_multiclass, y_train_multiclass,
+        conf, False)
 
-    y_pred_dev = multiclass_self_train(base_model,
-                                       [t[1] for t in x_train_multiclass], [t[1] for t in y_train_multiclass],
-                                       [t[1] for t in x_test_multiclass], [t[1] for t in y_test_multiclass],
-                                       conf, test_ht)
+    y_pred_dev_list = multiclass_self_train(
+        base_model,
+        x_train_multiclass, y_train_multiclass,
+        x_dev_multiclass, y_dev_multiclass,
+        conf, test_ht)
 
-    # TODO make this list to a list of list
+    y_pred_train = []
+    y_pred_dev = []
 
-    # y_pred_train = crf.predict(x_train)
-    # y_pred_dev = crf.predict(x_dev)
+    # convert from list to list of lists
+    # train
+    sent = []
+    for i, idx in enumerate(train_idx):
+        word = y_pred_train_list[i]
+        if (i > 0) and (idx != train_idx[i - 1]):
+            y_pred_train.append(sent)
+            sent = [word]
+        else:
+            sent.append(word)
+
+    # test
+    sent = []
+    for i, idx in enumerate(dev_idx):
+        word = y_pred_dev_list[i]
+        if (i > 0) and (idx != dev_idx[i - 1]):
+            y_pred_dev.append(sent)
+            sent = [word]
+        else:
+            sent.append(word)
+
     print(y_pred_dev[:10])
 
     # f1 score different way
@@ -221,24 +243,57 @@ if __name__ == '__main__':
         # all_possible_states=True,
     )
 
-    # In domain
-    sys.stdout = open("../outputs/" + "ner_uncased" + '.txt', 'w')
+    lr_model = LogisticRegression(max_iter=200000)
+
+    # # In domain crf
+    # sys.stdout = open("../outputs/" + "ner_cased" + '.txt', 'w')
+    # print("\nIn domain: train_sec, test_sec")
+    # run_crf(train_sec, test_sec, crf_model,
+    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    #
+    # print("\nIn domain: train_wiki, test_wiki")
+    # run_crf(train_wiki, test_wiki, crf_model,
+    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    #
+    # # Out domain crf
+    # print("\nOut domain: train_wiki, test_sec")
+    # run_crf(train_wiki, test_sec, crf_model,
+    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    #
+    # print("\nOut domain: train_sec, test_wiki")
+    # run_crf(train_sec, test_wiki, crf_model,
+    #         crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    #
+    # sys.stdout.close()
+    # sys.stdout = sys.__stdout__
+
+    # In domain multiclass
+    sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
     print("\nIn domain: train_sec, test_sec")
-    run_crf(train_sec, test_sec, crf_model, test_ht=False, use_crf=True,
-            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
 
     print("\nIn domain: train_wiki, test_wiki")
-    run_crf(train_wiki, test_wiki, crf_model, test_ht=False, use_crf=True,
-            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
 
-    # Out domain
+    # Out domain multiclass
     print("\nOut domain: train_wiki, test_sec")
-    run_crf(train_wiki, test_sec, crf_model, test_ht=False, use_crf=True,
-            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
 
     print("\nOut domain: train_sec, test_wiki")
-    run_crf(train_sec, test_wiki, crf_model, test_ht=False, use_crf=True,
-            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    # Out domain multiclass HT
+    print("\nOut domain HT: train_wiki, test_sec")
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nOut domain HT: train_sec, test_wiki")
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)
 
     sys.stdout.close()
     sys.stdout = sys.__stdout__

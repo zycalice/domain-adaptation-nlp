@@ -321,6 +321,7 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
 
     # initiate labels
     unique_labels = sorted(list(set(train_labels)))
+    id2labels = {i: x for i, x in enumerate(unique_labels)}
     train_binary_labels = np.zeros(len(train_labels))
     test_binary_labels = np.zeros(len(test_labels))
 
@@ -345,12 +346,13 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
         logs.append(y_prob)
 
     logs = np.array(logs)
-    pred_logs = logs/np.sum(logs, 0)
-    pred = np.argmax(pred_logs, 0)
+    pred_logs = logs / np.sum(logs, 0)
+    pred_id = np.argmax(pred_logs, 0)
 
-    # TODO convert from numbers to categories
-    # TODO Output in list of list structure
-
+    # convert from numbers to categories
+    pred = []
+    for x in pred_id:
+        pred.append(id2labels[x])
     return pred
 
 
