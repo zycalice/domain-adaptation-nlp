@@ -151,7 +151,7 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     train_idx = [i for i, sent in enumerate(y_train) for _ in sent]
     dev_idx = [i for i, sent in enumerate(y_dev) for _ in sent]
 
-    labels = sorted(list(set([t[1] for t in y_train_multiclass])))
+    labels = sorted(list(set([x for x in y_train_multiclass])))
     labels.remove('O')  # why remove 0?
 
     # predictions
