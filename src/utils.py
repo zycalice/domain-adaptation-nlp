@@ -337,6 +337,8 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
         # fit using transformed test features
         features = np.concatenate((train_features, test_features), 0)
         binary_labels = np.concatenate((train_binary_labels, test_binary_labels), 0)
+        # print(features)
+        # print(binary_labels)
         base_model.fit(features, binary_labels)
 
         # produce probabilities on the test features only

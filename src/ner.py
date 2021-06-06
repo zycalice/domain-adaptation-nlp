@@ -143,10 +143,10 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, False)  # list of list
 
     # flat the data
-    x_train_multiclass = [x for i, sent in enumerate(x_train) for x in sent]
-    y_train_multiclass = [y for i, sent in enumerate(y_train) for y in sent]
-    x_dev_multiclass = [x for i, sent in enumerate(x_dev) for x in sent]
-    y_dev_multiclass = [y for i, sent in enumerate(y_dev) for y in sent]
+    x_train_multiclass = [x for sent in x_train for x in sent]
+    y_train_multiclass = [y for sent in y_train for y in sent]
+    x_dev_multiclass = [x for sent in x_dev for x in sent]
+    y_dev_multiclass = [y for sent in y_dev for y in sent]
 
     train_idx = [i for i, sent in enumerate(y_train) for _ in sent]
     dev_idx = [i for i, sent in enumerate(y_dev) for _ in sent]
@@ -155,16 +155,17 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     labels.remove('O')  # why remove 0?
 
     # predictions
+    print(x_train_multiclass)
     y_pred_train_list = multiclass_self_train(
         base_model,
-        x_train_multiclass, y_train_multiclass,
-        x_train_multiclass, y_train_multiclass,
+        x_train_multiclass[0].values(), y_train_multiclass[0].values(),
+        x_train_multiclass[0].values(), y_train_multiclass[0].values(),
         conf, False)
 
     y_pred_dev_list = multiclass_self_train(
         base_model,
-        x_train_multiclass, y_train_multiclass,
-        x_dev_multiclass, y_dev_multiclass,
+        x_train_multiclass[0].values(), y_train_multiclass[0].values(),
+        x_dev_multiclass[0].values(), y_dev_multiclass[0].values(),
         conf, test_ht)
 
     y_pred_train = []
@@ -268,32 +269,32 @@ if __name__ == '__main__':
     # sys.stdout = sys.__stdout__
 
     # In domain multiclass
-    sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
-    print("\nIn domain: train_sec, test_sec")
+    # sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
+    print("\nIn domain multiclass: train_sec, test_sec")
     run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
                    f1_report=True, output_predictions=False)
 
-    print("\nIn domain: train_wiki, test_wiki")
+    print("\nIn domain multiclass: train_wiki, test_wiki")
     run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
                    f1_report=True, output_predictions=False)
 
     # Out domain multiclass
-    print("\nOut domain: train_wiki, test_sec")
+    print("\nOut domain multiclass: train_wiki, test_sec")
     run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
                    f1_report=True, output_predictions=False)
 
-    print("\nOut domain: train_sec, test_wiki")
+    print("\nOut domain multiclass: train_sec, test_wiki")
     run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
                    f1_report=True, output_predictions=False)
 
     # Out domain multiclass HT
-    print("\nOut domain HT: train_wiki, test_sec")
+    print("\nOut domain multiclass HT: train_wiki, test_sec")
     run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
                    f1_report=True, output_predictions=False)
 
-    print("\nOut domain HT: train_sec, test_wiki")
+    print("\nOut domain multiclass HT: train_sec, test_wiki")
     run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
                    f1_report=True, output_predictions=False)
 
-    sys.stdout.close()
-    sys.stdout = sys.__stdout__
+    # sys.stdout.close()
+    # sys.stdout = sys.__stdout__
