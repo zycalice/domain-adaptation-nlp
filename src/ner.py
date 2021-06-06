@@ -158,14 +158,14 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     print(x_train_multiclass)
     y_pred_train_list = multiclass_self_train(
         base_model,
-        x_train_multiclass[0].values(), y_train_multiclass[0].values(),
-        x_train_multiclass[0].values(), y_train_multiclass[0].values(),
+        x_train_multiclass[0].values(), y_train_multiclass,
+        x_train_multiclass[0].values(), y_train_multiclass,
         conf, False)
 
     y_pred_dev_list = multiclass_self_train(
         base_model,
-        x_train_multiclass[0].values(), y_train_multiclass[0].values(),
-        x_dev_multiclass[0].values(), y_dev_multiclass[0].values(),
+        x_train_multiclass[0].values(), y_train_multiclass,
+        x_dev_multiclass[0].values(), y_dev_multiclass,
         conf, test_ht)
 
     y_pred_train = []
