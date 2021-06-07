@@ -167,31 +167,51 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
         x_dev_multiclass, y_dev_multiclass,
         conf, test_ht)
 
+    # print("train", np.array(y_pred_train_list).shape, "dev", np.array(y_pred_dev_list).shape)
+
     y_pred_train = []
     y_pred_dev = []
 
     # convert from list to list of lists
     # train
     sent = []
-    for i, idx in enumerate(train_idx):
+    for i, sent_idx in enumerate(train_idx):
         word = y_pred_train_list[i]
-        if (i > 0) and (idx != train_idx[i - 1]):
+        if (i > 0) and (sent_idx != train_idx[i - 1]):
             y_pred_train.append(sent)
             sent = [word]
         else:
             sent.append(word)
+    y_pred_train.append(sent)
+
+    # # Alternative way
+    # y_pred_train_dict = {}
+    # y_pred_dev_dict = {}
+    #
+    # for i, _ in enumerate(train_idx):
+    #     sent_id = train_idx[i]
+    #     word = y_pred_train_list[i]
+    #     if sent_id not in y_pred_train_dict:
+    #         y_pred_train_dict[sent_id] = [word]
+    #     else:
+    #         y_pred_train_dict[sent_id].append(word)
+    #
+    # y_pred_train = list(y_pred_train_dict.values())
 
     # test
     sent = []
-    for i, idx in enumerate(dev_idx):
+    for i, sent_idx in enumerate(dev_idx):
         word = y_pred_dev_list[i]
-        if (i > 0) and (idx != dev_idx[i - 1]):
+        if (i > 0) and (sent_idx != dev_idx[i - 1]):
             y_pred_dev.append(sent)
             sent = [word]
         else:
             sent.append(word)
+    y_pred_dev.append(sent)
 
-    print(y_pred_dev[:10])
+    # print(y_pred_dev[:10])
+    # print(np.array(x_train).shape, np.array(y_train).shape, np.array(y_pred_train).shape)
+    # print(np.array(x_dev).shape, np.array(y_dev).shape, np.array(y_pred_dev).shape)
 
     # f1 score different way
     if f1_report:
@@ -268,27 +288,27 @@ if __name__ == '__main__':
     run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
                    f1_report=True, output_predictions=False)
 
-    print("\nIn domain multiclass: train_wiki, test_wiki")
-    run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    # Out domain multiclass
-    print("\nOut domain multiclass: train_wiki, test_sec")
-    run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    print("\nOut domain multiclass: train_sec, test_wiki")
-    run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    # Out domain multiclass HT
-    print("\nOut domain multiclass HT: train_wiki, test_sec")
-    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    print("\nOut domain multiclass HT: train_sec, test_wiki")
-    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
-                   f1_report=True, output_predictions=False)
+    # print("\nIn domain multiclass: train_wiki, test_wiki")
+    # run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # # Out domain multiclass
+    # print("\nOut domain multiclass: train_wiki, test_sec")
+    # run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # print("\nOut domain multiclass: train_sec, test_wiki")
+    # run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # # Out domain multiclass HT
+    # print("\nOut domain multiclass HT: train_wiki, test_sec")
+    # run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # print("\nOut domain multiclass HT: train_sec, test_wiki")
+    # run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
+    #                f1_report=True, output_predictions=False)
 
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__

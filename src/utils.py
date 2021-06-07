@@ -1,5 +1,6 @@
 import random
 import numpy as np
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
@@ -323,7 +324,7 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
     unique_labels = sorted(list(set(train_labels)))
     id2labels = {i: x for i, x in enumerate(unique_labels)}
 
-    logs = []
+    probs = []
 
     for label in unique_labels:
         train_binary_labels = np.zeros(len(train_labels))
@@ -337,19 +338,25 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
 
         # fit using transformed test features
         features = np.concatenate((train_features, test_features), 0)
+        # print(np.array(train_features).shape)
+        # print(np.array(test_features).shape)
+        # print(np.array(features).shape)
         binary_labels = np.concatenate((train_binary_labels, test_binary_labels), 0)
-        # print(features)
-        # print(binary_labels)
+        # print(np.array(features).shape)
+        # print(np.array(binary_labels).shape)
+        # print(set(binary_labels))
         base_model.fit(features, binary_labels)
 
         # produce probabilities on the test features only TODO add conf; currently not used
-        y_prob = base_model.predict_proba(test_features)  # probabilities
-        y_combo = [(i, x) for i, x in enumerate(y_prob)]
+        y_prob = base_model.predict_proba(test_features)[:, 0]  # probabilities
+        # print(np.array(y_prob).shape)
+        # y_combo = [(i, x) for i, x in enumerate(y_prob)]
 
-        logs.append(y_prob)
+        probs.append(y_prob)
+        # print(np.array(logs).shape)
 
-    logs = np.array(logs)
-    pred_logs = logs / np.sum(logs, 0)
+    probs = np.array(probs)
+    pred_logs = probs / np.sum(probs, 0)
     pred_id = np.argmax(pred_logs, 0)
 
     # convert from numbers to categories
