@@ -322,13 +322,14 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
     # initiate labels
     unique_labels = sorted(list(set(train_labels)))
     id2labels = {i: x for i, x in enumerate(unique_labels)}
-    train_binary_labels = np.zeros(len(train_labels))
-    test_binary_labels = np.zeros(len(test_labels))
 
     logs = []
+
     for label in unique_labels:
-        train_binary_labels[train_labels == label] = 1
-        test_binary_labels[test_labels == label] = 1
+        train_binary_labels = np.zeros(len(train_labels))
+        test_binary_labels = np.zeros(len(test_labels))
+        train_binary_labels[np.array(train_labels) == label] = 1
+        test_binary_labels[np.array(test_labels) == label] = 1
 
         # ht transformation
         if ht:
@@ -341,8 +342,8 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
         # print(binary_labels)
         base_model.fit(features, binary_labels)
 
-        # produce probabilities on the test features only
-        y_prob = base_model.predict_prob(test_features)  # probabilities
+        # produce probabilities on the test features only TODO add conf; currently not used
+        y_prob = base_model.predict_proba(test_features)  # probabilities
         y_combo = [(i, x) for i, x in enumerate(y_prob)]
 
         logs.append(y_prob)
@@ -353,7 +354,7 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
 
     # convert from numbers to categories
     pred = []
-    for x in pred_id:
+    for x in list(pred_id):
         pred.append(id2labels[x])
     return pred
 
