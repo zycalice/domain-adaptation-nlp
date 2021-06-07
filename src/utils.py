@@ -338,17 +338,11 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
 
         # fit using transformed test features
         features = np.concatenate((train_features, test_features), 0)
-        # print(np.array(train_features).shape)
-        # print(np.array(test_features).shape)
-        # print(np.array(features).shape)
         binary_labels = np.concatenate((train_binary_labels, test_binary_labels), 0)
-        # print(np.array(features).shape)
-        # print(np.array(binary_labels).shape)
-        # print(set(binary_labels))
         base_model.fit(features, binary_labels)
 
         # produce probabilities on the test features only TODO add conf; currently not used
-        y_prob = base_model.predict_proba(test_features)[:, 0]  # probabilities
+        y_prob = base_model.predict_proba(test_features)[:, 1]  # probabilities
         # print(np.array(y_prob).shape)
         # y_combo = [(i, x) for i, x in enumerate(y_prob)]
 
