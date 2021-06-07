@@ -332,7 +332,7 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
         train_binary_labels[np.array(train_labels) == label] = 1
         test_binary_labels[np.array(test_labels) == label] = 1
 
-        # ht transformation
+        # ht transformation TODO fix bug in ht_lr - TypeError: can't multiply sequence by non-int of type 'numpy.float64'
         if ht:
             test_features = ht_lr(train_features, train_binary_labels, test_features, test_binary_labels)
 

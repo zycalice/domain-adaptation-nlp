@@ -41,6 +41,8 @@ def hh_lr(u, v, c1, c2, points):
 
     print(u_mag)
     print(v_mag)
+    print(points)
+    # TODO fix bug - TypeError: can't multiply sequence by non-int of type 'numpy.float64'
 
     # Scaling so pos-neg vectors have the same magnitude
     scaled_points = points * v_mag / u_mag
