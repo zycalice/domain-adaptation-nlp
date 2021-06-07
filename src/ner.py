@@ -258,7 +258,7 @@ if __name__ == '__main__':
         # all_possible_states=True,
     )
 
-    lr_model = LogisticRegression(max_iter=200000)
+    lr_model = LogisticRegression(max_iter=2000000)
 
     # # In domain crf
     # sys.stdout = open("../outputs/" + "ner_cased" + '.txt', 'w')
@@ -282,12 +282,12 @@ if __name__ == '__main__':
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
 
-    # In domain multiclass
+    # # In domain multiclass
     # sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
-    print("\nIn domain multiclass: train_sec, test_sec")
-    run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
-                   f1_report=True, output_predictions=False)
-
+    # print("\nIn domain multiclass: train_sec, test_sec")
+    # run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
     # print("\nIn domain multiclass: train_wiki, test_wiki")
     # run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
     #                f1_report=True, output_predictions=False)
@@ -309,6 +309,10 @@ if __name__ == '__main__':
     # print("\nOut domain multiclass HT: train_sec, test_wiki")
     # run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
     #                f1_report=True, output_predictions=False)
-
+    #
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
+
+    print("\nOut domain multiclass HT: train_sec, test_wiki")
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)

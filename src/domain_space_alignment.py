@@ -39,6 +39,9 @@ def hh_lr(u, v, c1, c2, points):
     v_mag = np.linalg.norm(v)
     v_unit = v / v_mag
 
+    print(u_mag)
+    print(v_mag)
+
     # Scaling so pos-neg vectors have the same magnitude
     scaled_points = points * v_mag / u_mag
     scaled_c1 = c1 * v_mag / u_mag

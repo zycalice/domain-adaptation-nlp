@@ -1,2 +1,106 @@
 
-In domain: train_sec, test_sec
+In domain multiclass: train_sec, test_sec
+== Train ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.937     0.753     0.835       275
+      I-MISC      1.000     1.000     1.000         6
+       I-ORG      0.934     0.804     0.864       281
+       I-PER      0.997     0.993     0.995       591
+
+   micro avg      0.970     0.890     0.928      1153
+   macro avg      0.967     0.888     0.923      1153
+weighted avg      0.967     0.890     0.925      1153
+
+== Dev ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.921     0.716     0.806        81
+      I-MISC      1.000     1.000     1.000         1
+       I-ORG      0.961     0.718     0.822       103
+       I-PER      1.000     0.990     0.995       192
+
+   micro avg      0.976     0.857     0.912       377
+   macro avg      0.970     0.856     0.906       377
+weighted avg      0.972     0.857     0.907       377
+
+
+In domain multiclass: train_wiki, test_wiki
+== Train ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.793     0.809     0.801      1053
+      I-MISC      0.794     0.566     0.661      1051
+       I-ORG      0.781     0.643     0.705      1452
+       I-PER      0.850     0.907     0.877      1263
+
+   micro avg      0.808     0.732     0.768      4819
+   macro avg      0.805     0.731     0.761      4819
+weighted avg      0.805     0.732     0.762      4819
+
+== Dev ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.788     0.782     0.785       394
+      I-MISC      0.768     0.630     0.692       341
+       I-ORG      0.772     0.603     0.677       506
+       I-PER      0.805     0.903     0.851       371
+
+   micro avg      0.785     0.721     0.752      1612
+   macro avg      0.783     0.729     0.751      1612
+weighted avg      0.783     0.721     0.747      1612
+
+
+Out domain multiclass: train_wiki, test_sec
+== Train ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.793     0.809     0.801      1053
+      I-MISC      0.794     0.566     0.661      1051
+       I-ORG      0.781     0.643     0.705      1452
+       I-PER      0.850     0.907     0.877      1263
+
+   micro avg      0.808     0.732     0.768      4819
+   macro avg      0.805     0.731     0.761      4819
+weighted avg      0.805     0.732     0.762      4819
+
+== Dev ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.762     0.593     0.667        81
+      I-MISC      0.077     1.000     0.143         1
+       I-ORG      0.732     0.796     0.763       103
+       I-PER      0.921     0.974     0.947       192
+
+   micro avg      0.813     0.844     0.828       377
+   macro avg      0.623     0.841     0.630       377
+weighted avg      0.833     0.844     0.834       377
+
+
+Out domain multiclass: train_sec, test_wiki
+== Train ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.937     0.753     0.835       275
+      I-MISC      1.000     1.000     1.000         6
+       I-ORG      0.934     0.804     0.864       281
+       I-PER      0.997     0.993     0.995       591
+
+   micro avg      0.970     0.890     0.928      1153
+   macro avg      0.967     0.888     0.923      1153
+weighted avg      0.967     0.890     0.925      1153
+
+== Dev ==
+              precision    recall  f1-score   support
+
+       I-LOC      0.819     0.860     0.839       394
+      I-MISC      0.873     0.584     0.699       341
+       I-ORG      0.859     0.520     0.648       506
+       I-PER      0.887     0.911     0.899       371
+
+   micro avg      0.857     0.707     0.775      1612
+   macro avg      0.860     0.719     0.771      1612
+weighted avg      0.859     0.707     0.763      1612
+
+
+Out domain multiclass HT: train_wiki, test_sec
