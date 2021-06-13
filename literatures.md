@@ -20,3 +20,6 @@
   * use CoNLL-2003 as source, use CBS SciTech News as target
 * [NER](https://lionbridge.ai/datasets/15-free-datasets-and-corpora-for-named-entity-recognition-ner/)
   * used wikigold and SEC-filings
+
+# pretrained BERT
+* [CoNLL2003 pretrained BERT](https://huggingface.co/dslim/bert-base-NER)
