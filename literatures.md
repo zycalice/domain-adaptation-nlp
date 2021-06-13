@@ -3,6 +3,7 @@
 * [BERT(please read NER example in section 5.3)](https://arxiv.org/pdf/1810.04805.pdf)
 ## Domain alignment
 * [Zero shot NER](https://arxiv.org/pdf/2002.05923.pdf)
+* [Cross NER(SOTA)](https://www.aclweb.org/anthology/P19-1236.pdf)
 
 ## Context-Specific Word Embedding
 * [Elmo](https://arxiv.org/pdf/1802.05365.pdf)
