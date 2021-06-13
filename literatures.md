@@ -14,11 +14,13 @@
 
 # Dataset
 * [CoNLL2003](https://huggingface.co/datasets/conll2003)
+  [Alternative link](https://www.clips.uantwerpen.be/conll2003/ner/)
+  [Alternative link](https://github.com/glample/tagger/blob/master/dataset/eng.testa)
 * [CrossNER](https://zihanliu1026.medium.com/crossner-evaluating-cross-domain-named-entity-recognition-1a3ee2c1c42b)
   * need to edit the categories
 * [Cross Domain NER(SOTA)](https://github.com/jiachenwestlake/Cross-Domain_NER)
   * use CoNLL-2003 as source, use CBS SciTech News as target
-* [NER](https://github.com/juand-r/entity-recognition-datasets)
+* [Other NER](https://github.com/juand-r/entity-recognition-datasets)
   * used wikigold and SEC-filings
 
 # pretrained BERT
