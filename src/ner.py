@@ -143,9 +143,9 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     x_train, y_train, x_dev, y_dev = get_features_labels(train_sents, dev_sents, False)
 
     # flat the data TODO: need to work on input format
-    x_train_multiclass = [np.array(list(x.values())) for sent in x_train for x in sent]
+    x_train_multiclass = [list(x.values()) for sent in x_train for x in sent]
     y_train_multiclass = [y for sent in y_train for y in sent]
-    x_dev_multiclass = [np.array(list(x.values())) for sent in x_dev for x in sent]
+    x_dev_multiclass = [list(x.values()) for sent in x_dev for x in sent]
     y_dev_multiclass = [y for sent in y_dev for y in sent]
 
     train_idx = [i for i, sent in enumerate(y_train) for _ in sent]
@@ -295,9 +295,9 @@ if __name__ == '__main__':
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
 
-    # sys.stdout = open("../outputs/" + "debug" + '.txt', 'w')
+    sys.stdout = open("../outputs/" + "debug" + '.txt', 'w')
     print("\nOut domain multiclass HT: train_sec, test_wiki")
     run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
                    f1_report=True, output_predictions=False)
-    # sys.stdout.close()
-    # sys.stdout = sys.__stdout__
+    sys.stdout.close()
+    sys.stdout = sys.__stdout__

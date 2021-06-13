@@ -323,16 +323,21 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
     # initiate labels
     unique_labels = sorted(list(set(train_labels)))
     id2labels = {i: x for i, x in enumerate(unique_labels)}
+    train_features = np.array(train_features)
+    test_features = np.array(test_features)
+    train_labels = np.array(train_labels)
+    test_labels = np.array(test_labels)
 
     probs = []
 
     for label in unique_labels:
         train_binary_labels = np.zeros(len(train_labels))
         test_binary_labels = np.zeros(len(test_labels))
-        train_binary_labels[np.array(train_labels) == label] = 1
-        test_binary_labels[np.array(test_labels) == label] = 1
+        train_binary_labels[train_labels == label] = 1
+        test_binary_labels[test_labels == label] = 1
 
-        # ht transformation TODO fix bug in ht_lr - TypeError: can't multiply sequence by non-int of type 'numpy.float64'
+        # ht transformation
+        # TODO fix bug in ht_lr - TypeError: can't multiply sequence by non-int of type 'numpy.float64'
         if ht:
             test_features = ht_lr(train_features, train_binary_labels, test_features, test_binary_labels)
 
