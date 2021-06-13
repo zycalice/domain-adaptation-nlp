@@ -3,7 +3,7 @@
 * [BERT(please read NER example in section 5.3)](https://arxiv.org/pdf/1810.04805.pdf)
 ## Domain alignment
 * [Zero shot NER](https://arxiv.org/pdf/2002.05923.pdf)
-  * closest task with ours
+  * the closest task with ours
 * [Cross Domain NER(SOTA)](https://www.aclweb.org/anthology/P19-1236.pdf)
 
 ## Context-Specific Word Embedding
@@ -17,5 +17,5 @@
   * need to edit the categories
 * [Cross Domain NER(SOTA)](https://github.com/jiachenwestlake/Cross-Domain_NER)
   * use CoNLL-2003 as source, use CBS SciTech News as target
-* [NER](https://lionbridge.ai/datasets/15-free-datasets-and-corpora-for-named-entity-recognition-ner/)
+* [NER](https://github.com/juand-r/entity-recognition-datasets)
   * used wikigold and SEC-filings
