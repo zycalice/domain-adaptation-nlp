@@ -7,6 +7,7 @@ import pickle
 from sklearn.linear_model import LogisticRegression
 
 
+# all train_features, test_features needs to be in numpy format
 def ht_lr(train_features, train_labels, test_features, test_labels):
     # aligning target domain to source domain
     lr_clf = LogisticRegression()

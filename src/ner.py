@@ -219,8 +219,59 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
         output_predictions_to_file(dev_sents, output_name, y_pred_dev)
 
 
-#  TODO: probability layer can be obtained using
-#  https://sklearn-crfsuite.readthedocs.io/en/latest/_modules/sklearn_crfsuite/estimator.html#CRF.predict_marginals
+def run_all_multiclass_experiments(output_file_name="../outputs/" + "ner_cased" + '.txt'):
+    # In domain crf
+    sys.stdout = open(output_file_name, 'w')
+    print("\nIn domain: train_sec, test_sec")
+    run_crf(train_sec, test_sec, crf_model,
+            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    print("\nIn domain: train_wiki, test_wiki")
+    run_crf(train_wiki, test_wiki, crf_model,
+            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    # Out domain crf
+    print("\nOut domain: train_wiki, test_sec")
+    run_crf(train_wiki, test_sec, crf_model,
+            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    print("\nOut domain: train_sec, test_wiki")
+    run_crf(train_sec, test_wiki, crf_model,
+            crf_f1_report=True, crf_transition_analysis=False, output_predictions=False)
+
+    sys.stdout.close()
+    sys.stdout = sys.__stdout__
+
+    # In domain multiclass
+    sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
+    print("\nIn domain multiclass: train_sec, test_sec")
+    run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nIn domain multiclass: train_wiki, test_wiki")
+    run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    # Out domain multiclass
+    print("\nOut domain multiclass: train_wiki, test_sec")
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nOut domain multiclass: train_sec, test_wiki")
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    # Out domain multiclass HT
+    print("\nOut domain multiclass HT: train_wiki, test_sec")
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nOut domain multiclass HT: train_sec, test_wiki")
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    sys.stdout.close()
+    sys.stdout = sys.__stdout__
 
 
 if __name__ == '__main__':
@@ -295,7 +346,6 @@ if __name__ == '__main__':
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
 
-    print("\nOut domain multiclass HT: train_sec, test_wiki")
-    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
+    print("\nOut domain multiclass HT: train_wiki, test_sec")
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
                    f1_report=True, output_predictions=False)
-
