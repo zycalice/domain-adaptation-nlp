@@ -345,7 +345,3 @@ if __name__ == '__main__':
     #
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
-
-    print("\nOut domain multiclass HT: train_wiki, test_sec")
-    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
-                   f1_report=True, output_predictions=False)
