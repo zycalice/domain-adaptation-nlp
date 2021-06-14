@@ -6,18 +6,19 @@ from src.utils import *
 
 def output_bert_embeddings(domain_types, data_size, X_dict):
     for domain in domain_types:
-        _ = tokenize_encode_bert_sentences(tokenizer_d, model_d, list(X_dict["X_train_" + domain][:data_size]),
-                                           data_path + "all_bert/" + "encoded_" + domain + "_train_" +
-                                           str(data_size))
-        _ = tokenize_encode_bert_sentences(tokenizer_d, model_d, list(X_dict["X_train_" + domain][:data_size]),
-                                           data_path + "all_bert/" + "encoded_" + domain + "_dev_" + str(data_size))
+        _ = tokenize_encode_bert_sentences_batch(tokenizer_d, model_d, list(X_dict["X_train_" + domain][:data_size]),
+                                                 data_path + "all_bert/" + "encoded_" + domain + "_train_" +
+                                                 str(data_size))
+        _ = tokenize_encode_bert_sentences_batch(tokenizer_d, model_d, list(X_dict["X_train_" + domain][:data_size]),
+                                                 data_path + "all_bert/" + "encoded_" + domain + "_dev_" + str(data_size))
 
 
-def tokenize_encode_bert_sentences(tokenizer, model, input_sentences, output_path):
+def tokenize_encode_bert_sentences_batch(tokenizer, model, input_sentences, output_path):
     output = np.zeros([len(input_sentences), 768])
     for i, x in enumerate(input_sentences):
         output[i] = tokenize_encode_bert_sentences_sample(tokenizer, model, [x])
-    np.save(output_path, output)
+    if output_path is not None:
+        np.save(output_path, output)
     return output
 
 
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     with open(data_path + "wiki_sec_word2idx.json") as file:
         word2idx = json.load(file)
     words_list = list(word2idx.keys())
-    encoded_ner_corpus = tokenize_encode_bert_sentences(tokenizer, model, words_list,
+    encoded_ner_corpus = tokenize_encode_bert_sentences_batch(tokenizer, model, words_list,
                                                         "../data/all_bert/bert_uncased_encoded_ner_corpus")
-    cased_encoded_ner_corpus = tokenize_encode_bert_sentences(tokenizer_cased, model_cased, words_list,
+    cased_encoded_ner_corpus = tokenize_encode_bert_sentences_batch(tokenizer_cased, model_cased, words_list,
                                                               "../data/all_bert/bert_cased_encoded_ner_corpus")
