@@ -81,17 +81,3 @@ if __name__ == '__main__':
         file_path = data_path + namestr(data, globals())
         if not os.path.isfile(file_path):
             np.save(data_path + "all_cleaned/" + namestr(data, globals()), data)
-
-    # NER.
-    wiki = load_ner_data("../data/ner_wikigold/wikigold.conll.txt", " ")[:-1]
-    sec = load_ner_data("../data/ner_sec/FIN5.txt")[:-1]
-
-    words_wiki, tags = unique_words_tags(wiki)
-    words_sec, _ = unique_words_tags(sec)
-
-    words = list(words_wiki | words_sec)
-    words.sort()
-
-    word2idx = {w: i for i, w in enumerate(words)}
-    with open(data_path + "wiki_sec_word2idx.json", "w") as outfile:
-        json.dump(word2idx, outfile, indent=4)

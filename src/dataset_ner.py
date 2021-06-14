@@ -1,4 +1,5 @@
 import numpy
+import json
 
 
 # load data
@@ -48,3 +49,21 @@ def distributions_words_tags(data_input):
                 unique_tags[tag] = 1
 
     return unique_words, unique_tags
+
+
+if __name__ == '__main__':
+    data_path = "../data/"
+
+    # NER.
+    wiki = load_ner_data("../data/ner_wikigold/wikigold.conll.txt", " ")[:-1]
+    sec = load_ner_data("../data/ner_sec/FIN5.txt")[:-1]
+
+    words_wiki, tags = unique_words_tags(wiki)
+    words_sec, _ = unique_words_tags(sec)
+
+    words = list(words_wiki | words_sec)
+    words.sort()
+
+    word2idx = {w: i for i, w in enumerate(words)}
+    with open(data_path + "wiki_sec_word2idx.json", "w") as outfile:
+        json.dump(word2idx, outfile, indent=4)
