@@ -57,10 +57,16 @@ if __name__ == '__main__':
     # NER.
     wiki = load_ner_data("../data/ner_wikigold/wikigold.conll.txt", " ")[:-1]
     sec = load_ner_data("../data/ner_sec/FIN5.txt")[:-1]
+    conll2003 = load_ner_data(
+        "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_conll/eng.train.txt")[1:-1]
 
+    # unique words and tags
     words_wiki, tags = unique_words_tags(wiki)
     words_sec, _ = unique_words_tags(sec)
+    words_conll, conll_tags = unique_words_tags(conll2003)
+    # TODO add test data
 
+    # tags
     words = list(words_wiki | words_sec)
     words.sort()
 
