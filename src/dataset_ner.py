@@ -1,5 +1,6 @@
 import numpy as np
 import json
+import re
 
 
 # load data
@@ -51,25 +52,40 @@ def distributions_words_tags(data_input):
     return unique_words, unique_tags
 
 
+# transform data
+def transform_label(sent):
+    return [(t[0], re.sub("E-", "I-", re.sub("S-", "B-", t[1]))) for t in sent]
+
+
 if __name__ == '__main__':
     data_path = "../data/"
 
-    # NER.
+    # NER v1.
     wiki = load_ner_data("../data/ner_wikigold/wikigold.conll.txt", " ")[:-1]
     sec = load_ner_data("../data/ner_sec/FIN5.txt")[:-1]
-    conll2003 = load_ner_data(
-        "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_conll/eng.train.txt")[1:-1]
 
-    # unique words and tags
     words_wiki, tags = unique_words_tags(wiki)
     words_sec, _ = unique_words_tags(sec)
-    words_conll, conll_tags = unique_words_tags(conll2003)
-    # TODO add test data
-
-    # tags
     words = list(words_wiki | words_sec)
     words.sort()
 
     word2idx = {w: i for i, w in enumerate(words)}
     with open(data_path + "wiki_sec_word2idx.json", "w") as outfile:
         json.dump(word2idx, outfile, indent=4)
+
+    # NER v2.
+    conll2003 = load_ner_data(
+        "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_conll/eng.train.txt")[1:-1]
+    tech = load_ner_data(
+        "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_tech/tech_test.txt"
+    )
+
+    words_conll, conll_tags = unique_words_tags(conll2003)
+    words_tech, tech_tags = unique_words_tags(tech)
+    words_conll_format = list(words_conll | words_tech)
+    words_conll_format.remove("")
+    words_conll_format.sort()
+
+    conll_tech_word2idx = {w: i for i, w in enumerate(words_conll_format)}
+    with open(data_path + "conll_tech_word2idx.json", "w") as outfile:
+        json.dump(conll_tech_word2idx, outfile, indent=4)
