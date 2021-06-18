@@ -11,10 +11,11 @@ import sys
 
 # Load pre-computed bert embeddings.
 data_path = "../data/"
-with open(data_path + "wiki_sec_word2idx.json") as f:
+with open(data_path + "conll_tech_word2idx.json") as f:
     word2idx = json.load(f)
 
-ner_bert = np.load("../data/all_bert/bert_cased_encoded_ner_corpus.npy")  # cased result is better than uncased for crf
+ner_bert = np.load("../data/all_bert/bert_cased_encoded_ner_corpus_conll.npy")
+# cased result is better than uncased for crf
 
 assert (len(ner_bert) == len(word2idx))
 
@@ -277,9 +278,16 @@ def run_all_multiclass_experiments(output_file_name="../outputs/" + "ner_cased" 
 if __name__ == '__main__':
     wiki = load_ner_data("../data/ner_wikigold/wikigold.conll.txt", " ")[:-1]
     sec = load_ner_data("../data/ner_sec/FIN5.txt")[:-1]
+    conll = load_ner_data(
+        "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_conll/eng.train.txt")[1:-1]
+    tech = load_ner_data(
+        "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_tech/tech_test.txt"
+    )
 
     train_wiki, test_wiki = train_test_split(wiki, random_state=7)
     train_sec, test_sec = train_test_split(sec, random_state=7)
+    train_conll, test_conll = train_test_split(conll, random_state=7)
+    train_tech, test_tech = train_test_split(tech, random_state=7)
 
     # model
     crf_model = sklearn_crfsuite.CRF(
@@ -315,33 +323,66 @@ if __name__ == '__main__':
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
 
-    # # In domain multiclass
-    # sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
-    # print("\nIn domain multiclass: train_sec, test_sec")
-    # run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
-    #                f1_report=True, output_predictions=False)
-    #
-    # print("\nIn domain multiclass: train_wiki, test_wiki")
-    # run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
-    #                f1_report=True, output_predictions=False)
-    #
-    # # Out domain multiclass
-    # print("\nOut domain multiclass: train_wiki, test_sec")
-    # run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
-    #                f1_report=True, output_predictions=False)
-    #
-    # print("\nOut domain multiclass: train_sec, test_wiki")
-    # run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
-    #                f1_report=True, output_predictions=False)
-    #
-    # # Out domain multiclass HT
-    # print("\nOut domain multiclass HT: train_wiki, test_sec")
-    # run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
-    #                f1_report=True, output_predictions=False)
-    #
-    # print("\nOut domain multiclass HT: train_sec, test_wiki")
-    # run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
-    #                f1_report=True, output_predictions=False)
-    #
-    # sys.stdout.close()
-    # sys.stdout = sys.__stdout__
+    # In domain multiclass using wiki and sec.
+    
+    sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
+    print("\nIn domain multiclass: train_sec, test_sec")
+    run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nIn domain multiclass: train_wiki, test_wiki")
+    run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    # Out domain multiclass
+    print("\nOut domain multiclass: train_wiki, test_sec")
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nOut domain multiclass: train_sec, test_wiki")
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    # Out domain multiclass HT
+    print("\nOut domain multiclass HT: train_wiki, test_sec")
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nOut domain multiclass HT: train_sec, test_wiki")
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    sys.stdout.close()
+    sys.stdout = sys.__stdout__
+
+    # In domain multiclass using conll and tech.
+
+    sys.stdout = open("../outputs/" + "ner_cased_multiclass_conll" + '.txt', 'w')
+    print("\nIn domain multiclass: train_conll, test_conll")
+    run_multiclass(train_conll, test_conll, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nIn domain multiclass: train_tech, test_tech")
+    run_multiclass(train_tech, test_tech, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    # Out domain multiclass
+    print("\nOut domain multiclass: train_conll, test_tech")
+    run_multiclass(train_conll, test_tech, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nOut domain multiclass: train_tech, test_conll")
+    run_multiclass(train_tech, test_conll, lr_model, test_ht=False, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    # Out domain multiclass HT
+    print("\nOut domain multiclass HT: train_conll, test_tech")
+    run_multiclass(train_conll, test_tech, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    print("\nOut domain multiclass HT: train_tech, test_conll")
+    run_multiclass(train_tech, test_conll, lr_model, test_ht=True, conf=None,
+                   f1_report=True, output_predictions=False)
+
+    sys.stdout.close()
+    sys.stdout = sys.__stdout__

@@ -1,6 +1,8 @@
 import json
 from transformers import DistilBertTokenizer, DistilBertModel
 from transformers import BertTokenizer, BertModel
+from transformers import AutoTokenizer, AutoModelForTokenClassification
+from transformers import pipeline
 from src.utils import *
 
 
@@ -45,6 +47,8 @@ if __name__ == '__main__':
     model = BertModel.from_pretrained('bert-base-uncased')
     tokenizer_cased = BertTokenizer.from_pretrained('bert-base-cased')
     model_cased = BertModel.from_pretrained('bert-base-cased')
+    tokenizer_ner = AutoTokenizer.from_pretrained("dslim/bert-base-NER")
+    model_ner = AutoModelForTokenClassification.from_pretrained("dslim/bert-base-NER")
 
     # # Sentiment Classification.
     # domains = ["tw", "az", "mv", "fi"]
