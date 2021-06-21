@@ -27,6 +27,8 @@ def word2features(sent, i, use_crf):
     sentence.
     """
     word = sent[i][0]
+    if word == "":
+        print("the sent is", sent)
     embedding = ner_bert[word2idx[word]]
     # embedding_orig = tokenize_encode_bert_sentences_sample(tokenizer_d, model_d, word)[0]
     # if (embedding != embedding_orig).any():
@@ -323,37 +325,37 @@ if __name__ == '__main__':
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
 
-    # In domain multiclass using wiki and sec.
-    
-    sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
-    print("\nIn domain multiclass: train_sec, test_sec")
-    run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    print("\nIn domain multiclass: train_wiki, test_wiki")
-    run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    # Out domain multiclass
-    print("\nOut domain multiclass: train_wiki, test_sec")
-    run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    print("\nOut domain multiclass: train_sec, test_wiki")
-    run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    # Out domain multiclass HT
-    print("\nOut domain multiclass HT: train_wiki, test_sec")
-    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    print("\nOut domain multiclass HT: train_sec, test_wiki")
-    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
-                   f1_report=True, output_predictions=False)
-
-    sys.stdout.close()
-    sys.stdout = sys.__stdout__
+    # # In domain multiclass using wiki and sec.
+    #
+    # sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
+    # print("\nIn domain multiclass: train_sec, test_sec")
+    # run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # print("\nIn domain multiclass: train_wiki, test_wiki")
+    # run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # # Out domain multiclass
+    # print("\nOut domain multiclass: train_wiki, test_sec")
+    # run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # print("\nOut domain multiclass: train_sec, test_wiki")
+    # run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # # Out domain multiclass HT
+    # print("\nOut domain multiclass HT: train_wiki, test_sec")
+    # run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # print("\nOut domain multiclass HT: train_sec, test_wiki")
+    # run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
+    #                f1_report=True, output_predictions=False)
+    #
+    # sys.stdout.close()
+    # sys.stdout = sys.__stdout__
 
     # In domain multiclass using conll and tech.
 
