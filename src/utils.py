@@ -337,16 +337,15 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
         test_binary_labels[test_labels == label] = 1
 
         # ht transformation
-        # TODO fix bug in ht_lr - TypeError: can't multiply sequence by non-int of type 'numpy.float64'
         if ht:
             test_features = ht_lr(train_features, train_binary_labels, test_features, test_binary_labels)
 
         # fit using transformed test features
-        features = np.concatenate((train_features, test_features), 0)
-        binary_labels = np.concatenate((train_binary_labels, test_binary_labels), 0)
-        base_model.fit(features, binary_labels)
+        # features = np.concatenate((train_features, test_features), 0)
+        # binary_labels = np.concatenate((train_binary_labels, test_binary_labels), 0)
+        base_model.fit(train_features, train_binary_labels)
 
-        # produce probabilities on the test features only TODO add conf; currently not used
+        # produce probabilities on the test features only
         y_prob = base_model.predict_proba(test_features)[:, 1]  # probabilities
         # print(np.array(y_prob).shape)
         # y_combo = [(i, x) for i, x in enumerate(y_prob)]

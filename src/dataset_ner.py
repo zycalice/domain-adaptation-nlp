@@ -79,6 +79,7 @@ if __name__ == '__main__':
     tech = load_ner_data(
         "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_tech/tech_test.txt"
     )
+    tech = [transform_label(x) for x in tech]
 
     words_conll, conll_tags = unique_words_tags(conll2003)
     words_tech, tech_tags = unique_words_tags(tech)

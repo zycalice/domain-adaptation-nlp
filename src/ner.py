@@ -9,7 +9,7 @@ from src.dataset_ner import load_ner_data
 from sklearn.model_selection import train_test_split
 import sys
 
-# Load pre-computed bert embeddings.
+# Load pre-computed bert embeddings. #TODO sub-token
 data_path = "../data/"
 with open(data_path + "conll_tech_word2idx.json") as f:
     word2idx = json.load(f)
@@ -150,6 +150,7 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     y_train_multiclass = [y for sent in y_train for y in sent]
     x_dev_multiclass = [list(x.values()) for sent in x_dev for x in sent]
     y_dev_multiclass = [y for sent in y_dev for y in sent]
+    print(np.array(x_train_multiclass).shape)
 
     train_idx = [i for i, sent in enumerate(y_train) for _ in sent]
     dev_idx = [i for i, sent in enumerate(y_dev) for _ in sent]
@@ -388,3 +389,4 @@ if __name__ == '__main__':
 
     sys.stdout.close()
     sys.stdout = sys.__stdout__
+
