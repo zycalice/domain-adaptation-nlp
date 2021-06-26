@@ -49,7 +49,7 @@ def distributions_words_tags(data_input):
             else:
                 unique_tags[tag] = 1
 
-    return unique_words, unique_tags
+    return sorted(unique_words), sorted(unique_tags)
 
 
 # transform data
@@ -82,9 +82,10 @@ if __name__ == '__main__':
     tech = [transform_label(x) for x in tech]
 
     words_conll, conll_tags = unique_words_tags(conll2003)
+    print(conll_tags)
     words_tech, tech_tags = unique_words_tags(tech)
+    print(tech_tags)
     words_conll_format = list(words_conll | words_tech)
-    words_conll_format.remove("")
     words_conll_format.sort()
 
     conll_tech_word2idx = {w: i for i, w in enumerate(words_conll_format)}

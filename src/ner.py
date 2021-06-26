@@ -8,6 +8,7 @@ from bert_embedding import *
 from src.dataset_ner import load_ner_data
 from sklearn.model_selection import train_test_split
 import sys
+from dataset_ner import *
 
 # Load pre-computed bert embeddings. #TODO sub-token
 data_path = "../data/"
@@ -155,7 +156,7 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
     train_idx = [i for i, sent in enumerate(y_train) for _ in sent]
     dev_idx = [i for i, sent in enumerate(y_dev) for _ in sent]
 
-    labels = sorted(list(set([x for x in y_train_multiclass])))
+    labels = sorted(list(set([x for x in y_dev_multiclass])))
     labels.remove('O')  # why remove 0?
 
     # predictions
@@ -286,6 +287,7 @@ if __name__ == '__main__':
     tech = load_ner_data(
         "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_tech/tech_test.txt"
     )
+    tech = [transform_label(x) for x in tech]
 
     train_wiki, test_wiki = train_test_split(wiki, random_state=7)
     train_sec, test_sec = train_test_split(sec, random_state=7)
