@@ -282,8 +282,12 @@ def run_all_multiclass_experiments(output_file_name="../outputs/" + "ner_cased" 
 if __name__ == '__main__':
     wiki = load_ner_data("../data/ner_wikigold/wikigold.conll.txt", " ")[:-1]
     sec = load_ner_data("../data/ner_sec/FIN5.txt")[:-1]
-    conll = load_ner_data(
-        "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_conll/eng.train.txt")[1:-1]
+
+    dataset = load_dataset('conll2003')
+    label_list_input = dataset['train'].features['ner_tags'].feature.names
+    pos_list_input = dataset['train'].features['pos_tags'].feature.names
+    conll2003 = [sent_to_tuple(dataset['train'][x], label_list_input, pos_list_input) for x in range(len(dataset['train']))]
+
     tech = load_ner_data(
         "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_tech/tech_test.txt"
     )
@@ -291,7 +295,7 @@ if __name__ == '__main__':
 
     train_wiki, test_wiki = train_test_split(wiki, random_state=7)
     train_sec, test_sec = train_test_split(sec, random_state=7)
-    train_conll, test_conll = train_test_split(conll, random_state=7)
+    train_conll, test_conll = train_test_split(conll2003, random_state=7)
     train_tech, test_tech = train_test_split(tech, random_state=7)
 
     # model

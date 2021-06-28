@@ -1,6 +1,7 @@
 import numpy as np
 import json
 import re
+from datasets import load_dataset
 
 
 # load data
@@ -52,6 +53,16 @@ def distributions_words_tags(data_input):
     return sorted(unique_words), sorted(unique_tags)
 
 
+def sent_to_tuple(sent, label_list, pos_list):
+    ner_tags = sent['ner_tags']
+    pos_tags = sent['pos_tags']
+    tokens = sent['tokens']
+    sent_list = []
+    for i in range(len(sent['ner_tags'])):
+        sent_list.append((tokens[i], pos_list[pos_tags[i]], label_list[ner_tags[i]]))
+    return sent_list
+
+
 # transform data
 def transform_label(sent):
     return [(t[0], re.sub("E-", "I-", re.sub("S-", "B-", t[1]))) for t in sent]
@@ -74,8 +85,12 @@ if __name__ == '__main__':
         json.dump(word2idx, outfile, indent=4)
 
     # NER v2.
-    conll2003 = load_ner_data(
-        "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_conll/eng.train.txt")[1:-1]
+    dataset = load_dataset('conll2003')
+    label_list_conll = dataset['train'].features['ner_tags'].feature.names
+    pos_list_conll = dataset['train'].features['pos_tags'].feature.names
+    conll2003 = [sent_to_tuple(dataset['train'][x], label_list_conll, pos_list_conll)
+                 for x in range(len(dataset['train']))]
+
     tech = load_ner_data(
         "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_tech/tech_test.txt"
     )
