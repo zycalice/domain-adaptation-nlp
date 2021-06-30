@@ -48,7 +48,7 @@ if __name__ == '__main__':
     tokenizer_cased = BertTokenizer.from_pretrained('bert-base-cased')
     model_cased = BertModel.from_pretrained('bert-base-cased')
     tokenizer_ner = AutoTokenizer.from_pretrained("dslim/bert-base-NER")
-    model_ner = AutoModelForTokenClassification.from_pretrained("dslim/bert-base-NER")
+    model_ner = AutoModelForTokenClassification.from_pretrained("dslim/bert-base-NER").bert
 
     # # Sentiment Classification.
     # domains = ["tw", "az", "mv", "fi"]
@@ -78,6 +78,6 @@ if __name__ == '__main__':
     _ = tokenize_encode_bert_sentences_batch(
         tokenizer_cased, model_cased, words_list,
         "../data/all_bert/bert_cased_encoded_ner_corpus_conll")
-    # _ = tokenize_encode_bert_sentences_batch(
-    #     tokenizer_ner, model_ner, words_list,
-    #     "../data/all_bert/bert_ner_encoded_ner_corpus_conll")
+    _ = tokenize_encode_bert_sentences_batch(
+        tokenizer_ner, model_ner, words_list,
+        "../data/all_bert/bert_ner_encoded_ner_corpus_conll")

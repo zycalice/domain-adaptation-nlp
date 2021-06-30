@@ -15,7 +15,11 @@ data_path = "../data/"
 with open(data_path + "conll_tech_word2idx.json") as f:
     word2idx = json.load(f)
 
-ner_bert = np.load("../data/all_bert/bert_cased_encoded_ner_corpus_conll.npy")
+# with open(data_path + "wiki_sec_word2idx.json") as f:
+#     word2idx = json.load(f)
+
+# ner_bert = np.load("../data/all_bert/bert_cased_encoded_ner_corpus_conll.npy")
+ner_bert = np.load("../data/all_bert/bert_ner_encoded_ner_corpus_conll.npy")
 # cased result is better than uncased for crf
 
 assert (len(ner_bert) == len(word2idx))
@@ -332,9 +336,9 @@ if __name__ == '__main__':
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
 
-    # # In domain multiclass using wiki and sec.
-    #
-    # sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
+    # In domain multiclass using wiki and sec.
+
+    # sys.stdout = open("../outputs/" + "ner_cased_multiclass_wiki_sec" + '.txt', 'w')
     # print("\nIn domain multiclass: train_sec, test_sec")
     # run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
     #                f1_report=True, output_predictions=False)
@@ -366,7 +370,7 @@ if __name__ == '__main__':
 
     # In domain multiclass using conll and tech.
 
-    sys.stdout = open("../outputs/" + "ner_cased_multiclass_conll" + '.txt', 'w')
+    sys.stdout = open("../outputs/" + "ner_ner_multiclass_conll_tech" + '.txt', 'w')
     print("\nIn domain multiclass: train_conll, test_conll")
     run_multiclass(train_conll, test_conll, lr_model, test_ht=False, conf=None,
                    f1_report=True, output_predictions=False)
