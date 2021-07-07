@@ -391,7 +391,7 @@ def pseudo_label_balanced(x_source, y_source, x_ti, y_ti, base_model, top_n,
                           use_dist, few_shot=None):
     # get predictions
     base_model.fit(x_source, y_source)
-    y_prob_ti = base_model.predict_proba(x_ti)[:, 0]
+    y_prob_ti = base_model.predict_proba(x_ti)[:, 1]
     y_pred_ti = base_model.predict(x_ti)
 
     # add dist

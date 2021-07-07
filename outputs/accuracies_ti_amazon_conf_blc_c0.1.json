@@ -28,8 +28,8 @@
         "t2t": 0.9415,
         "s2t": 0.8965,
         "self_train": 0.904,
-        "gradual_self_train": 0.9145,
-        "num_iter": 13
+        "gradual_self_train": 0.915,
+        "num_iter": 14
     },
     "Movies_and_TV.train_to_Home_and_Kitchen.train": {
         "s2s": 0.9265,
@@ -68,8 +68,8 @@
         "t2t": 0.93,
         "s2t": 0.917,
         "self_train": 0.918,
-        "gradual_self_train": 0.915,
-        "num_iter": 13
+        "gradual_self_train": 0.916,
+        "num_iter": 14
     },
     "Electronics.train_to_Movies_and_TV.train": {
         "s2s": 0.915,

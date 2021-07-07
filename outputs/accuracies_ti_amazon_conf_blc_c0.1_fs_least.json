@@ -1,114 +1,114 @@
 {
     "Home_and_Kitchen.train_to_Home_and_Kitchen.train": {
-        "fs_same_index": 0.930045294413689,
-        "fs_random_index": 0.9295420231504781,
-        "fs_least_index": 0.934071464519376,
-        "fs_gradual_self_train": 0.9265223955712129,
-        "num_iter": 13
+        "fs_same_index": 0.9290744466800804,
+        "fs_random_index": 0.932092555331992,
+        "fs_least_index": 0.9336016096579477,
+        "fs_gradual_self_train": 0.9265593561368209,
+        "num_iter": 12
     },
     "Home_and_Kitchen.train_to_Movies_and_TV.train": {
-        "fs_same_index": 0.9013588324106694,
-        "fs_random_index": 0.8817312531454454,
-        "fs_least_index": 0.8978359335681932,
-        "fs_gradual_self_train": 0.9048817312531454,
-        "num_iter": 13
-    },
-    "Home_and_Kitchen.train_to_Electronics.train": {
-        "fs_same_index": 0.8877139979859013,
-        "fs_random_index": 0.8856998992950654,
-        "fs_least_index": 0.8892245720040282,
-        "fs_gradual_self_train": 0.8962739174219537,
+        "fs_same_index": 0.9008056394763343,
+        "fs_random_index": 0.8826787512588117,
+        "fs_least_index": 0.8947633434038268,
+        "fs_gradual_self_train": 0.904833836858006,
         "num_iter": 14
     },
+    "Home_and_Kitchen.train_to_Electronics.train": {
+        "fs_same_index": 0.8868209255533199,
+        "fs_random_index": 0.8853118712273642,
+        "fs_least_index": 0.8888329979879276,
+        "fs_gradual_self_train": 0.897887323943662,
+        "num_iter": 12
+    },
     "Home_and_Kitchen.train_to_Books.train": {
-        "fs_same_index": 0.8983392048314042,
-        "fs_random_index": 0.8943130347257172,
-        "fs_least_index": 0.8933064921992954,
-        "fs_gradual_self_train": 0.9139406139909411,
-        "num_iter": 13
+        "fs_same_index": 0.8968812877263581,
+        "fs_random_index": 0.8958752515090543,
+        "fs_least_index": 0.8933601609657947,
+        "fs_gradual_self_train": 0.9154929577464789,
+        "num_iter": 12
     },
     "Movies_and_TV.train_to_Home_and_Kitchen.train": {
-        "fs_same_index": 0.8846347607052897,
-        "fs_random_index": 0.8760705289672545,
-        "fs_least_index": 0.8816120906801007,
-        "fs_gradual_self_train": 0.8916876574307305,
-        "num_iter": 15
+        "fs_same_index": 0.8766985405133367,
+        "fs_random_index": 0.8807247106190237,
+        "fs_least_index": 0.8817312531454454,
+        "fs_gradual_self_train": 0.8922999496728736,
+        "num_iter": 13
     },
     "Movies_and_TV.train_to_Movies_and_TV.train": {
-        "fs_same_index": 0.926019124308002,
-        "fs_random_index": 0.9255158530447911,
+        "fs_same_index": 0.9245093105183694,
+        "fs_random_index": 0.9265223955712129,
         "fs_least_index": 0.9285354806240563,
-        "fs_gradual_self_train": 0.9255158530447911,
+        "fs_gradual_self_train": 0.9270256668344238,
         "num_iter": 13
     },
     "Movies_and_TV.train_to_Electronics.train": {
-        "fs_same_index": 0.8475088072471062,
-        "fs_random_index": 0.8268746854554605,
-        "fs_least_index": 0.8570709612481128,
-        "fs_gradual_self_train": 0.8892803220936084,
-        "num_iter": 13
-    },
-    "Movies_and_TV.train_to_Books.train": {
-        "fs_same_index": 0.9148185483870968,
-        "fs_random_index": 0.9188508064516129,
-        "fs_least_index": 0.9269153225806451,
-        "fs_gradual_self_train": 0.922883064516129,
-        "num_iter": 16
-    },
-    "Electronics.train_to_Home_and_Kitchen.train": {
-        "fs_same_index": 0.9164149043303121,
-        "fs_random_index": 0.9174219536757301,
-        "fs_least_index": 0.918932527693857,
-        "fs_gradual_self_train": 0.9164149043303121,
+        "fs_same_index": 0.8449144008056395,
+        "fs_random_index": 0.8343403826787512,
+        "fs_least_index": 0.8499496475327291,
+        "fs_gradual_self_train": 0.8892245720040282,
         "num_iter": 14
     },
-    "Electronics.train_to_Movies_and_TV.train": {
-        "fs_same_index": 0.9007556675062972,
-        "fs_random_index": 0.9011598587997983,
-        "fs_least_index": 0.902672718103883,
-        "fs_gradual_self_train": 0.9093198992443325,
-        "num_iter": 17
+    "Movies_and_TV.train_to_Books.train": {
+        "fs_same_index": 0.9174635128334172,
+        "fs_random_index": 0.9164569703069955,
+        "fs_least_index": 0.9265223955712129,
+        "fs_gradual_self_train": 0.9235027679919476,
+        "num_iter": 13
     },
-    "Electronics.train_to_Electronics.train": {
-        "fs_same_index": 0.914443885254152,
-        "fs_random_index": 0.9149471565173629,
-        "fs_least_index": 0.9159536990437847,
+    "Electronics.train_to_Home_and_Kitchen.train": {
+        "fs_same_index": 0.9149043303121853,
+        "fs_random_index": 0.9168765743073047,
+        "fs_least_index": 0.9193954659949622,
+        "fs_gradual_self_train": 0.9179254783484391,
+        "num_iter": 15
+    },
+    "Electronics.train_to_Movies_and_TV.train": {
+        "fs_same_index": 0.9013588324106694,
+        "fs_random_index": 0.9033719174635129,
+        "fs_least_index": 0.9038751887267237,
         "fs_gradual_self_train": 0.910417715148465,
         "num_iter": 13
     },
+    "Electronics.train_to_Electronics.train": {
+        "fs_same_index": 0.914443885254152,
+        "fs_random_index": 0.914443885254152,
+        "fs_least_index": 0.9159536990437847,
+        "fs_gradual_self_train": 0.9109209864116758,
+        "num_iter": 13
+    },
     "Electronics.train_to_Books.train": {
-        "fs_same_index": 0.8852541519879215,
-        "fs_random_index": 0.8938097634625063,
+        "fs_same_index": 0.8912934071464519,
+        "fs_random_index": 0.8943130347257172,
         "fs_least_index": 0.9028686462003019,
-        "fs_gradual_self_train": 0.9189733266230499,
+        "fs_gradual_self_train": 0.9194765978862607,
         "num_iter": 13
     },
     "Books.train_to_Home_and_Kitchen.train": {
-        "fs_same_index": 0.8736153071500503,
-        "fs_random_index": 0.8665659617321249,
+        "fs_same_index": 0.8635448136958711,
+        "fs_random_index": 0.8630412890231621,
         "fs_least_index": 0.8680765357502518,
         "fs_gradual_self_train": 0.8892245720040282,
         "num_iter": 14
     },
     "Books.train_to_Movies_and_TV.train": {
-        "fs_same_index": 0.9052896725440807,
-        "fs_random_index": 0.9032745591939546,
-        "fs_least_index": 0.9133501259445844,
-        "fs_gradual_self_train": 0.9113350125944585,
-        "num_iter": 15
+        "fs_same_index": 0.907258064516129,
+        "fs_random_index": 0.9047379032258065,
+        "fs_least_index": 0.9133064516129032,
+        "fs_gradual_self_train": 0.9148185483870968,
+        "num_iter": 16
     },
     "Books.train_to_Electronics.train": {
-        "fs_same_index": 0.8607467204843592,
-        "fs_random_index": 0.8329969727547931,
-        "fs_least_index": 0.8683148335015136,
-        "fs_gradual_self_train": 0.8779011099899092,
-        "num_iter": 18
+        "fs_same_index": 0.8233517866129844,
+        "fs_random_index": 0.8187311178247734,
+        "fs_least_index": 0.8590130916414904,
+        "fs_gradual_self_train": 0.8837443381982889,
+        "num_iter": 14
     },
     "Books.train_to_Books.train": {
-        "fs_same_index": 0.9411468812877264,
-        "fs_random_index": 0.9406438631790744,
+        "fs_same_index": 0.9421529175050302,
+        "fs_random_index": 0.9411468812877264,
         "fs_least_index": 0.943158953722334,
-        "fs_gradual_self_train": 0.9401408450704225,
+        "fs_gradual_self_train": 0.9411468812877264,
         "num_iter": 12
     }
 }

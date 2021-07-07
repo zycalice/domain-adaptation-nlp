@@ -16,7 +16,7 @@ def ht_lr(train_features, train_labels, test_features, test_labels):
     y_prob = lr_clf.predict_proba(test_features)[:, 0]
     y_prob = [(i, val, y_pred[i]) for i, val in enumerate(y_prob)]
     y_prob = sorted(y_prob, key=lambda x: x[1])
-    y_prob_P = y_prob[:int(len(test_labels) / 10)]
+    y_prob_P = y_prob[:int(len(test_labels) / 10)]  # TODO not enough enough, the threshold is too large
     y_prob_N = y_prob[-int(len(test_labels) / 10):]
 
     sourcePos = [val for i, val in enumerate(train_features) if train_labels[i] == 1]
