@@ -16,20 +16,24 @@ def output_bert_embeddings(domain_types, data_size, X_dict):
                                                      data_size))
 
 
-def tokenize_encode_bert_sentences_batch(tokenizer, model, input_sentences, output_path):
+def tokenize_encode_bert_sentences_batch(tokenizer, model, input_sentences, output_path, layer_type="CLS"):
     output = np.zeros([len(input_sentences), 768])
     for i, x in enumerate(input_sentences):
-        output[i] = tokenize_encode_bert_sentences_sample(tokenizer, model, [x])
+        output[i] = tokenize_encode_bert_sentences_sample(tokenizer=tokenizer, model=model,
+                                                          input_sentences=[x],
+                                                          layer_type=layer_type)
     if output_path is not None:
         np.save(output_path, output)
     return output
 
 
-def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences, cls_only=True):
+def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences, layer_type="CLS"):
     encoded_input = tokenizer(input_sentences, return_tensors='pt', truncation=True, padding=True)
     output = model(**encoded_input)[0]
-    if cls_only:
+    if layer_type == "CLS":
         output = output[:, 0, :].detach().numpy()
+    elif layer_type == "first subtoken":
+        output = output[:, 1, :].detach().numpy()
     else:
         output = output.detach().numpy()
     return output
@@ -68,16 +72,26 @@ if __name__ == '__main__':
     #     tokenizer_cased, model_cased, words_list,
     #     "../data/all_bert/bert_cased_encoded_ner_corpus")
 
-    # NER v2.
+    # # NER v2.
+    # with open(data_path + "conll_tech_word2idx.json") as file:
+    #     word2idx = json.load(file)
+    # words_list = list(word2idx.keys())
+    # _ = tokenize_encode_bert_sentences_batch(
+    #     tokenizer, model, words_list,
+    #     "../data/all_bert/bert_uncased_encoded_ner_corpus_conll")
+    # _ = tokenize_encode_bert_sentences_batch(
+    #     tokenizer_cased, model_cased, words_list,
+    #     "../data/all_bert/bert_cased_encoded_ner_corpus_conll")
+    # _ = tokenize_encode_bert_sentences_batch(
+    #     tokenizer_ner, model_ner, words_list,
+    #     "../data/all_bert/bert_ner_encoded_ner_corpus_conll")
+
+    # NER v3.
     with open(data_path + "conll_tech_word2idx.json") as file:
         word2idx = json.load(file)
     words_list = list(word2idx.keys())
     _ = tokenize_encode_bert_sentences_batch(
-        tokenizer, model, words_list,
-        "../data/all_bert/bert_uncased_encoded_ner_corpus_conll")
-    _ = tokenize_encode_bert_sentences_batch(
-        tokenizer_cased, model_cased, words_list,
-        "../data/all_bert/bert_cased_encoded_ner_corpus_conll")
-    _ = tokenize_encode_bert_sentences_batch(
         tokenizer_ner, model_ner, words_list,
-        "../data/all_bert/bert_ner_encoded_ner_corpus_conll")
+        "../data/all_bert/bert_ner_first_token_encoded_ner_corpus_conll",
+        layer_type="first subtoken"
+    )

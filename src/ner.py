@@ -4,11 +4,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn_crfsuite import metrics
 from collections import Counter
 import pickle
-from bert_embedding import *
 from src.dataset_ner import load_ner_data
 from sklearn.model_selection import train_test_split
 import sys
-from dataset_ner import *
+from src.dataset_ner import *
+from src.bert_embedding import *
 
 # Load pre-computed bert embeddings. #TODO sub-token
 data_path = "../data/"
@@ -19,7 +19,9 @@ with open(data_path + "conll_tech_word2idx.json") as f:
 #     word2idx = json.load(f)
 
 # ner_bert = np.load("../data/all_bert/bert_cased_encoded_ner_corpus_conll.npy")
-ner_bert = np.load("../data/all_bert/bert_ner_encoded_ner_corpus_conll.npy")
+# ner_bert = np.load("../data/all_bert/bert_ner_encoded_ner_corpus_conll.npy")
+ner_bert = np.load("../data/all_bert/bert_ner_first_token_encoded_ner_corpus_conll.npy")
+
 # cased result is better than uncased for crf
 
 assert (len(ner_bert) == len(word2idx))
@@ -370,7 +372,7 @@ if __name__ == '__main__':
 
     # In domain multiclass using conll and tech.
 
-    sys.stdout = open("../outputs/" + "ner_ner_multiclass_conll_tech" + '.txt', 'w')
+    sys.stdout = open("../outputs/" + "ner_ner_first_token_multiclass_conll_tech" + '.txt', 'w')
     print("\nIn domain multiclass: train_conll, test_conll")
     run_multiclass(train_conll, test_conll, lr_model, test_ht=False, conf=None,
                    f1_report=True, output_predictions=False)

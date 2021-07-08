@@ -1,6 +1,6 @@
 import pickle
 import json
-from utils import *
+from .utils import *
 from sklearn.linear_model import LogisticRegression
 
 
