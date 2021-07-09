@@ -307,9 +307,10 @@ def run_gradual_train_final_label_conf_groups(x_source_raw, y_source_raw, x_targ
 # Multiclass Self-Train with ht
 # TODO change input to list but with sentence id
 def multiclass_self_train(base_model, train_features, train_labels, test_features, test_labels,
-                          conf, ht=False):
+                          top_threshold, ht=False):
     """
 
+    :param top_threshold:
     :param base_model:
     :param train_features: on the word level; each word has a set of features
     :param train_labels: word labels
@@ -338,7 +339,7 @@ def multiclass_self_train(base_model, train_features, train_labels, test_feature
 
         # ht transformation
         if ht:
-            test_features = ht_lr(train_features, train_binary_labels, test_features, test_binary_labels)
+            test_features = ht_lr(train_features, train_binary_labels, test_features, top_threshold)
 
         # fit using transformed test features
         # features = np.concatenate((train_features, test_features), 0)

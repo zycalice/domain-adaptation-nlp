@@ -8,16 +8,18 @@ from sklearn.linear_model import LogisticRegression
 
 
 # all train_features, test_features needs to be in numpy format
-def ht_lr(train_features, train_labels, test_features, test_labels):
+def ht_lr(train_features, train_labels, test_features, top_threshold):
     # aligning target domain to source domain
     lr_clf = LogisticRegression()
     lr_clf.fit(train_features, train_labels)
     y_pred = lr_clf.predict(test_features)
-    y_prob = lr_clf.predict_proba(test_features)[:, 0]
+    y_prob = lr_clf.predict_proba(test_features)[:, 1]
     y_prob = [(i, val, y_pred[i]) for i, val in enumerate(y_prob)]
     y_prob = sorted(y_prob, key=lambda x: x[1])
-    y_prob_P = y_prob[:int(len(test_labels) / 10)]  # TODO not enough enough, the threshold is too large
-    y_prob_N = y_prob[-int(len(test_labels) / 10):]
+    # y_prob_P = y_prob[:int(len(test_labels) * fraction)]  # TODO not enough enough, the threshold is too large
+    # y_prob_N = y_prob[-int(len(test_labels) * fraction):]
+    y_prob_P = y_prob[top_threshold]
+    y_prob_N = y_prob[-top_threshold:]
 
     sourcePos = [val for i, val in enumerate(train_features) if train_labels[i] == 1]
     sourceNeg = [val for i, val in enumerate(train_features) if train_labels[i] == 0]
@@ -60,10 +62,10 @@ def hh_lr(u, v, c1, c2, points):
     return points_after_translation
 
 
-def S2T_p_hh(train_features, train_labels, test_features, test_labels):
+def S2T_p_hh(train_features, train_labels, test_features, test_labels, top_threshold):
     # Domain Space Alignment model
     lowerbound = S2T(train_features, train_labels, test_features, test_labels)
-    test_features = ht_lr(train_features, train_labels, test_features, test_labels)
+    test_features = ht_lr(train_features, train_labels, test_features, top_threshold)
 
     lr_clf = LogisticRegression()
     lr_clf.fit(train_features, train_labels)
@@ -78,7 +80,7 @@ def S2T(train_features, train_labels, test_features, test_labels):
     return lr_clf.score(test_features, test_labels)
 
 
-def cv_nfold_blc(func, all_data, nfold=1000):
+def cv_nfold_blc(func, all_data, nfold=1000, top_threshold=100):
     # n fold validation
     # labels are balanced
 
@@ -134,7 +136,7 @@ def cv_nfold_blc(func, all_data, nfold=1000):
             input_X_target = np.concatenate([val for i, val in enumerate(X_target) if i != fold], axis=0)
             input_y_target = np.concatenate([val for i, val in enumerate(y_target) if i != fold], axis=0)
 
-            S2T_scr, func_scr = func(input_X_source, input_y_source, input_X_target, input_y_target)
+            S2T_scr, func_scr = func(input_X_source, input_y_source, input_X_target, input_y_target, top_threshold)
             S2T_scores.append(S2T_scr)
             func_scores.append(func_scr)
         print(index)
@@ -151,7 +153,7 @@ if __name__ == '__main__':
     with open(amazon_data_path, "rb") as fr:
         all_data = pickle.load(fr)
 
-    accuracy_gain, S2T_scores, func_scores = cv_nfold_blc(S2T_p_hh, all_data, nfold=1000)
+    accuracy_gain, S2T_scores, func_scores = cv_nfold_blc(S2T_p_hh, all_data, nfold=1000, top_threshold=100)
 
     print('lowerbound score:', round(np.mean(S2T_scores)[0], 3))
     print('Domain Space Alignment model score:', round(np.mean(func_scores)[0], 3))

@@ -144,7 +144,7 @@ def run_crf(train_data, dev_data, base_model, output_name=None, crf_f1_report=Tr
         output_predictions_to_file(dev_sents, output_name, y_pred_dev)
 
 
-def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=None, f1_report=True,
+def run_multiclass(train_data, dev_data, base_model, test_ht, top_threshold=100, output_name=None, f1_report=True,
                    output_predictions=False, save_model=False):
     # Load the training data
     train_sents = train_data
@@ -170,13 +170,13 @@ def run_multiclass(train_data, dev_data, base_model, conf, test_ht, output_name=
         base_model,
         x_train_multiclass, y_train_multiclass,
         x_train_multiclass, y_train_multiclass,
-        conf, False)
+        top_threshold, False)
 
     y_pred_dev_list = multiclass_self_train(
         base_model,
         x_train_multiclass, y_train_multiclass,
         x_dev_multiclass, y_dev_multiclass,
-        conf, test_ht)
+        top_threshold, test_ht)
 
     # print("train", np.array(y_pred_train_list).shape, "dev", np.array(y_pred_dev_list).shape)
 
@@ -256,29 +256,29 @@ def run_all_multiclass_experiments(output_file_name="../outputs/" + "ner_cased" 
     # In domain multiclass
     sys.stdout = open("../outputs/" + "ner_cased_multiclass" + '.txt', 'w')
     print("\nIn domain multiclass: train_sec, test_sec")
-    run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
+    run_multiclass(train_sec, test_sec, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     print("\nIn domain multiclass: train_wiki, test_wiki")
-    run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, conf=None,
+    run_multiclass(train_wiki, test_wiki, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     # Out domain multiclass
     print("\nOut domain multiclass: train_wiki, test_sec")
-    run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, conf=None,
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     print("\nOut domain multiclass: train_sec, test_wiki")
-    run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, conf=None,
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     # Out domain multiclass HT
     print("\nOut domain multiclass HT: train_wiki, test_sec")
-    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, conf=None,
+    run_multiclass(train_wiki, test_sec, lr_model, test_ht=True, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     print("\nOut domain multiclass HT: train_sec, test_wiki")
-    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, conf=None,
+    run_multiclass(train_sec, test_wiki, lr_model, test_ht=True, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     sys.stdout.close()
@@ -292,7 +292,8 @@ if __name__ == '__main__':
     dataset = load_dataset('conll2003')
     label_list_input = dataset['train'].features['ner_tags'].feature.names
     pos_list_input = dataset['train'].features['pos_tags'].feature.names
-    conll2003 = [sent_to_tuple(dataset['train'][x], label_list_input, pos_list_input) for x in range(len(dataset['train']))]
+    conll2003 = [sent_to_tuple(dataset['train'][x], label_list_input, pos_list_input)
+                 for x in range(len(dataset['train']))]
 
     tech = load_ner_data(
         "/Users/yuchen.zhang/Documents/Projects/domain-adaptation-nlp/data/ner_tech/tech_test.txt"
@@ -374,29 +375,29 @@ if __name__ == '__main__':
 
     sys.stdout = open("../outputs/" + "ner_ner_first_token_multiclass_conll_tech" + '.txt', 'w')
     print("\nIn domain multiclass: train_conll, test_conll")
-    run_multiclass(train_conll, test_conll, lr_model, test_ht=False, conf=None,
+    run_multiclass(train_conll, test_conll, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     print("\nIn domain multiclass: train_tech, test_tech")
-    run_multiclass(train_tech, test_tech, lr_model, test_ht=False, conf=None,
+    run_multiclass(train_tech, test_tech, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     # Out domain multiclass
     print("\nOut domain multiclass: train_conll, test_tech")
-    run_multiclass(train_conll, test_tech, lr_model, test_ht=False, conf=None,
+    run_multiclass(train_conll, test_tech, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     print("\nOut domain multiclass: train_tech, test_conll")
-    run_multiclass(train_tech, test_conll, lr_model, test_ht=False, conf=None,
+    run_multiclass(train_tech, test_conll, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     # Out domain multiclass HT
     print("\nOut domain multiclass HT: train_conll, test_tech")
-    run_multiclass(train_conll, test_tech, lr_model, test_ht=True, conf=None,
+    run_multiclass(train_conll, test_tech, lr_model, test_ht=True, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     print("\nOut domain multiclass HT: train_tech, test_conll")
-    run_multiclass(train_tech, test_conll, lr_model, test_ht=True, conf=None,
+    run_multiclass(train_tech, test_conll, lr_model, test_ht=True, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
     sys.stdout.close()
