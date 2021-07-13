@@ -18,8 +18,8 @@ def ht_lr(train_features, train_labels, test_features, top_threshold):
     y_prob = sorted(y_prob, key=lambda x: x[1])
     # y_prob_P = y_prob[:int(len(test_labels) * fraction)]  # TODO not enough enough, the threshold is too large
     # y_prob_N = y_prob[-int(len(test_labels) * fraction):]
-    y_prob_P = y_prob[top_threshold]
-    y_prob_N = y_prob[-top_threshold:]
+    y_prob_P = y_prob[-top_threshold:]
+    y_prob_N = y_prob[top_threshold:]
 
     sourcePos = [val for i, val in enumerate(train_features) if train_labels[i] == 1]
     sourceNeg = [val for i, val in enumerate(train_features) if train_labels[i] == 0]

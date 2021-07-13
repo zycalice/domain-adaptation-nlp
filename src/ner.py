@@ -339,9 +339,10 @@ if __name__ == '__main__':
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
 
-    # In domain multiclass using wiki and sec.
+    # wiki and sec.
 
     # sys.stdout = open("../outputs/" + "ner_cased_multiclass_wiki_sec" + '.txt', 'w')
+    # In domain multiclass using wiki and sec.
     # print("\nIn domain multiclass: train_sec, test_sec")
     # run_multiclass(train_sec, test_sec, lr_model, test_ht=False, conf=None,
     #                f1_report=True, output_predictions=False)
@@ -371,9 +372,11 @@ if __name__ == '__main__':
     # sys.stdout.close()
     # sys.stdout = sys.__stdout__
 
-    # In domain multiclass using conll and tech.
+    # conll and Tech.
 
     sys.stdout = open("../outputs/" + "ner_ner_first_token_multiclass_conll_tech" + '.txt', 'w')
+
+    # In domain multiclass using conll and tech.
     print("\nIn domain multiclass: train_conll, test_conll")
     run_multiclass(train_conll, test_conll, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
@@ -382,7 +385,7 @@ if __name__ == '__main__':
     run_multiclass(train_tech, test_tech, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
 
-    # Out domain multiclass
+    # Out domain multiclass using conll and tech
     print("\nOut domain multiclass: train_conll, test_tech")
     run_multiclass(train_conll, test_tech, lr_model, test_ht=False, top_threshold=100,
                    f1_report=True, output_predictions=False)
@@ -393,11 +396,11 @@ if __name__ == '__main__':
 
     # Out domain multiclass HT
     print("\nOut domain multiclass HT: train_conll, test_tech")
-    run_multiclass(train_conll, test_tech, lr_model, test_ht=True, top_threshold=100,
+    run_multiclass(train_conll, test_tech, lr_model, test_ht=True, top_threshold=50,
                    f1_report=True, output_predictions=False)
 
     print("\nOut domain multiclass HT: train_tech, test_conll")
-    run_multiclass(train_tech, test_conll, lr_model, test_ht=True, top_threshold=100,
+    run_multiclass(train_tech, test_conll, lr_model, test_ht=True, top_threshold=50,
                    f1_report=True, output_predictions=False)
 
     sys.stdout.close()
