@@ -12,7 +12,7 @@
 # Tutorials
 * [NER with BERT](https://medium.com/@yingbiao/ner-with-bert-in-action-936ff275bc73#:~:text=NER%20is%20a%20task%20in,model%20for%20NER%20downstream%20task.)
 
-# Dataset
+# NER Dataset
 * [CoNLL2003](https://huggingface.co/datasets/conll2003)
   [Alternative link](https://www.clips.uantwerpen.be/conll2003/ner/)
   [Alternative link](https://github.com/glample/tagger/blob/master/dataset/eng.testa)
@@ -22,6 +22,13 @@
   * use CoNLL-2003 as source, use CBS SciTech News as target
 * [Other NER](https://github.com/juand-r/entity-recognition-datasets)
   * used wikigold and SEC-filings
+
+# Classification Dataset
+* [20-Newsgroups](https://dl.acm.org/doi/abs/10.1145/1281192.1281218?casa_token=jMMh4etuT_cAAAAA%3A83HBb43uGWalKdDbRZj3UFZy7JG3fDkt10kUDpGBI_GWluphIp9tiXbe4YZPZo-uvfuOZ_9kw-K04g)
+* [Amazon Data](http://www.cs.jhu.edu/~mdredze/datasets/sentiment/)
+  * Usually use reduced set(Books, DVDs, Electronicsand Kitchen)(Blitzer et al.)
+* [SentDat](https://dl.acm.org/doi/pdf/10.1145/1772690.1772767)
+  * (video game(V), electronics(E), software(S) and hotel (H))
 
 # pretrained BERT
 * [CoNLL2003 pretrained BERT](https://huggingface.co/dslim/bert-base-NER)
