@@ -30,5 +30,14 @@
 * [SentDat](https://dl.acm.org/doi/pdf/10.1145/1772690.1772767)
   * (video game(V), electronics(E), software(S) and hotel (H))
 
+# Multilingual Dataset
+* [NTCIR](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.364.9258&rep=rep1&type=pdf)
+  * EN & CN
+* [Sanders/GermEval](https://aclanthology.org/L18-1101.pdf)
+  * EN & German, sentiment classification, pos/neu/neg, multilingual-multiclass
+
+
+
+
 # pretrained BERT
 * [CoNLL2003 pretrained BERT](https://huggingface.co/dslim/bert-base-NER)
