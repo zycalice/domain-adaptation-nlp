@@ -54,12 +54,16 @@ if __name__ == '__main__':
     tokenizer_ner = AutoTokenizer.from_pretrained("dslim/bert-base-NER")
     model_ner = AutoModelForTokenClassification.from_pretrained("dslim/bert-base-NER").bert
 
-    # # Sentiment Classification.
+    # # Sentiment Classification BERT.
     # domains = ["tw", "az", "mv", "fi"]
     # clf_data_size = 3000
     #
     # X_dict = load_np_files(data_path=data_path, domains=domains, data_types=["train", "dev"], load_feature=True)
     # output_bert_embeddings(domains, clf_data_size, X_dict)
+
+    # Sentiment Classification Sentence BERT.
+    # TODO
+
     #
     # # NER v1.
     # with open(data_path + "wiki_sec_word2idx.json") as file:
@@ -86,12 +90,12 @@ if __name__ == '__main__':
     #     tokenizer_ner, model_ner, words_list,
     #     "../data/all_bert/bert_ner_encoded_ner_corpus_conll")
 
-    # NER v3.
-    with open(data_path + "conll_tech_word2idx.json") as file:
-        word2idx = json.load(file)
-    words_list = list(word2idx.keys())
-    _ = tokenize_encode_bert_sentences_batch(
-        tokenizer_ner, model_ner, words_list,
-        "../data/all_bert/bert_ner_first_token_encoded_ner_corpus_conll",
-        layer_type="first subtoken"
-    )
+    # # NER v3.
+    # with open(data_path + "conll_tech_word2idx.json") as file:
+    #     word2idx = json.load(file)
+    # words_list = list(word2idx.keys())
+    # _ = tokenize_encode_bert_sentences_batch(
+    #     tokenizer_ner, model_ner, words_list,
+    #     "../data/all_bert/bert_ner_first_token_encoded_ner_corpus_conll",
+    #     layer_type="first subtoken"
+    # )

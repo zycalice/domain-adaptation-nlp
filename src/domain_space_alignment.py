@@ -6,11 +6,11 @@ import numpy as np
 import pickle
 from sklearn.linear_model import LogisticRegression
 
-
+max_iteration=2000000
 # all train_features, test_features needs to be in numpy format
 def ht_lr(train_features, train_labels, test_features, top_threshold):
     # aligning target domain to source domain
-    lr_clf = LogisticRegression()
+    lr_clf = LogisticRegression(max_iter=max_iteration)
     lr_clf.fit(train_features, train_labels)
     y_pred = lr_clf.predict(test_features)
     y_prob = lr_clf.predict_proba(test_features)[:, 1]
@@ -67,7 +67,7 @@ def S2T_p_hh(train_features, train_labels, test_features, test_labels, top_thres
     lowerbound = S2T(train_features, train_labels, test_features, test_labels)
     test_features = ht_lr(train_features, train_labels, test_features, top_threshold)
 
-    lr_clf = LogisticRegression()
+    lr_clf = LogisticRegression(max_iter=max_iteration)
     lr_clf.fit(train_features, train_labels)
 
     return lowerbound, lr_clf.score(test_features, test_labels)
@@ -75,12 +75,12 @@ def S2T_p_hh(train_features, train_labels, test_features, test_labels, top_thres
 
 def S2T(train_features, train_labels, test_features, test_labels):
     # lowerbound model
-    lr_clf = LogisticRegression()
+    lr_clf = LogisticRegression(max_iter=max_iteration)
     lr_clf.fit(train_features, train_labels)
     return lr_clf.score(test_features, test_labels)
 
 
-def cv_nfold_blc(func, all_data, nfold=1000, top_threshold=100):
+def cv_nfold_blc(func, all_data, nfold=10, top_threshold=100):
     # n fold validation
     # labels are balanced
 
@@ -130,19 +130,21 @@ def cv_nfold_blc(func, all_data, nfold=1000, top_threshold=100):
                                             1 + thresh)]]
                     for thresh in range(nfold)
                     ]
-        for fold in range(nfold):
-            input_X_source = X_source[fold]
-            input_y_source = y_source[fold]
-            input_X_target = np.concatenate([val for i, val in enumerate(X_target) if i != fold], axis=0)
-            input_y_target = np.concatenate([val for i, val in enumerate(y_target) if i != fold], axis=0)
+        if nfold==1:
+            raise ValueError
+        else:
+            for fold in range(nfold):
+                input_X_source = X_source[fold]
+                input_y_source = y_source[fold]
+                input_X_target = np.concatenate([val for i, val in enumerate(X_target) if i != fold], axis=0)
+                input_y_target = np.concatenate([val for i, val in enumerate(y_target) if i != fold], axis=0)
 
-            S2T_scr, func_scr = func(input_X_source, input_y_source, input_X_target, input_y_target, top_threshold)
-            S2T_scores.append(S2T_scr)
-            func_scores.append(func_scr)
+                S2T_scr, func_scr = func(input_X_source, input_y_source, input_X_target, input_y_target, top_threshold)
+                S2T_scores.append(S2T_scr)
+                func_scores.append(func_scr)
         print(index)
 
     accuracy_gain = [func_scores[i] - S2T_scores[i] for i in range(len(func_scores))]
-
     return accuracy_gain, S2T_scores, func_scores
 
 
@@ -153,7 +155,7 @@ if __name__ == '__main__':
     with open(amazon_data_path, "rb") as fr:
         all_data = pickle.load(fr)
 
-    accuracy_gain, S2T_scores, func_scores = cv_nfold_blc(S2T_p_hh, all_data, nfold=1000, top_threshold=100)
+    accuracy_gain, S2T_scores, func_scores = cv_nfold_blc(S2T_p_hh, all_data, nfold=2, top_threshold=100)
 
-    print('lowerbound score:', round(np.mean(S2T_scores)[0], 3))
-    print('Domain Space Alignment model score:', round(np.mean(func_scores)[0], 3))
+    print('lowerbound score:', S2T_scores)
+    print('Domain Space Alignment model score:', func_scores)
