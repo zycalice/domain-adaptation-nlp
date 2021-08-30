@@ -155,7 +155,7 @@ if __name__ == '__main__':
     with open(amazon_data_path, "rb") as fr:
         all_data = pickle.load(fr)
 
-    accuracy_gain, S2T_scores, func_scores = cv_nfold_blc(S2T_p_hh, all_data, nfold=5, top_threshold=100)
+    accuracy_gain, S2T_scores, func_scores = cv_nfold_blc(S2T_p_hh, all_data, nfold=5, top_threshold=200)
 
     print('lowerbound score:', np.mean(S2T_scores))
     print('Domain Space Alignment model score:', np.mean(func_scores))
