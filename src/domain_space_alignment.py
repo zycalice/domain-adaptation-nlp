@@ -19,7 +19,7 @@ def ht_lr(train_features, train_labels, test_features, top_threshold):
     # y_prob_P = y_prob[:int(len(test_labels) * fraction)]  # TODO not enough enough, the threshold is too large
     # y_prob_N = y_prob[-int(len(test_labels) * fraction):]
     y_prob_P = y_prob[-top_threshold:]
-    y_prob_N = y_prob[top_threshold:]
+    y_prob_N = y_prob[:top_threshold]
 
     sourcePos = [val for i, val in enumerate(train_features) if train_labels[i] == 1]
     sourceNeg = [val for i, val in enumerate(train_features) if train_labels[i] == 0]
@@ -155,7 +155,7 @@ if __name__ == '__main__':
     with open(amazon_data_path, "rb") as fr:
         all_data = pickle.load(fr)
 
-    accuracy_gain, S2T_scores, func_scores = cv_nfold_blc(S2T_p_hh, all_data, nfold=2, top_threshold=100)
+    accuracy_gain, S2T_scores, func_scores = cv_nfold_blc(S2T_p_hh, all_data, nfold=5, top_threshold=100)
 
-    print('lowerbound score:', S2T_scores)
-    print('Domain Space Alignment model score:', func_scores)
+    print('lowerbound score:', np.mean(S2T_scores))
+    print('Domain Space Alignment model score:', np.mean(func_scores))
