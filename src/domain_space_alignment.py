@@ -6,7 +6,9 @@ import numpy as np
 import pickle
 from sklearn.linear_model import LogisticRegression
 
-max_iteration=2000000
+max_iteration = 2000000
+
+
 # all train_features, test_features needs to be in numpy format
 def ht_lr(train_features, train_labels, test_features, top_threshold):
     # aligning target domain to source domain
@@ -109,28 +111,28 @@ def cv_nfold_blc(func, all_data, nfold=10, top_threshold=100):
         X_source = [[val[1]
                      for val in X_i_source[
                                 math.ceil(len(X_i_source) / nfold) * thresh:math.ceil(len(X_i_source) / nfold) * (
-                                            1 + thresh)]]
+                                        1 + thresh)]]
                     for thresh in range(nfold)
                     ]
         y_source = [[y_source[val[0]]
                      for val in X_i_source[
                                 math.ceil(len(X_i_source) / nfold) * thresh:math.ceil(len(X_i_source) / nfold) * (
-                                            1 + thresh)]]
+                                        1 + thresh)]]
                     for thresh in range(nfold)
                     ]
         X_target = [[val[1]
                      for val in X_i_target[
                                 math.ceil(len(X_i_target) / nfold) * thresh:math.ceil(len(X_i_target) / nfold) * (
-                                            1 + thresh)]]
+                                        1 + thresh)]]
                     for thresh in range(nfold)
                     ]
         y_target = [[y_target[val[0]]
                      for val in X_i_target[
                                 math.ceil(len(X_i_target) / nfold) * thresh:math.ceil(len(X_i_target) / nfold) * (
-                                            1 + thresh)]]
+                                        1 + thresh)]]
                     for thresh in range(nfold)
                     ]
-        if nfold==1:
+        if nfold == 1:
             raise ValueError
         else:
             for fold in range(nfold):
