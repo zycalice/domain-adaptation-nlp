@@ -4,34 +4,34 @@ In domain multiclass: train_conll, test_conll
 == Train ==
               precision    recall  f1-score   support
 
-       B-LOC      0.814     0.880     0.845      5367
-       I-LOC      0.777     0.697     0.735       870
-      B-MISC      0.870     0.848     0.859      2552
-      I-MISC      0.778     0.590     0.671       860
-       B-ORG      0.764     0.730     0.747      4742
-       I-ORG      0.712     0.518     0.600      2765
-       B-PER      0.772     0.799     0.785      4926
-       I-PER      0.650     0.656     0.653      3386
+       B-LOC       0.81      0.88      0.85      5367
+       I-LOC       0.78      0.70      0.74       870
+      B-MISC       0.87      0.85      0.86      2552
+      I-MISC       0.78      0.59      0.67       860
+       B-ORG       0.76      0.73      0.75      4742
+       I-ORG       0.71      0.52      0.60      2765
+       B-PER       0.77      0.80      0.79      4926
+       I-PER       0.65      0.66      0.65      3386
 
-   micro avg      0.769     0.748     0.758     25468
-   macro avg      0.767     0.715     0.737     25468
-weighted avg      0.767     0.748     0.755     25468
+   micro avg       0.77      0.75      0.76     25468
+   macro avg       0.77      0.71      0.74     25468
+weighted avg       0.77      0.75      0.76     25468
 
 == Dev ==
               precision    recall  f1-score   support
 
-       B-LOC      0.777     0.861     0.816      1773
-       I-LOC      0.697     0.610     0.651       287
-      B-MISC      0.822     0.839     0.830       886
-      I-MISC      0.714     0.549     0.621       295
-       B-ORG      0.712     0.676     0.693      1579
-       I-ORG      0.645     0.472     0.545       939
-       B-PER      0.736     0.760     0.748      1674
-       I-PER      0.578     0.564     0.571      1142
+       B-LOC       0.78      0.86      0.82      1773
+       I-LOC       0.70      0.61      0.65       287
+      B-MISC       0.82      0.84      0.83       886
+      I-MISC       0.71      0.55      0.62       295
+       B-ORG       0.71      0.68      0.69      1579
+       I-ORG       0.65      0.47      0.55       939
+       B-PER       0.74      0.76      0.75      1674
+       I-PER       0.58      0.56      0.57      1142
 
-   micro avg      0.720     0.704     0.712      8575
-   macro avg      0.710     0.666     0.684      8575
-weighted avg      0.716     0.704     0.707      8575
+   micro avg       0.72      0.70      0.71      8575
+   macro avg       0.71      0.67      0.68      8575
+weighted avg       0.72      0.70      0.71      8575
 
 
 In domain multiclass: train_tech, test_tech
@@ -39,34 +39,34 @@ In domain multiclass: train_tech, test_tech
 == Train ==
               precision    recall  f1-score   support
 
-       B-LOC      0.831     0.965     0.893       372
-       I-LOC      0.840     0.750     0.792       112
-      B-MISC      0.814     0.766     0.789       269
-      I-MISC      0.750     0.363     0.489        91
-       B-ORG      0.881     0.851     0.866       624
-       I-ORG      0.818     0.642     0.719       349
-       B-PER      0.880     0.914     0.897       813
-       I-PER      0.826     0.804     0.815       424
+       B-LOC       0.83      0.97      0.89       372
+       I-LOC       0.84      0.75      0.79       112
+      B-MISC       0.81      0.77      0.79       269
+      I-MISC       0.75      0.36      0.49        91
+       B-ORG       0.88      0.85      0.87       624
+       I-ORG       0.82      0.64      0.72       349
+       B-PER       0.88      0.91      0.90       813
+       I-PER       0.83      0.80      0.81       424
 
-   micro avg      0.851     0.825     0.838      3054
-   macro avg      0.830     0.757     0.782      3054
-weighted avg      0.848     0.825     0.833      3054
+   micro avg       0.85      0.83      0.84      3054
+   macro avg       0.83      0.76      0.78      3054
+weighted avg       0.85      0.83      0.83      3054
 
 == Dev ==
               precision    recall  f1-score   support
 
-       B-LOC      0.723     0.846     0.780       117
-       I-LOC      0.833     0.536     0.652        28
-      B-MISC      0.614     0.562     0.587        96
-      I-MISC      0.600     0.220     0.321        41
-       B-ORG      0.797     0.752     0.774       250
-       I-ORG      0.636     0.488     0.553       129
-       B-PER      0.781     0.792     0.786       279
-       I-PER      0.635     0.604     0.619       144
+       B-LOC       0.72      0.85      0.78       117
+       I-LOC       0.83      0.54      0.65        28
+      B-MISC       0.61      0.56      0.59        96
+      I-MISC       0.60      0.22      0.32        41
+       B-ORG       0.80      0.75      0.77       250
+       I-ORG       0.64      0.49      0.55       129
+       B-PER       0.78      0.79      0.79       279
+       I-PER       0.64      0.60      0.62       144
 
-   micro avg      0.727     0.679     0.702      1084
-   macro avg      0.702     0.600     0.634      1084
-weighted avg      0.721     0.679     0.694      1084
+   micro avg       0.73      0.68      0.70      1084
+   macro avg       0.70      0.60      0.63      1084
+weighted avg       0.72      0.68      0.69      1084
 
 
 Out domain multiclass: train_conll, test_tech
@@ -74,34 +74,34 @@ Out domain multiclass: train_conll, test_tech
 == Train ==
               precision    recall  f1-score   support
 
-       B-LOC      0.814     0.880     0.845      5367
-       I-LOC      0.777     0.697     0.735       870
-      B-MISC      0.870     0.848     0.859      2552
-      I-MISC      0.778     0.590     0.671       860
-       B-ORG      0.764     0.730     0.747      4742
-       I-ORG      0.712     0.518     0.600      2765
-       B-PER      0.772     0.799     0.785      4926
-       I-PER      0.650     0.656     0.653      3386
+       B-LOC       0.81      0.88      0.85      5367
+       I-LOC       0.78      0.70      0.74       870
+      B-MISC       0.87      0.85      0.86      2552
+      I-MISC       0.78      0.59      0.67       860
+       B-ORG       0.76      0.73      0.75      4742
+       I-ORG       0.71      0.52      0.60      2765
+       B-PER       0.77      0.80      0.79      4926
+       I-PER       0.65      0.66      0.65      3386
 
-   micro avg      0.769     0.748     0.758     25468
-   macro avg      0.767     0.715     0.737     25468
-weighted avg      0.767     0.748     0.755     25468
+   micro avg       0.77      0.75      0.76     25468
+   macro avg       0.77      0.71      0.74     25468
+weighted avg       0.77      0.75      0.76     25468
 
 == Dev ==
               precision    recall  f1-score   support
 
-       B-LOC      0.480     0.735     0.581       117
-       I-LOC      0.474     0.643     0.545        28
-      B-MISC      0.492     0.323     0.390        96
-      I-MISC      0.081     0.073     0.077        41
-       B-ORG      0.453     0.468     0.461       250
-       I-ORG      0.206     0.217     0.211       129
-       B-PER      0.694     0.642     0.667       279
-       I-PER      0.445     0.535     0.486       144
+       B-LOC       0.48      0.74      0.58       117
+       I-LOC       0.47      0.64      0.55        28
+      B-MISC       0.49      0.32      0.39        96
+      I-MISC       0.08      0.07      0.08        41
+       B-ORG       0.45      0.47      0.46       250
+       I-ORG       0.21      0.22      0.21       129
+       B-PER       0.69      0.64      0.67       279
+       I-PER       0.45      0.53      0.49       144
 
-   micro avg      0.472     0.497     0.484      1084
-   macro avg      0.416     0.454     0.427      1084
-weighted avg      0.478     0.497     0.482      1084
+   micro avg       0.47      0.50      0.48      1084
+   macro avg       0.42      0.45      0.43      1084
+weighted avg       0.48      0.50      0.48      1084
 
 
 Out domain multiclass: train_tech, test_conll
@@ -109,34 +109,34 @@ Out domain multiclass: train_tech, test_conll
 == Train ==
               precision    recall  f1-score   support
 
-       B-LOC      0.831     0.965     0.893       372
-       I-LOC      0.840     0.750     0.792       112
-      B-MISC      0.814     0.766     0.789       269
-      I-MISC      0.750     0.363     0.489        91
-       B-ORG      0.881     0.851     0.866       624
-       I-ORG      0.818     0.642     0.719       349
-       B-PER      0.880     0.914     0.897       813
-       I-PER      0.826     0.804     0.815       424
+       B-LOC       0.83      0.97      0.89       372
+       I-LOC       0.84      0.75      0.79       112
+      B-MISC       0.81      0.77      0.79       269
+      I-MISC       0.75      0.36      0.49        91
+       B-ORG       0.88      0.85      0.87       624
+       I-ORG       0.82      0.64      0.72       349
+       B-PER       0.88      0.91      0.90       813
+       I-PER       0.83      0.80      0.81       424
 
-   micro avg      0.851     0.825     0.838      3054
-   macro avg      0.830     0.757     0.782      3054
-weighted avg      0.848     0.825     0.833      3054
+   micro avg       0.85      0.83      0.84      3054
+   macro avg       0.83      0.76      0.78      3054
+weighted avg       0.85      0.83      0.83      3054
 
 == Dev ==
               precision    recall  f1-score   support
 
-       B-LOC      0.555     0.500     0.526      1773
-       I-LOC      0.441     0.328     0.376       287
-      B-MISC      0.414     0.542     0.469       886
-      I-MISC      0.316     0.122     0.176       295
-       B-ORG      0.461     0.312     0.372      1579
-       I-ORG      0.452     0.197     0.274       939
-       B-PER      0.572     0.567     0.569      1674
-       I-PER      0.426     0.373     0.398      1142
+       B-LOC       0.56      0.50      0.53      1773
+       I-LOC       0.44      0.33      0.38       287
+      B-MISC       0.41      0.54      0.47       886
+      I-MISC       0.32      0.12      0.18       295
+       B-ORG       0.46      0.31      0.37      1579
+       I-ORG       0.45      0.20      0.27       939
+       B-PER       0.57      0.57      0.57      1674
+       I-PER       0.43      0.37      0.40      1142
 
-   micro avg      0.492     0.414     0.449      8575
-   macro avg      0.455     0.368     0.395      8575
-weighted avg      0.486     0.414     0.439      8575
+   micro avg       0.49      0.41      0.45      8575
+   macro avg       0.45      0.37      0.40      8575
+weighted avg       0.49      0.41      0.44      8575
 
 
 Out domain multiclass HT: train_conll, test_tech
@@ -144,34 +144,34 @@ Out domain multiclass HT: train_conll, test_tech
 == Train ==
               precision    recall  f1-score   support
 
-       B-LOC      0.814     0.880     0.845      5367
-       I-LOC      0.777     0.697     0.735       870
-      B-MISC      0.870     0.848     0.859      2552
-      I-MISC      0.778     0.590     0.671       860
-       B-ORG      0.764     0.730     0.747      4742
-       I-ORG      0.712     0.518     0.600      2765
-       B-PER      0.772     0.799     0.785      4926
-       I-PER      0.650     0.656     0.653      3386
+       B-LOC       0.81      0.88      0.85      5367
+       I-LOC       0.78      0.70      0.74       870
+      B-MISC       0.87      0.85      0.86      2552
+      I-MISC       0.78      0.59      0.67       860
+       B-ORG       0.76      0.73      0.75      4742
+       I-ORG       0.71      0.52      0.60      2765
+       B-PER       0.77      0.80      0.79      4926
+       I-PER       0.65      0.66      0.65      3386
 
-   micro avg      0.769     0.748     0.758     25468
-   macro avg      0.767     0.715     0.737     25468
-weighted avg      0.767     0.748     0.755     25468
+   micro avg       0.77      0.75      0.76     25468
+   macro avg       0.77      0.71      0.74     25468
+weighted avg       0.77      0.75      0.76     25468
 
 == Dev ==
               precision    recall  f1-score   support
 
-       B-LOC      0.441     0.419     0.430       117
-       I-LOC      0.161     0.536     0.248        28
-      B-MISC      0.115     0.427     0.181        96
-      I-MISC      0.018     0.073     0.029        41
-       B-ORG      0.118     0.164     0.137       250
-       I-ORG      0.041     0.116     0.060       129
-       B-PER      0.286     0.914     0.436       279
-       I-PER      0.037     0.028     0.032       144
+       B-LOC       0.07      0.16      0.09       117
+       I-LOC       0.00      0.00      0.00        28
+      B-MISC       0.00      0.00      0.00        96
+      I-MISC       0.03      0.22      0.05        41
+       B-ORG       0.00      0.00      0.00       250
+       I-ORG       0.06      0.28      0.10       129
+       B-PER       0.44      0.28      0.34       279
+       I-PER       0.00      0.00      0.00       144
 
-   micro avg      0.173     0.390     0.240      1084
-   macro avg      0.152     0.335     0.194      1084
-weighted avg      0.173     0.390     0.225      1084
+   micro avg       0.10      0.13      0.12      1084
+   macro avg       0.07      0.12      0.07      1084
+weighted avg       0.13      0.13      0.11      1084
 
 
 Out domain multiclass HT: train_tech, test_conll
@@ -179,31 +179,32 @@ Out domain multiclass HT: train_tech, test_conll
 == Train ==
               precision    recall  f1-score   support
 
-       B-LOC      0.831     0.965     0.893       372
-       I-LOC      0.840     0.750     0.792       112
-      B-MISC      0.814     0.766     0.789       269
-      I-MISC      0.750     0.363     0.489        91
-       B-ORG      0.881     0.851     0.866       624
-       I-ORG      0.818     0.642     0.719       349
-       B-PER      0.880     0.914     0.897       813
-       I-PER      0.826     0.804     0.815       424
+       B-LOC       0.83      0.97      0.89       372
+       I-LOC       0.84      0.75      0.79       112
+      B-MISC       0.81      0.77      0.79       269
+      I-MISC       0.75      0.36      0.49        91
+       B-ORG       0.88      0.85      0.87       624
+       I-ORG       0.82      0.64      0.72       349
+       B-PER       0.88      0.91      0.90       813
+       I-PER       0.83      0.80      0.81       424
 
-   micro avg      0.851     0.825     0.838      3054
-   macro avg      0.830     0.757     0.782      3054
-weighted avg      0.848     0.825     0.833      3054
+   micro avg       0.85      0.83      0.84      3054
+   macro avg       0.83      0.76      0.78      3054
+weighted avg       0.85      0.83      0.83      3054
 
 == Dev ==
               precision    recall  f1-score   support
 
-       B-LOC      0.590     0.710     0.644      1773
-       I-LOC      0.245     0.209     0.226       287
-      B-MISC      0.028     0.019     0.023       886
-      I-MISC      0.005     0.007     0.005       295
-       B-ORG      0.472     0.257     0.333      1579
-       I-ORG      0.254     0.384     0.306       939
-       B-PER      0.355     0.617     0.451      1674
-       I-PER      0.425     0.302     0.353      1142
+       B-LOC       0.82      0.53      0.64      1773
+       I-LOC       0.01      0.10      0.02       287
+      B-MISC       0.00      0.00      0.00       886
+      I-MISC       0.00      0.00      0.00       295
+       B-ORG       0.00      0.00      0.00      1579
+       I-ORG       0.07      0.15      0.10       939
+       B-PER       0.00      0.00      0.00      1674
+       I-PER       0.00      0.00      0.00      1142
 
-   micro avg      0.369     0.406     0.387      8575
-   macro avg      0.297     0.313     0.293      8575
-weighted avg      0.374     0.406     0.373      8575
+   micro avg       0.19      0.13      0.15      8575
+   macro avg       0.11      0.10      0.09      8575
+weighted avg       0.18      0.13      0.14      8575
+

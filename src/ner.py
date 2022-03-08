@@ -119,12 +119,12 @@ def run_crf(train_data, dev_data, base_model, output_name=None, crf_f1_report=Tr
 
         print("== Train ==")
         print(metrics.flat_classification_report(
-            y_train, y_pred_train, labels=sorted_labels, digits=3
+            y_train, y_pred_train, labels=sorted_labels
         ))
 
         print("== Dev ==")
         print(metrics.flat_classification_report(
-            y_dev, y_pred_dev, labels=sorted_labels, digits=3
+            y_dev, y_pred_dev, labels=sorted_labels
         ))
 
     if crf_transition_analysis:
@@ -217,12 +217,12 @@ def run_multiclass(train_data, dev_data, base_model, test_ht, top_threshold=100,
 
         print("== Train ==")
         print(metrics.flat_classification_report(
-            y_train, y_pred_train, labels=sorted_labels, digits=3
+            y_train, y_pred_train, labels=sorted_labels,
         ))
 
         print("== Dev ==")
         print(metrics.flat_classification_report(
-            y_dev, y_pred_dev, labels=sorted_labels, digits=3
+            y_dev, y_pred_dev, labels=sorted_labels,
         ))
 
     if output_predictions:

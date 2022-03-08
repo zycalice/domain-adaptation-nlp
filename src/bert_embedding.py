@@ -6,14 +6,14 @@ from transformers import pipeline
 from src.utils import *
 
 
-def output_bert_embeddings(domain_types, data_size, X_dict):
+def output_bert_embeddings(domain_types, data_size, X_dict, layer_type="CLS"):
     for domain in domain_types:
         _ = tokenize_encode_bert_sentences_batch(tokenizer_d, model_d, list(X_dict["X_train_" + domain][:data_size]),
                                                  data_path + "all_bert/" + "encoded_" + domain + "_train_" +
-                                                 str(data_size))
+                                                 str(data_size), layer_type=layer_type)
         _ = tokenize_encode_bert_sentences_batch(tokenizer_d, model_d, list(X_dict["X_train_" + domain][:data_size]),
                                                  data_path + "all_bert/" + "encoded_" + domain + "_dev_" + str(
-                                                     data_size))
+                                                     data_size), layer_type=layer_type)
 
 
 def tokenize_encode_bert_sentences_batch(tokenizer, model, input_sentences, output_path, layer_type="CLS"):
@@ -29,18 +29,14 @@ def tokenize_encode_bert_sentences_batch(tokenizer, model, input_sentences, outp
 
 def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences, layer_type="CLS"):
     encoded_input = tokenizer(input_sentences, return_tensors='pt', truncation=True, padding=True)
-    output = model(**encoded_input)[0]
+    output = model(**encoded_input)
     if layer_type == "CLS":
-        output = output[:, 0, :].detach().numpy()
-    elif layer_type == "first subtoken":
-        output = output[:, 1, :].detach().numpy()
+        output = output[0][:, 0, :].detach().numpy()
+    elif layer_type == "first-subtoken":
+        output = output[1].detach().numpy()
     else:
         output = output.detach().numpy()
     return output
-
-
-def fine_tune_bert():
-    pass
 
 
 if __name__ == '__main__':
