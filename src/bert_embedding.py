@@ -32,8 +32,6 @@ def tokenize_encode_bert_sentences_sample(tokenizer, model, input_sentences, lay
     output = model(**encoded_input)
     if layer_type == "CLS":
         output = output[0][:, 0, :].detach().numpy()
-    elif layer_type == "first-subtoken":
-        output = output[1].detach().numpy()
     else:
         output = output.detach().numpy()
     return output
